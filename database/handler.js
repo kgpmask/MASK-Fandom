@@ -6,15 +6,7 @@ const Post = require('./schemas/Post');
 
 // Handle newly registered user or normal login
 async function createNewUser (profile) {
-	const user = await User.findById(profile.id);
-	if (user) return user;
-	const newUser = new User({
-		_id: profile.id,
-		name: profile.displayName,
-		picture: profile.photos[0].value,
-		permissions: []
-	});
-	return newUser.save();
+	// Time to change this one :)
 }
 
 // Get User
@@ -28,6 +20,7 @@ function getAllUsers (id) {
 
 // Add new record to database
 async function updateUserQuizRecord (stats) { // {userId, quizId, time, score}
+	// This... should be fine as it is
 	const user = await Quiz.UserInfo.findOne({ userId: stats.userId });
 	const userName = (await getUser(stats.userId)).name;
 	const record = user || new Quiz.UserInfo({ userId: stats.userId, userName, points: 0, quizData: [] });
@@ -48,6 +41,7 @@ async function updateUserQuizRecord (stats) { // {userId, quizId, time, score}
 
 // User statistics
 async function getUserStats (userId) {
+	// This should be fine as it is too
 	const user = await Quiz.UserInfo.findOne({ userId });
 	if (user) return user;
 	else return updateUserQuizRecord({ userId });
