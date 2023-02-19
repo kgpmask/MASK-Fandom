@@ -1,19 +1,44 @@
+const bcrypt = require('bcrypt');
+
 const User = require('./schemas/User');
 const Quiz = require('./schemas/Quiz');
 const { LiveQuiz, LiveResult } = require('./schemas/LiveQuiz');
 const Newsletter = require('./schemas/Newsletter');
 const Post = require('./schemas/Post');
+const Session = require('./schemas/Session');
 
 // Handle newly registered user or normal login
 async function createNewUser (profile) {
-	// Time to change this one :)
+	// Yeah... profile is pretty much explained over here.
+	const { name, username, password } = profile;
+	let user = await getUserByUsername(username);
+	if (user) return user;
+	user = User({ name, username });
+	// Generate a salt and hash. Then save them both.
+	user.salt = await bcrypt.genSalt(7);
+	user.hash = await bcrypt.hash(password, user.salt);
+	return user.save();
 }
 
-// Get User
-async function getUser (id) {
+// Get User (by using ID)
+function getUser (id) {
 	return User.findById(id);
 }
 
+// Get User (by using username)
+function getUserByUsername (username) {
+	return User.find({ username });
+}
+
+// Validates if the login is valid or not
+async function validateUserLogin (creds) {
+	const { username, password } = creds;
+	const user = await getUserByUsername(username);
+	if (!user) throw new Error('User does not exist.');
+	return user.hash === await bcrypt.hash(password, user.salt) ? user._id : false;
+}
+
+// Wondering why this one exists TBH...
 function getAllUsers (id) {
 	return User.find().lean();
 }
@@ -97,6 +122,23 @@ function getPosts (postType) {
 	return Post.find(postType ? { type: postType } : {}).sort({ date: -1 });
 }
 
+// Sessions for local auth
+function generateSessionRecord (userId) {
+	const sessionId = [3, 5, 9].map(i => (Math.random() + 1).toString(36).substring(2, i)).join('-');
+	const session = Session({
+		_id: sessionId,
+		userId
+	});
+	session.save();
+	return sessionId;
+}
+
+async function returnUserFromSession (sessionId) {
+	const { userId } = await Session.findById(sessionId);
+	if (!userId) throw new Error('Invalid Session ID!');
+	return await getUser(userId);
+}
+
 module.exports = {
 	createNewUser,
 	getUser,
@@ -109,5 +151,7 @@ module.exports = {
 	getAllLiveResults,
 	addLiveResult,
 	getNewsletter,
-	getPosts
+	getPosts,
+	generateSessionRecord,
+	returnUserFromSession
 };

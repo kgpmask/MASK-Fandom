@@ -1,1 +1,8 @@
-// This file will contain some stuff which will be used in login, like req.user for the handler and stuff
+const dbh = require('../database/handler');
+
+module.exports = async (req, res, next) => {
+	// Basically, I'll use this to generate and manage sessions, while also adding req.user
+	const { sessionId } = req.cookies;
+	if (!sessionId) return;
+	req.user = await dbh.returnUserFromSession(sessionId);
+};

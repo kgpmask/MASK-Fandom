@@ -14,7 +14,8 @@ module.exports = function setMiddleware (app) {
 	app.use(express.urlencoded({ extended: true }));
 	app.use(cookieParser());
 
-	// Need to add the login middleware here
+	// Checks the session token, and sets req.user accordingly
+	app.use(login);
 
 	app.use('/assets', express.static(path.join(__dirname, '..', 'assets')));
 
@@ -42,8 +43,8 @@ module.exports = function setMiddleware (app) {
 	});
 
 	app.use((req, res, next) => {
-		res.locals.userless = PARAMS.userless;
 		res.locals.mongoless = PARAMS.mongoless;
+		res.locals.userless = PARAMS.mongoless || PARAMS.userless;
 		res.locals.quizFlag = PARAMS.quiz;
 		req.loggedIn = res.locals.loggedIn = Boolean(req.user);
 		next();

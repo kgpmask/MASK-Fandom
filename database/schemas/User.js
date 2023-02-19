@@ -6,7 +6,9 @@ const userInfoSchema = new mongoose.Schema({
 	username: { type: String, required: true },
 	salt: { type: String, required: true },
 	hash: { type: String, required: true },
-	permissions: [String]
+	permissions: { type: [String], default: [] }
 });
+
+userInfoSchema.set('collection', 'pw-user');
 
 module.exports = mongoose.model('User', userInfoSchema);
