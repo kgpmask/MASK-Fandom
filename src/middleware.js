@@ -14,34 +14,7 @@ module.exports = function setMiddleware (app) {
 	app.use(express.urlencoded({ extended: true }));
 	app.use(cookieParser());
 
-	if (!PARAMS.userless) {
-		app.use(session({
-			secret: process.env.SESSION_SECRET,
-			resave: false, // don't save session if unmodified
-			saveUninitialized: false, // don't create session until something stored
-			store: MongoStore.create({ mongoUrl: process.env.MONGO_URL })
-		}));
-		app.use(passport.authenticate('session'));
-
-		app.use((req, res, next) => {
-			if (req.url !== '/git-hook') {
-				csrf()(req, res, next);
-				res.locals.csrfToken = req.csrfToken();
-			} else next();
-			// git-hook ignores CSRF
-		});
-
-		login.init();
-	}
-
-	// Pre-routing
-	if (!PARAMS.userless) {
-		app.get('/login/federated/google', passport.authenticate('google'));
-		app.get('/oauth2/redirect/google', passport.authenticate('google', {
-			successReturnToOrRedirect: '/',
-			failureRedirect: '/login'
-		}));
-	}
+	// Need to add the login middleware here
 
 	app.use('/assets', express.static(path.join(__dirname, '..', 'assets')));
 
