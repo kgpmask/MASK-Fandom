@@ -9,6 +9,6 @@ const userInfoSchema = new mongoose.Schema({
 	permissions: { type: [String], default: [] }
 });
 
-userInfoSchema.set('collection', 'pw-user');
+userInfoSchema.set('collection', 'pw-users');
 
 module.exports = mongoose.model('User', userInfoSchema);
