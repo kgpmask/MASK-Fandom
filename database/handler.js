@@ -34,7 +34,7 @@ function getUserByUsername (username) {
 async function validateUserLogin (creds) {
 	const { username, password } = creds;
 	const user = await getUserByUsername(username);
-	if (!user) throw new Error('User does not exist.');
+	if (!user) throw new Error('User does not exist!');
 	return user.hash === await bcrypt.hash(password, user.salt) ? user._id : false;
 }
 
@@ -139,6 +139,10 @@ async function returnUserFromSession (sessionId) {
 	return await getUser(userId);
 }
 
+async function removeSession (sessionId) {
+	await Session.deleteOne({ _id: sessionId });
+}
+
 module.exports = {
 	createNewUser,
 	getUser,
@@ -153,5 +157,6 @@ module.exports = {
 	getNewsletter,
 	getPosts,
 	generateSessionRecord,
-	returnUserFromSession
+	returnUserFromSession,
+	removeSession
 };
