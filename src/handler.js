@@ -4,6 +4,7 @@ const fs = require('fs').promises;
 const { restart } = require('nodemon');
 const { render } = require('nunjucks');
 const path = require('path');
+const { generateSessionRecord } = require('../database/handler');
 
 const checker = require('./checker.js');
 const dbh = PARAMS.mongoless ? {} : require('../database/handler');
@@ -116,29 +117,34 @@ function handler (app, nunjEnv) {
 	// User stuff
 
 	app.get('/login', (req, res) => {
-		if (req.loggedIn) return res.redirect('/');
+		// Login
+		if (req.user) return res.redirect('/events');
 		res.renderFile('login.njk');
 	});
-	app.get('/logout', (req, res) => {
-		if (!req.loggedIn) return res.redirect('/login');
-		return req.logout(() => res.redirect('/'));
+
+	app.post('/login', async (req, res) => {
+		// req.body = { username, password }
+		const id = await dbh.validateUserLogin(req.body);
+		if (!id) throw new Error('Credentials don\'t match.');
+		req.cookies.sessionId = dbh.generateSessionRecord(id);
+		return res.send('Login Successful');
 	});
+
+	app.get('/logout', (req, res) => {
+		// Logout
+		if (!req.user) throw new Error('A- ano... What are you doing here?');
+		return res.renderFile('logout.njk');
+	});
+
+	app.post('/logout', async (req, res) => {
+		// Logout page will send a POST request which will execute this block of code
+		if (!req.user) throw new Error('How are you logging out without even logging in, b-baka.');
+		await res.clearCookie('sessionId');
+		return res.send('Signed out successfully. Mata ne.');
+	});
+
 	app.get('/profile', async (req, res) => {
-		if (!req.loggedIn) return res.redirect('/');
-		const user = await dbh.getUserStats(req.user._id);
-		return res.renderFile('profile.njk', {
-			name: req.user.name,
-			picture: req.user.picture,
-			points: user.points,
-			quizzes: user.quizData.map(stamp => {
-				const months = [
-					'-', 'January', 'February', 'March', 'April', 'May', 'June',
-					'July', 'August', 'September', 'October', 'November', 'December'
-				];
-				const [year, month, date] = stamp.quizId.split('-');
-				return `${Tools.nth(~~date)} ${months[~~month]}`;
-			})
-		});
+		// Fandom-specific deets to be added :/
 	});
 
 

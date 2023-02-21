@@ -1,33 +1,51 @@
+const bcrypt = require('bcrypt');
+
 const User = require('./schemas/User');
 const Quiz = require('./schemas/Quiz');
 const { LiveQuiz, LiveResult } = require('./schemas/LiveQuiz');
 const Newsletter = require('./schemas/Newsletter');
 const Post = require('./schemas/Post');
+const Session = require('./schemas/Session');
 
 // Handle newly registered user or normal login
 async function createNewUser (profile) {
-	const user = await User.findById(profile.id);
-	if (user) return user;
-	const newUser = new User({
-		_id: profile.id,
-		name: profile.displayName,
-		picture: profile.photos[0].value,
-		permissions: []
-	});
-	return newUser.save();
+	// Yeah... profile is pretty much explained over here.
+	const { name, username, password } = profile;
+	let user = await getUserByUsername(username);
+	if (user) throw new Error('User with username already exists :(');
+	user = new User({ _id: [...Array(21)].map(() => Math.floor(10 * Math.random()+'')).join('') ,name, username });
+	// Generate a salt and hash. Then save them both.
+	user.salt = await bcrypt.genSalt(7);
+	user.hash = await bcrypt.hash(password, user.salt);
+	return user.save();
 }
 
-// Get User
-async function getUser (id) {
+// Get User (by using ID)
+function getUser (id) {
 	return User.findById(id);
 }
 
+// Get User (by using username)
+function getUserByUsername (username) {
+	return User.findOne({ username });
+}
+
+// Validates if the login is valid or not
+async function validateUserLogin (creds) {
+	const { username, password } = creds;
+	const user = await getUserByUsername(username);
+	if (!user) throw new Error('User does not exist!');
+	return user.hash === await bcrypt.hash(password, user.salt) ? user._id : false;
+}
+
+// Wondering why this one exists TBH...
 function getAllUsers (id) {
 	return User.find().lean();
 }
 
 // Add new record to database
 async function updateUserQuizRecord (stats) { // {userId, quizId, time, score}
+	// This... should be fine as it is
 	const user = await Quiz.UserInfo.findOne({ userId: stats.userId });
 	const userName = (await getUser(stats.userId)).name;
 	const record = user || new Quiz.UserInfo({ userId: stats.userId, userName, points: 0, quizData: [] });
@@ -48,6 +66,7 @@ async function updateUserQuizRecord (stats) { // {userId, quizId, time, score}
 
 // User statistics
 async function getUserStats (userId) {
+	// This should be fine as it is too
 	const user = await Quiz.UserInfo.findOne({ userId });
 	if (user) return user;
 	else return updateUserQuizRecord({ userId });
@@ -103,8 +122,31 @@ function getPosts (postType) {
 	return Post.find(postType ? { type: postType } : {}).sort({ date: -1 });
 }
 
+// Sessions for local auth
+function generateSessionRecord (userId) {
+	// 3524: The Goose is Dead
+	const sessionId = [3, 5, 2, 4].map(i => (Math.random() + 1).toString(36).substring(2, 2+i)).join('-');
+	const session = new Session({
+		_id: sessionId,
+		userId
+	});
+	session.save();
+	return sessionId;
+}
+
+async function returnUserFromSession (sessionId) {
+	const { userId } = await Session.findById(sessionId);
+	if (!userId) throw new Error('Invalid Session ID!');
+	return await getUser(userId);
+}
+
+async function removeSession (sessionId) {
+	await Session.findByIdAndDelete(sessionId);
+}
+
 module.exports = {
 	createNewUser,
+	validateUserLogin,
 	getUser,
 	getAllUsers,
 	updateUserQuizRecord,
@@ -115,5 +157,8 @@ module.exports = {
 	getAllLiveResults,
 	addLiveResult,
 	getNewsletter,
-	getPosts
+	getPosts,
+	generateSessionRecord,
+	returnUserFromSession,
+	removeSession
 };
