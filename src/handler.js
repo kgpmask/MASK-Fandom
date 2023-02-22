@@ -24,15 +24,72 @@ function handler (app, nunjEnv) {
 			date: new Date('Oct 25, 2009'),
 			page: '_blank',
 			hype: true
+		},
+		{
+			name: 'Art - Tanjiro Kamado',
+			link: '0025.webp',
+			type: 'art',
+			attr: [ 'Sanjeev Raj Ganji' ],
+			date: new Date(1630261800000),
+			hype: true
+		},
+		{
+			name: 'Art - Saitama',
+			link: '0019.webp',
+			type: 'art',
+			attr: [ 'Garima Mendhe' ],
+			date: new Date(1628879400000),
+			hype: true
+		},
+		{
+			name: 'Art - Kirigakure Shinobi Massacre',
+			link: '0012.webp',
+			type: 'art',
+			attr: [ 'Arpit Das' ],
+			date: new Date(1589308200000),
+			hype: true
+		},
+		{
+			name: 'Art - Garou',
+			link: '0008.webp',
+			type: 'art',
+			attr: [ 'Pritam Mallick' ],
+			date: new Date(1572220800000),
+			hype: true
+		},
+		{
+			name: '「AMV」Phantasy Star Online 2 - Symphony',
+			link: 'https://www.youtube.com/watch?v=GX7TAigwZPw',
+			type: 'youtube',
+			attr: [ 'Hrishabh Kumar Tundwar' ],
+			date: new Date(1673289000000),
+			hype: true
+		},
+		{
+			name: '「AMV」The Garden of Words - A Thousand Years',
+			link: 'https://www.youtube.com/watch?v=9W4eyQ7LP7g',
+			type: 'youtube',
+			attr: [ 'Hrishabh Kumar Tundwar' ],
+			date: new Date(1673289000000),
+			hype: true
+		},
+		{
+			name: '「AMV」Assassination Classroom - Heathens',
+			link: 'https://www.youtube.com/watch?v=unITcghHNVI',
+			type: 'youtube',
+			attr: [ 'Chiranjeet Mishra' ],
+			date: new Date(1673289000000),
+			hype: true
 		}];
 		const allPosts = PARAMS.mongoless ? sample : await dbh.getPosts();
-		const posts = allPosts.splice(0, 7);
+		const posts = PARAMS.mongoless ? allPosts.splice(0, 2) : allPosts.splice(0, 7);
 		posts.forEach(post => {
 			const elapsed = Date.now() - post.date;
 			if (!isNaN(elapsed) && elapsed < 7 * 24 * 60 * 60 * 1000) post.recent = true;
 		});
-		const art = allPosts.filter(post => post.type === 'art' && post.hype).splice(0, 5);
-		const vids = allPosts.filter(post => post.type === 'youtube' && post.hype).splice(0, 5);
+		const toBeDisplayed = PARAMS.mongoless ? 3 : 5;
+		const art = allPosts.filter(post => post.type === 'art' && post.hype).splice(0, toBeDisplayed);
+		const vids = allPosts.filter(post => post.type === 'youtube' && post.hype).splice(0, toBeDisplayed);
 		return res.renderFile('home.njk', { posts, vids, art });
 	});
 	app.get('/art', async (req, res) => {
@@ -40,7 +97,7 @@ function handler (app, nunjEnv) {
 			name: 'Art - Tanjiro Kamado',
 			link: '0025.webp',
 			type: 'art',
-			attr: [ 'Sanjeev Raj Ganji' ],
+			attr: ['Sanjeev Raj Ganji'],
 			date: new Date(1630261800000),
 			hype: true
 		}];
@@ -343,13 +400,57 @@ function handler (app, nunjEnv) {
 		// TODO: Rename this to /quiz/success
 		return res.renderFile('events/quiz_success.njk');
 	});
+	// Live master endpoint
+	app.get('/live-master', async (req, res) => {
+		if (PARAMS.dev) {
+			// TODO: In the future, set a 'daily' script to run at midnight and update a process.env.LIVE_QUIZ parameter
+			const quiz = await dbh.getLiveQuiz('2022-11-12');
+			// if (!quiz) return res.renderFile('events/quizzes_404.njk', { message: `The quiz hasn't started, yet!` });
+			const QUIZ = quiz.questions;
 
+			return res.renderFile('events/live_master.njk', {
+				quiz: JSON.stringify(QUIZ),
+				qAmt: QUIZ.length,
+				id: 'live',
+				dev: PARAMS.dev
+			});
+		} else {
+			return res.renderFile('events/quizzes_404.njk', { message: `STOP SNOOPING AROUND!` });
+		}
+	});
+	app.post('/live-master', async (req, res) => {
+		if (PARAMS.dev) {
+			// LQ keeps track of which question is currently being asked
+			if (!handlerContext.liveQuiz) handlerContext.liveQuiz = {};
+			const LQ = handlerContext.liveQuiz;
+			const quiz = await dbh.getLiveQuiz('2022-11-12');
+			const QUIZ = quiz.questions;
+			// console.log(req.body);
+			const { currentQ, options } = req.body;
+
+			const time = { '10': 20, '5': 15, '3': 12 }[QUIZ[currentQ].points];
+			io.sockets.in('waiting-for-live-quiz').emit('question', { currentQ, options, time });
+			setTimeout(() => {
+				const type = QUIZ[currentQ].options.type;
+				const solution = QUIZ[currentQ].solution;
+				setTimeout(() => io.sockets.in('waiting-for-live-quiz').emit('answer', {
+					answer: Array.isArray(solution) ? solution.join(' / ') : solution,
+					type
+				}), 2000); // Emit the actual event 3s after
+			}, 1000 * (time + 1)); // Extra second to account for lag
+			LQ.currentQ = req.body.currentQ;
+			LQ.endTime = Date.now() + 1000 * (time + 1);
+			res.send('Done');
+		} else {
+			return res.renderFile('events/quizzes_404.njk', { message: `STOP SNOOPING AROUND!` });
+		}
+	});
 	app.get('/live', async (req, res) => {
 		if (!req.loggedIn) {
 			if (!PARAMS.userless) req.session.returnTo = req.url;
 			return res.renderFile('events/quiz_login.njk');
 		}
-		const quiz = await dbh.getLiveQuiz(PARAMS.dev);
+		const quiz = await dbh.getLiveQuiz(PARAMS.dev ? '2022-11-12' : false);
 		if (!quiz) return res.renderFile('events/quizzes_404.njk', { message: `The quiz hasn't started, yet!` });
 		const QUIZ = quiz.questions;
 		const user = await dbh.getUser(req.user._id);
@@ -373,37 +474,34 @@ function handler (app, nunjEnv) {
 		}
 		if (!handlerContext.liveQuiz) handlerContext.liveQuiz = {};
 		const LQ = handlerContext.liveQuiz;
-		const quiz = await dbh.getLiveQuiz(PARAMS.dev);
+		const quiz = await dbh.getLiveQuiz(PARAMS.dev ? '2022-11-12' : false);
 		const QUIZ = quiz.questions;
 		const user = await dbh.getUser(req.user._id);
 		if (user.permissions?.includes('quizmaster')) {
-			const quizTime = { '10': 20, '5': 15, '3': 12 }[QUIZ[req.body.currentQ].points];
-			io.sockets.in('waiting-for-live-quiz').emit('question', {
-				currentQ: req.body.currentQ,
-				options: req.body.options,
-				time: quizTime
-			});
+			const { currentQ, options } = req.body;
+			const time = { '10': 20, '5': 15, '3': 12 }[QUIZ[currentQ].points];
+			io.sockets.in('waiting-for-live-quiz').emit('question', { currentQ, options, time });
 			setTimeout(() => {
-				const type = QUIZ[req.body.currentQ].options.type;
-				const solution = QUIZ[req.body.currentQ].solution;
+				const type = QUIZ[currentQ].options.type;
+				const solution = QUIZ[currentQ].solution;
 				setTimeout(() => io.sockets.in('waiting-for-live-quiz').emit('answer', {
 					answer: Array.isArray(solution) ? solution.join(' / ') : solution,
 					type
 				}), 2000); // Emit the actual event 3s after
-			}, 1000 * (quizTime + 1)); // Extra second to account for lag
+			}, 1000 * (time + 1)); // Extra second to account for lag
 			LQ.currentQ = req.body.currentQ;
-			LQ.endTime = Date.now() + 1000 * (quizTime + 1);
+			LQ.endTime = Date.now() + 1000 * (time + 1);
 			res.send('Done');
 		} else {
 			const answer = req.body.submittedAnswer;
-			if (answer === '') throw new Error('Missing answer');
+			if (answer === '') return res.error('Missing answer');
 			const currentQ = LQ.currentQ ?? - 1;
 			const Q = QUIZ[currentQ];
-			if (!Q) throw new Error('currentQ out of bounds');
+			if (!Q) return res.error('currentQ out of bounds');
 			const time = Math.round((LQ.endTime - Date.now()) / 1000);
-			if (time < 0) throw new Error('Too late!');
+			if (time < 0) return res.error('Too late!');
 			const alreadySubmitted = await dbh.getLiveResult(user._id, quiz.title, currentQ);
-			if (alreadySubmitted) throw new Error('Already attempted this question!');
+			if (alreadySubmitted) return res.error('Already attempted this question!');
 			const { points, timeLeft } = await checker.checkLiveQuiz(answer, Q.solution, Q.options.type, Q.points, time);
 			const result = points
 				? points < Q.points ? 'partial' : 'correct'
