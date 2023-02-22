@@ -15,10 +15,10 @@ describe('Database connection', () => {
 });
 
 describe('User', () => {
-	it('should find the MASK user', async () => {
-		const query = await handler.getUser('112743836736901320473');
-		// kgpmask@gmail.com ID
-		return assert(query?.name === 'MASK Society');
+	it('should find a test user', async () => {
+		const query = await handler.getUser('933939822073621628860');
+		// Custom user made for testing purposes
+		return assert(query?.name === 'Shinda Gacho');
 	}).timeout(10_000);
 });
 

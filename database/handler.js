@@ -13,7 +13,7 @@ async function createNewUser (profile) {
 	const { name, username, password } = profile;
 	let user = await getUserByUsername(username);
 	if (user) throw new Error('User with username already exists :(');
-	user = new User({ _id: [...Array(21)].map(() => Math.floor(10 * Math.random()+'')).join('') ,name, username });
+	user = new User({ _id: [...Array(21)].map(() => Math.floor(10 * Math.random() + '')).join(''), name, username });
 	// Generate a salt and hash. Then save them both.
 	user.salt = await bcrypt.genSalt(7);
 	user.hash = await bcrypt.hash(password, user.salt);
@@ -126,7 +126,7 @@ function getPosts (postType) {
 // Sessions for local auth
 function generateSessionRecord (userId) {
 	// 3524: The Goose is Dead
-	const sessionId = [3, 5, 2, 4].map(i => (Math.random() + 1).toString(36).substring(2, 2+i)).join('-');
+	const sessionId = [3, 5, 2, 4].map(i => (Math.random() + 1).toString(36).substring(2, 2 + i)).join('-');
 	const session = new Session({
 		_id: sessionId,
 		userId

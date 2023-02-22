@@ -6,6 +6,14 @@ const userInfoSchema = new mongoose.Schema({
 	username: { type: String, required: true },
 	salt: { type: String, required: true },
 	hash: { type: String, required: true },
+	signedUpFor: {
+		Naruto: Boolean,
+		AOT: Boolean,
+		OPM: Boolean,
+		MHA: Boolean
+	},
+	qrScanned: Boolean,
+	paymentConfirmed: Boolean,
 	permissions: { type: [String], default: [] }
 });
 
