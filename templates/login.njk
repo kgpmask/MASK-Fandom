@@ -4,41 +4,27 @@
 {% set pagetitle = 'Login' %}
 
 {% block pagecontent %}
-	<header class='form-header'>
-		<h1><font color = 'white'>Sign Up for Quizzes</h1>
-    </header>
 
 	<div class = "form">
 		<form action = '/' method = 'post'>
-        <h3>Signup Here</h3>
-		<input type= "text" placeholder = "display name" id = "display-name">
+        <h3>Login here</h3>
+
         <input type="text" placeholder="Username" id="username">
 
-        <input type="email" placeholder="E-mail adress" id="email">
-		<div class = "checkboxes">
-			q1<input type = "checkbox" id = "naruto"> q2<input type = "checkbox" id = "opm"> q3<input type = "checkbox" id = "aot"> q4<input type = "checkbox" id = "mha">
-		</div>
-		<button id = "get_pics" onclick = "show()">choose your pfp</button>
-		<div id = "images" style = "display:none;">
-			<img src = "../assets/members/22_jai.webp" id = "img1">
-			<img src = "../assets/members/22_ankan.webp" id = "img2">
-			<img src = "../assets/members/21_vidunram.webp" id = "img3">
-			<img src = "../assets/members/22_sahil.webp" id = "img4">
-			<img src = "../assets/members/22_snehansh.webp" id = "img5">
-		</div>
-		<input type = "password" placeholder = "Password" id = "password"> 
-        <button id = "register">Register</button>
+        <input type="password" placeholder="Password" id="password">
+
+        <button>Login</button>
 		</form>
 	</div>
 
 {% endblock %}
- 
+
 {% block customcss %}
 	<style media="screen">
 		
 		form{
-			height: 75%;
-			width: 60%;
+			height: 28%;
+			width: 30%;
 			background-color: rgba(255,255,255,0.13);
 			position: absolute;
 			transform: translate(-50%,-50%);
@@ -66,6 +52,7 @@
 		}
 
 		input{
+			display: block;
 			height: 50px;
 			width: 90%;
 			background-color: rgba(255,255,255,0.07);
@@ -75,9 +62,6 @@
 			font-size: 17px;
 
 			font-weight: 300;
-		}
-		.checkboxes{
-			display : inline;
 		}
 		::placeholder{
 			color: #e5e5e5;
@@ -95,20 +79,5 @@
 			border-radius: 12px;
 			cursor: pointer;
 		}
-		.images img:hover{
-			opacity : 0.5;
-		}
     </style>
-{% endblock %}
-
-
-
-{% block customjs %}
-	<script>
-		
-		function show(){
-			document.getElementById("images").style.display = "block";
-		}
-
-	</script>
 {% endblock %}
