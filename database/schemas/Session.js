@@ -6,6 +6,6 @@ const sessionSchema = new mongoose.Schema({
 	userId: { type: String, required: true }
 });
 
-sessionSchema.set('collection', 'pw-sessions');
+sessionSchema.set('collection', 'fandom-sessions');
 
 module.exports = mongoose.model('Session', sessionSchema);
