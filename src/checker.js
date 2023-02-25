@@ -69,3 +69,10 @@ exports.checkLiveQuiz = function check (answer, solutions, questionType, basePoi
 		return resolve({ points: finalPoints, timeLeft });
 	});
 };
+
+exports.checkFandomQuiz = function (answers, solutions) {
+	// answers will have following format
+	// { questionNo: 1, answer: "Goos owes Ankan Maggi" }
+	// Solution will have following format
+	// { questionNo: 1, answer: "Goos owes Ankan 2 maggis", basePoints: 10}
+};
