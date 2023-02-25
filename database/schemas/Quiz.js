@@ -41,8 +41,8 @@ const questionsSchema = new mongoose.Schema({
 	}
 });
 
-questionsSchema.set('collection', 'quizquestions');
-userQuizDataSchema.set('collection', 'quizdata');
+questionsSchema.set('collection', 'fanodm-questions');
+userQuizDataSchema.set('collection', 'fandom-records');
 
 module.exports = {
 	UserInfo: mongoose.model('UserQuizData', userQuizDataSchema),
