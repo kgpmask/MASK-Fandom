@@ -1,13 +1,4 @@
 {% set navlinks = [{
-	href: 'art',
-	name: 'Art'
-}, {
-	href: 'newsletters',
-	name: 'Newsletters'
-}, {
-	href: 'videos',
-	name: 'Videos'
-}, {
 	href: 'events',
 	name: 'Events'
 }] %}
@@ -49,8 +40,6 @@
 							<div style="float:right;" id="dropdown">
 								<a href="/about" class="dropbtn" target="_self">About</a>
 								<div class="dropdown-content">
-									<a href="/about" {% if 'about' === thispage %} class="active-page" {% endif %} target="_self">Our Society</a>
-									<a href="/members" {% if 'members' === thispage %} class="active-page" {% endif %} target="_self">Our Members</a>
 									{% if loggedIn %}
 										<a href="/profile" class="{% if 'profile' === thispage %}active-page {% endif %}{% if userless %}disabled {% endif %}" target="_self">Profile</a>
 									{% else %}
