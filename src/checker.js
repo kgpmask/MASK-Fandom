@@ -71,8 +71,18 @@ exports.checkLiveQuiz = function check (answer, solutions, questionType, basePoi
 };
 
 exports.checkFandomQuiz = function (answers, solutions) {
-	// answers will have following format
-	// { questionNo: 1, answer: "Goos owes Ankan Maggi" }
-	// Solution will have following format
-	// { questionNo: 1, answer: "Goos owes Ankan 2 maggis", basePoints: 10}
+	// The main reason we need a checker function is because we are dealing with different data types.
+	// There are two ways you can proceed with this.
+
+	//   One: the way you were going with: Note that you'll need to take another argument for whether the
+	// quiz is randomized or not. Even then, rather than solution, it would be advised if you renamed it
+	// as 'quiz' or something since the amount of points a question carries also varies.
+
+	//   Two: Generate the questions based on random or not, and then pass a answer-solution couple, and then
+	// just multiply the boolean true/false return value with the points that question is worth.
+
+	// checker.js functions generally deal with comparing individual instances, generally, as evident from
+	// the other checker functions. Would prefer if you could compare it that way itself.
+
+	// PS: Imagine getting scolded by lint even after working with it all this while. This one's for Part ig ;-;
 };
