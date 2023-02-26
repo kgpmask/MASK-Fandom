@@ -593,14 +593,13 @@ function handler (app, nunjEnv) {
 	app.use((err, req, res, next) => {
 		if (PARAMS.dev) console.error(err.stack);
 		// Make POST errors show only the data, and GET errors show the page with the error message
-		
 	});
 
 	app.post((req, res) => {
 		// If propagation hasn't stopped, switch to GET!
-		try{
+		try {
 			return res.redirect(req.url);
-		} catch{
+		} catch {
 			res.status = 500;
 			console.log(res);
 			next(err);
