@@ -5,7 +5,7 @@
 
 {% block pagecontent %}
 
-	<div class = "form">
+	<div class = "form-container">
 		<form action = '/' method = 'post'>
         <h3>Login here</h3>
 
@@ -21,10 +21,12 @@
 
 {% block customcss %}
 	<style media="screen">
-		
+		.form-container{
+			margin-top : 31rem;
+		}
 		form{
-			height: 28%;
-			width: 30%;
+			min-height: 28%;
+			min-width: 30%;
 			background-color: rgba(255,255,255,0.13);
 			position: absolute;
 			transform: translate(-50%,-50%);
