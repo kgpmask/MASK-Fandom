@@ -1,0 +1,56 @@
+{% extends '../_base.njk' %}
+
+{% block customcss %}
+	<style>
+		.user-list {
+			display: flex;
+			flex-direction: row;
+		}
+		
+		{# Note: When mediaport becomes smaller than a set value, make it render in column instead of row #}
+		.user-container {
+			display: flex;
+			flex-direction: row;
+		}
+
+		.user-image {
+			display: block;
+		}
+
+		.user-list {
+			display: flex;
+			flex-direction: column;
+		}
+
+		.button-container {
+			display: flex;
+			flex-direction: row;
+		}
+		
+		
+	</style>
+{% endblock %}
+
+{% block pagecontent %}
+	<h1>Records of Registered</h1>
+	<div class='user-list'>
+		{% for record in records %}
+		<div class='user-container'>
+			<img class='user-image' src='{{ record.imageLink }}' alt='{{ record.image }}'>
+			<div class='details-container'>
+				<div class='user-name'> {{ record.name }} </div>
+				<div class='user-username'> {{ record.username }} </div>
+				<div class='user-signed-up-for'>
+					{% for sauce, signedUp in record.signedUpFor %}
+						{% if signedUp %}<div class='{{ sauce }}-icon'></div>{% endif %}
+					{% endfor %}
+				</div>
+				<div class='button-container'>
+					<button class='edit-record'> Edit </button>
+					<button class='{{ 'payment-done' if record.paymentConfirmed else 'payment-pending' }}'>{{ 'Paid' if record.paymentConfirmed else 'Confirm Payment' }}</button>
+				</div>
+			</div>
+		</div>
+		{% endfor %}
+	</div>
+{% endblock %}
