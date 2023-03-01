@@ -7,22 +7,31 @@
 
 	<div class = "form-container">
 		<form action = '/' method = 'post' id = "signup">
-			<h3>Signup Here</h3>
-			<input type= "text" placeholder = "display name" id = "display-name">
-			<input type="text" placeholder="Username" id="username">
-			<input type="email" placeholder="E-mail adress" id="email"><br>
-			<button id = "get_pics" onclick = "show()">Upload a Profile Picture</button>
-			
-			<div id = "images" style = "display:none;">
-				<img src = "../assets/members/22_jai.webp" id = "img1" onclick = "">
-				<img src = "../assets/members/22_ankan.webp" id = "img2">
-				<img src = "../assets/members/21_vidunram.webp" id = "img3">
-				<img src = "../assets/members/22_sahil.webp" id = "img4">
-				<img src = "../assets/members/22_snehansh.webp" id = "img5">
+			<div id = "page1">
+				<h3>Signup Here</h3>
+				<input type= "text" placeholder = "display name" id = "display-name">
+				<input type="text" placeholder="Username" id="username">
+				<input type="email" placeholder="E-mail adress" id="email"><br>
+				<button id = "get-pics" onclick = "show()">Upload a Profile Picture</button>
+				
+				<div id = "images" style = "display:none;">
+					<img src = "../assets/members/22_jai.webp" class = "profile-picture" >
+					<img src = "../assets/members/22_ankan.webp" class = "profile-picture">
+					<img src = "../assets/members/21_vidunram.webp" class = "profile-picture">
+					<img src = "../assets/members/22_sahil.webp" class = "profile-picture">
+					<img src = "../assets/members/22_snehansh.webp" class = "profile-picture">
+				</div>
+				
+				<input type = "password" placeholder = "Password" id = "password"> 
+				<button id = "nextpage" onclick = "shownextpg()">next</button>
 			</div>
-			
-			<input type = "password" placeholder = "Password" id = "password"> 
-			<button id = "register">Register</button>
+
+			<div id = "page2" style = "display:none;">
+				<img src = "../assets/testqr/test.webp" id = "UPI">
+				<input type = "text" placeholder = "TransactionID">
+				<button id = "prev" onclick = "showprevpg()">previous</button>
+				<button id = "submit">submit</button>
+			</div>
 		</form>
 	</div>
 
@@ -33,10 +42,12 @@
 		.form-container{
 			margin-top : 43rem;
 			margin-bottom : 63rem;
+			display : block;
 		}
+		
 		form{
-			min-height: 50%;
-			width: 60%;
+			min-height: auto;
+			min-width: 33%;
 			background-color: rgba(255,255,255,0.13);
 			position: absolute;
 			transform: translate(-50%,-50%);
@@ -46,7 +57,7 @@
 			backdrop-filter: blur(5px);
 			border: 2px solid rgba(255,255,255,0.1);
 			box-shadow: 0 0 40px rgba(8,7,16,0.6);
-			padding: 23px 25px;
+			padding: 12px 25px;
 		}
 		form *{
 			font-family:Ubuntu,Roboto,Arial,Open Sans,sans-serif;
@@ -65,7 +76,8 @@
 
 		input{
 			height: 50px;
-			width: 90%;
+			width: -moz-available;
+			width: -webkit-fill-available;
 			background-color: rgba(255,255,255,0.07);
 			border-radius: 12px;
 			padding: 0 20px 4px;
@@ -84,7 +96,7 @@
 		}
 		button{
 			margin-top: 19px;
-			width: 75%;
+			width: 100%;
 			background-color: var(--red);
 			color: white;
 			padding: 15px 0;
@@ -92,14 +104,15 @@
 			font-weight: 600;
 			border-radius: 12px;
 			cursor: pointer;
+			display = inline;
 		}
 		#images{
 			padding : 11px 4px 0px 0px;
 		}
-		img:hover{
+		.profile-picture:hover{
 			transform : scale(1.1);
 		}
-		
+
     </style>	
 {% endblock %}
 
@@ -107,9 +120,19 @@
 
 {% block customjs %}
 	<script>
+		
+		function shownextpg(){
+			document.getElementById("page1").style.display = "none";
+			document.getElementById("page2").style.display = "block";
+		}
+
+		function showprevpg(){
+			document.getElementById("page2").style.display = "none";
+			document.getElementById("page1").style.display = "block";
+		}
+
 		function show(){
 			document.getElementById("images").style.display = "block";
-			document.getElementById("signup").style.height = "59%";
 		}
 	</script>
 {% endblock %}
