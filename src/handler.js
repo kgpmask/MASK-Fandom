@@ -20,7 +20,7 @@ function handler (app, nunjEnv) {
 			link: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
 			type: 'youtube',
 			attr: ['Parth Mane'],
-			date: new Date('Oct 25, 2009'),
+			date: new Date(1673289000000),
 			page: '_blank',
 			hype: true
 		},
