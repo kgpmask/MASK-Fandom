@@ -1,6 +1,6 @@
 {
 	"name": "mask",
-	"version": "3.1.0",
+	"version": "3.1.2",
 	"description": "Website for MASK",
 	"main": "./src/index.js",
 	"scripts": {
@@ -9,7 +9,7 @@
 		"du": "nodemon src/mask.js du",
 		"dm": "nodemon src/mask.js dm",
 		"lint": "eslint . --config .eslintrc.json --ext .js",
-		"test": "npm run lint && npx mocha test --exit && echo \"Passing all tests.\" && exit 0",
+		"test": "npm run lint && mocha test --exit && echo \"Passing all tests.\" && exit 0",
 		"prepare": "husky install",
 		"docker": "bash ./docker/docker.sh"
 	},
