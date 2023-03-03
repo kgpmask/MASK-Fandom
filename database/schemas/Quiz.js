@@ -6,33 +6,30 @@ const userQuizDataSchema = new mongoose.Schema({
 	points: { type: Number, required: true, default: 0 },
 	timeTaken: { type: Number, required: true },
 	records: { type: [{
-		questionNo: { type: Number, required: true },
-		answer: { type: Number | [String] }
+		answer: { type: [Number, [String]] }
 	}], required: true }
 });
 
 const questionsSchema = new mongoose.Schema({
-	_id: { type: String, required: true },
-	startTime: Date, // timeStamp of start time
-	endTime: Date, // start time + 21m (20m quiz, 1 min for forced submissions)
+	_id: { type: String, required: true, enum: ['NRT', 'OPM', 'AOT', 'MHA'] },
+	startTime: { type: String, required: true }, // timeStamp of start time
+	endTime: { type: String, required: true }, // start time + 21m (20m quiz, 1 min for forced submissions)
 	questions: [{
-		points: Number,
+		points: { type: Number, required: true },
 		q: [{
-			type: mongoose.Schema.Types.Mixed, // 'text' || 'image' || 'audio' || 'video' || 'table' || 'gallery'
-			value: String | [String]
+			type: { type: String, required: true, enum: ['text', 'image', 'audio', 'video', 'table', 'gallery'] },
+			value: { type: [String, [String]], required: true }
 		}],
 		options: [{
-			type: mongoose.Schema.Types.Mixed, // 'text' || 'number' || 'mcq'
+			type: { type: String, required: true, enum: ['text', 'number', 'mcq'] },
 			// only when MCQ
 			value: [{
-				type: mongoose.Schema.Types.Mixed, // 'text' || 'image'
-				value: String
+				type: { type: String, required: true, enum: ['text', 'image'] },
+				value: { type: String, required: true }
 			}]
 		}],
-		solution: Number | [String],
-		basepoints: Number
-	}],
-	random: Boolean
+		solution: { type: [Number, [String]], required: true }
+	}]
 });
 
 questionsSchema.set('collection', 'fanodm-questions');

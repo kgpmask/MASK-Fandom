@@ -70,29 +70,16 @@ exports.checkLiveQuiz = function check (answer, solutions, questionType, basePoi
 	});
 };
 
-exports.checkFandomQuiz = function (answer, solution, basepoints) {
-	// The main reason we need a checker function is because we are dealing with different data types.
-	// There are two ways you can proceed with this.
-
-	//   One: the way you were going with: Note that you'll need to take another argument for whether the
-	// quiz is randomized or not. Even then, rather than solution, it would be advised if you renamed it
-	// as 'quiz' or something since the amount of points a question carries also varies.
-
-	//   Two: Generate the questions based on random or not, and then pass a answer-solution couple, and then
-	// just multiply the boolean true/false return value with the points that question is worth.
-
-	// checker.js functions generally deal with comparing individual instances, generally, as evident from
-	// the other checker functions. Would prefer if you could compare it that way itself.
-
-	// PS: Imagine getting scolded by lint even after working with it all this while. This one's for Part ig ;-;
+exports.checkFandomQuiz = function (answer, solution, questionType) {
 	return new Promise((resolve, reject) => {
-		let points = basepoints;
-		const questionType = parseInt(answer) ? 'mcq' : 'text';
+		let flag;
 		switch (questionType) {
 			case 'mcq':
-				points = points * (parseInt(answer) !== solution);
+				flag = parseInt(answer) === solution;
+				break;
 			case 'text':
-				points = points * (Tools.levenshtein(Tools.toID(answer), Tools.toID(solution)) <= 5);
+				flag = Tools.levenshtein(Tools.toID(answer), Tools.toID(solution)) > 5;
+				break;
 		}
 		return resolve({ points: points });
 	});
