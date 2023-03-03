@@ -29,7 +29,8 @@ const questionsSchema = new mongoose.Schema({
 				value: String
 			}]
 		}],
-		solution: Number | [String]
+		solution: Number | [String],
+		basepoints: Number
 	}],
 	random: Boolean
 });
