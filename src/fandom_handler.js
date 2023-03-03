@@ -95,9 +95,24 @@ function handler (app, nunjEnv) {
 		if (req.loggedIn) return res.redirect('/');
 		res.renderFile('login.njk');
 	});
+	app.post('/login', async (req, res) => {
+		const id = await dbh.validateUserLogin(req.body);
+		if (!id) throw new Error('Credentials don\'t match.');
+		req.cookies.sessionId = dbh.generateSessionRecord(id);
+		return res.send('Login Successful');
+	});
 	app.get('/logout', (req, res) => {
 		if (!req.loggedIn) return res.redirect('/login');
 		return req.logout(() => res.redirect('/'));
+	});
+	app.post('/logout', async (req, res) => {
+		if (!req.user) throw new Error('How are you logging out without even logging in, b-baka.');
+		await res.clearCookie('sessionId');
+		return res.send('Signed out successfully. Mata ne.');
+	});
+	app.get('/signup', (req, res) => {
+		if (req.loggedIn) return res.redirect('/');
+		res.send("Bully goose for this page. It's not done yet.");
 	});
 	app.get('/profile', async (req, res) => {
 		if (!req.loggedIn) return res.redirect('/');
@@ -121,14 +136,25 @@ function handler (app, nunjEnv) {
 		//if (PARAMS.mongoless) return res.redirect('/');
 		return res.renderFile('fandom_events.njk', );
 	});
-    app.get('/fandom', (req, res) => {
+	app.get('/fandom', (req, res) => {
 		return res.error(`...uhh I don't think you're supposed to be here...`);
 		// eslint-disable-next-line no-unreachable
-		return res.renderFile('fandom_quiz.njk');
+		return res.renderFile('events/fandom_quiz.njk');
 	});
     app.get('/record', async (req, res) => {
         if (!req.admin) return res.redirect('/');
+		//left blank for goose
     });
+	app.get('/edit_profile', async (req, res) => {
+		if (!req.admin) return res.redirect('/');
+		//left blank for goose
+	});
+	app.get('/success', (req, res) => {
+		return res.renderFile('events/quiz_success.njk');
+	});
+	app.post('/fandom', async (req, res) => {
+		//for post request in quiz submission
+	});
 }
 
 module.exports = handler;
