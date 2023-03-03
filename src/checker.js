@@ -71,16 +71,22 @@ exports.checkLiveQuiz = function check (answer, solutions, questionType, basePoi
 };
 
 exports.checkFandomQuiz = function (answer, solution, questionType) {
+	// To explain to goos
+	// handler will pass answer, solution and questiontype
+	// solution will be just a number for mcq and number question types, while it'll be an array of string for string questiontype
 	return new Promise((resolve, reject) => {
 		let flag;
 		switch (questionType) {
+			case 'number':
 			case 'mcq':
 				flag = parseInt(answer) === solution;
 				break;
 			case 'text':
-				flag = Tools.levenshtein(Tools.toID(answer), Tools.toID(solution)) > 5;
+				flag = Math.max(...solution.map(sol => {
+					return Tools.levenshtein(Tools.toID(answer), Tools.toID(sol)) > 5;
+				}));
 				break;
 		}
-		return resolve({ points: points });
+		return resolve(flag);
 	});
 };
