@@ -18,14 +18,14 @@ const questionsSchema = new mongoose.Schema({
 	questions: [{
 		points: Number,
 		q: [{
-			type: mongoose.Schema.Types.Mixed,
+			type: mongoose.Schema.Types.Mixed, // 'text' || 'image' || 'audio' || 'video' || 'table' || 'gallery'
 			value: String | [String]
 		}],
 		options: [{
-			type: mongoose.Schema.Types.Mixed,
+			type: mongoose.Schema.Types.Mixed, // 'text' || 'number' || 'mcq'
 			// only when MCQ
 			value: [{
-				type: mongoose.Schema.Types.Mixed,
+				type: mongoose.Schema.Types.Mixed, // 'text' || 'image'
 				value: String
 			}]
 		}],

@@ -70,7 +70,7 @@ exports.checkLiveQuiz = function check (answer, solutions, questionType, basePoi
 	});
 };
 
-exports.checkFandomQuiz = function (answers, solutions) {
+exports.checkFandomQuiz = function (answer, solution) {
 	// The main reason we need a checker function is because we are dealing with different data types.
 	// There are two ways you can proceed with this.
 
@@ -85,4 +85,15 @@ exports.checkFandomQuiz = function (answers, solutions) {
 	// the other checker functions. Would prefer if you could compare it that way itself.
 
 	// PS: Imagine getting scolded by lint even after working with it all this while. This one's for Part ig ;-;
+	return new Promise((resolve, reject) => {
+		let points = 0;
+		const questionType = parseInt(answer) ? 'mcq' : 'text';
+		switch (questionType) {
+			case 'mcq':
+				if (parseInt(answer) === solution) points = 10;
+			case 'text':
+				if (Tools.levenshtein(Tools.toID(answer), Tools.toID(solution)) <= 5) points = 10;
+		}
+		return resolve({ points: points });
+	});
 };

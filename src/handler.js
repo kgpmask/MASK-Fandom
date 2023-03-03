@@ -691,9 +691,9 @@ function handler (app, nunjEnv) {
 	});
 
 	app.get('/fandom', (req, res) => {
-		return res.error(`...uhh I don't think you're supposed to be here...`);
+		// return res.error(`...uhh I don't think you're supposed to be here...`);
 		// eslint-disable-next-line no-unreachable
-		return res.renderFile('fandom_quiz.njk');
+		return res.renderFile('events/fandom_quiz.njk');
 	});
 
 	// Assorted other stuff
