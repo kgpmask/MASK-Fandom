@@ -313,10 +313,10 @@ function handler (app, nunjEnv) {
 		res.renderFile('login.njk');
 	});
 
-	app.post('/login', async (req, res) => {
+	app.post('/login', async (req, res, next) => {
 		// req.body = { username, password }
 		const id = await dbh.validateUserLogin(req.body);
-		if (!id) throw new Error('Credentials don\'t match.');
+		if (!id) return res.renderFile('login.njk', { error: 'Invalid username/password' });
 		req.cookies.sessionId = dbh.generateSessionRecord(id);
 		return res.send('Login Successful');
 	});
@@ -327,14 +327,15 @@ function handler (app, nunjEnv) {
 		return res.renderFile('logout.njk');
 	});
 
-	app.post('/logout', async (req, res) => {
+	app.post('/logout', async (req, res, next) => {
 		// Logout page will send a POST request which will execute this block of code
-		if (!req.user) throw new Error('How are you logging out without even logging in, b-baka.');
+		if (!req.user) return next(new Error('How are you logging out without even logging in, b-baka.'));
 		await res.clearCookie('sessionId');
 		return res.send('Signed out successfully. Mata ne.');
 	});
 
-	app.get('/profile', async (req, res) => {
+	app.get('/profile', async (req, res, next) => {
+		return next(new Error('Test'));
 		// Fandom-specific deets to be added :/
 	});
 
@@ -644,13 +645,13 @@ function handler (app, nunjEnv) {
 			dbh.addLiveResult(...functionArgs).then(() => res.send('Submitted')).catch(e => console.log(e) && res.error(e));
 		}
 	});
-	app.post('/live-end', async (req, res) => {
+	app.post('/live-end', async (req, res, next) => {
 		if (!req.loggedIn) {
 			if (!PARAMS.userless) req.session.returnTo = req.url;
 			return res.renderFile('events/quiz_login.njk');
 		}
 		const user = await dbh.getUser(req.user._id);
-		if (!user.permissions.find(perm => perm === 'quizmaster')) throw new Error('Access denied');
+		if (!user.permissions.find(perm => perm === 'quizmaster')) return next(new Error('Access denied'));
 		io.sockets.in('waiting-for-live-quiz').emit('end-quiz');
 		return res.send('Ended!');
 	});
@@ -732,18 +733,19 @@ function handler (app, nunjEnv) {
 
 	app.use((err, req, res, next) => {
 		if (PARAMS.dev) console.error(err.stack);
+		next(err);
 		// Make POST errors show only the data, and GET errors show the page with the error message
+	});
+	app.get((err, req, res, next) => {
+		res.errorRes(err.message);
+	});
+	app.post((err, req, res, next) => {
+		res.error(err);
 	});
 
 	app.post((req, res) => {
 		// If propagation hasn't stopped, switch to GET!
-		try {
-			return res.redirect(req.url);
-		} catch {
-			res.status = 500;
-			console.log(res);
-			next(err);
-		}
+		return res.redirect(req.url);
 	});
 	app.use((req, res) => {
 		// Catch-all 404
