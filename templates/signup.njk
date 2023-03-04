@@ -4,66 +4,63 @@
 {% set pagetitle = 'Signup' %}
 
 {% block pagecontent %}
-
-	<div class = "form-container">
-		<form action = '/' method = 'post' id = "signup">
-			<div id = "page1" style = "display:block;">
+	<br>
+	<br>
+	<div class="form-container">
+		<form action='/' method='post' id="signup">
+			<div id="page1" style="display:block;">
 				<h3>Signup Here</h3>
-				<input type= "text" placeholder = "display name" id = "display-name">
+				<input type= "text" placeholder="Display name" id="display-name">
 				<input type="text" placeholder="Username" id="username">
-				<input type="email" placeholder="E-mail adress" id="email"><br>		
-			
-			<p style="padding-top: 9px;font-size: 24px;"> Select your profile picture</p>
-	
-				<div id = "images">
-					<img src = "../assets/members/22_jai.webp" class = "profile_picture" >
-					<img src = "../assets/members/22_ankan.webp" class = "profile_picture">
-					<img src = "../assets/members/21_vidunram.webp" class = "profile_picture">
-					<img src = "../assets/members/22_sahil.webp" class = "profile_picture">
-					<img src = "../assets/members/22_snehansh.webp" class = "profile_picture">
-					<img src = "../assets/members/19_manish.webp" class = "profile_picture">
+				<input type="email" placeholder="E-mail address" id="email">
+				<br>
+				<p style="padding-top: 9px;font-size: 24px;">Select your profile picture</p>
+				<div id="images">
+					{% for image in images %}
+						<>
+					{% endfor %}
 				</div>
-			<p style="padding-top: 9px;font-size: 24px;"> </p>
-			<div class = "checkbox_container">
-				<div style = "float:left;">
-					<input type = "checkbox" class = "quiz" id = "AOT">
-					<label for = "AOT">Attack on Titans</label>
+				<br>
+				<div class="checkbox_container">
+					<div class='checkbox-holder'>
+						<input type="checkbox" class="quiz" id="AOT">
+						<label for="AOT">Attack on Titan</label>
+					</div>
+					<div class='checkbox-holder'>
+						<input type="checkbox" class="quiz" id="OPM">
+						<label for="OPM">One Punch Man</label>
+					</div>
+					<div class='checkbox-holder'>
+						<input type="checkbox" class="quiz" id="NRT">
+						<label for="NRT">Naruto</label>
+					</div>
+					<div class='checkbox-holder'>
+						<input type="checkbox" class="quiz" id="MHA">
+						<label for="MHA">My Hero Academia</label>
+					</div>				
 				</div>
-				<div style = "float:left;">
-					<input type = "checkbox" class = "quiz" id = "OPM">
-					<label for = "OPM">One Punch Man</label>
-				</div>
-				<div style = "float:right;">
-					<input type = "checkbox" class = "quiz" id = "NRT">
-					<label for = "NRT">Naruto</label>
-				</div>
-				<div style = "float:right;">	
-					<input type = "checkbox" class = "quiz" id = "MHA">
-					<label for = "MHA">My Hero Academia</label>
-				</div>				
-			</div>
-				<input type = "password" placeholder = "Password" id = "password"> 
-				<button type = "button" id = "nextpage" onclick = "shownextpg()">next</button>
+				<input type="password" placeholder="Password" id="password"> 
+				<button type="button" id="nextpage" onclick="shownextpg()">next</button>
 			</div>
 
-			<div id = "page2" style = "display:none;">
-				<img src = "../assets/testqr/test.webp" id = "UPI" style="border-radius: 8px;">
-				<input type = "text" placeholder = "TransactionID">
-			<h4><font family = "sans serif">Click on the icons below corresponding to your payment app to find the Transaction ID!</font></h4>
-			<div class = "upi_icons">
-				<img src = "../assets/icons/paytm.png" class = "icons" height = "60px" width = "60px" id = "paytm" onclick = "displaymodal(this)">
-				<img src = "../assets/icons/gpay.png" class = "icons" height = "60px" width = "60px" id = "gpay" onclick = "displaymodal(this)">
-				<img src = "../assets/icons/bhim.png" class = "icons" height = "60px" width = "60px" id = "bhim" onclick = "displaymodal(this)">
-				<img src = "../assets/icons/phonepe.png" class = "icons" height = "60px" width = "60px" id = "phonepe" onclick = "displaymodal(this)">
+			<div id="page2" style="display:none;">
+				<img src="../assets/testqr/test.webp" id="UPI" style="border-radius: 8px;">
+				<input type="text" placeholder="TransactionID">
+			<h4><font family="sans serif">Click on the icons below corresponding to your payment app to find the Transaction ID!</font></h4>
+			<div class="upi_icons">
+				<img src="../assets/icons/paytm.png" class="icons" height="60px" width="60px" id="paytm" onclick="displaymodal(this)">
+				<img src="../assets/icons/gpay.png" class="icons" height="60px" width="60px" id="gpay" onclick="displaymodal(this)">
+				<img src="../assets/icons/bhim.png" class="icons" height="60px" width="60px" id="bhim" onclick="displaymodal(this)">
+				<img src="../assets/icons/phonepe.png" class="icons" height="60px" width="60px" id="phonepe" onclick="displaymodal(this)">
 			</div>
-			<button type = "button" id = "prev" onclick = "showprevpg()">previous</button>
-			<button id = "submit">submit</button>
+			<button type="button" id="prev" onclick="showprevpg()">previous</button>
+			<button id="submit">submit</button>
 			</div>
 		</form>
-			<div class = "modal-container">
-				<div id = "modal">
-					<span onclick = "closemodal()" class = "closespn">×</span><br>
-					<img class="modalImage" id="modalimg" style = "scale:0.67; translate: 0% -20%;" />
+			<div class="modal-container">
+				<div id="modal">
+					<span onclick="closemodal()" class="closespn">×</span><br>
+					<img class="modalImage" id="modalimg" style="scale:0.67; translate: 0% -20%;" />
 				</div>
 			</div>
 
@@ -80,8 +77,9 @@
 		}
 		
 		form{
-			min-height: auto;
-			width: 522px;
+			display: flex;
+			width: 75%;
+			max-width: 540px;
 			background-color: rgba(255,255,255,0.13);
 			position: absolute;
 			transform: translate(-50%,-50%);
@@ -92,6 +90,7 @@
 			border: 2px solid rgba(255,255,255,0.1);
 			box-shadow: 0 0 40px rgba(8,7,16,0.6);
 			padding: 12px 25px;
+			row-gap: 10px;
 		}
 		form *{
 			font-family:Ubuntu,Roboto,Arial,Open Sans,sans-serif;
@@ -120,8 +119,23 @@
 
 			font-weight: 300;
 		}
+
+		.checkbox_container {
+			display: flex;
+			flex-direction: row;
+			flex-wrap: wrap;
+			align-items: center;
+			justify-content: center;
+		}
+
+		.checkbox-holder {
+			margin: 5px 20px;
+			width: 30%;
+		}
+
 		.checkboxes{
 			display : inline;
+			height: 10px;
 		}
 		::placeholder{
 			color: #e5e5e5;
@@ -138,7 +152,7 @@
 			font-weight: 600;
 			border-radius: 12px;
 			cursor: pointer;
-			display = inline;
+			display=inline;
 			align-items:right;
 			margin-right : 9px;
 			margin-left : 9px;
@@ -192,10 +206,7 @@
 		.modalImage{
 			border-radius:15px;
 		}
-		.checkboxes{
-			height = 10px;
-		}
-    </style>	
+	</style>
 {% endblock %}
 
 
@@ -203,28 +214,28 @@
 {% block customjs %}
 	<script>
 		
-		function shownextpg(){
-			document.getElementById("page1").style.display = "none";
-			document.getElementById("page2").style.display = "block";
-			document.getElementById("signup").style.width = "362px";
+		function shownextpg () {
+			document.getElementById('page1').style.display = 'none';
+			document.getElementById('page2').style.display = 'block';
+			document.getElementById('signup').style.width = '362px';
 		}
 
-		function showprevpg(){
-			document.getElementById("page2").style.display = "none";
-			document.getElementById("page1").style.display = "block";
-			document.getElementById("signup").style.width = "522px";
+		function showprevpg () {
+			document.getElementById('page2').style.display = 'none';
+			document.getElementById('page1').style.display = 'block';
+			document.getElementById('signup').style.width = '522px';
 
 		}
 
 
-		function displaymodal(element){
-			document.getElementById("modalimg").src ='../assets/transactionpages/'+element.id+'.png';
-			document.getElementById("modal").style.display = "block";
+		function displaymodal (element) {
+			document.getElementById('modalimg').src = '../assets/transactionpages/' + element.id + '.png';
+			document.getElementById('modal').style.display = 'block';
 		};
 		
-		function closemodal(){
-			console.log("close")
-			document.getElementById("modal").style.display = "none";
+		function closemodal () {
+			// console.log('close');
+			document.getElementById('modal').style.display = 'none';
 		}
 		
 	</script>
