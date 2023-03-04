@@ -6,19 +6,36 @@
 {% block pagecontent %}
 	<header class='form-header'>
 		<h1><font color = 'white'>SUSSY</h1>
-    </header>
+	</header>
 
 	<div class = "form">
 		<form action = '/' method = 'post'>
-        <h3>Edit Profile</h3>
+		<h3>Edit Profile</h3>
 
-        <input type="text" placeholder="ID" id="id">
-        <input type="text" placeholder="Name" id="name">
-        <input type="text" placeholder="Username" id="username">
-        <input type="text" placeholder="Password" id="password">
-        <input type="text" placeholder="Registered Anime" id="reg-anime">
+		<input type="text" placeholder="ID" id="id">
+		<input type="text" placeholder="Name" id="name">
+		<input type="text" placeholder="Username" id="username">
+		<input type="text" placeholder="Password" id="password">
+		<div class="checkbox_container">
+			<div class='checkbox-holder'>
+				<input type="checkbox" class="quiz" id="AOT">
+				<label for="AOT">Attack on Titan</label>
+			</div>
+			<div class='checkbox-holder'>
+				<input type="checkbox" class="quiz" id="OPM">
+				<label for="OPM">One Punch Man</label>
+			</div>
+			<div class='checkbox-holder'>
+				<input type="checkbox" class="quiz" id="NRT">
+				<label for="NRT">Naruto</label>
+			</div>
+			<div class='checkbox-holder'>
+				<input type="checkbox" class="quiz" id="MHA">
+				<label for="MHA">My Hero Academia</label>
+			</div>				
+		</div>
 
-        <button>Edit Profile</button>
+		<button>Edit Profile</button>
 		</form>
 	</div>
 
@@ -84,5 +101,5 @@
 			border-radius: 12px;
 			cursor: pointer;
 		}
-    </style>
+	</style>
 {% endblock %}
