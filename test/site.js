@@ -3,7 +3,7 @@ const axios = require('axios');
 const server = require('../src/mask.js');
 const PORT = 42069;
 
-const pages = ['', 'home', 'art', 'videos', 'events', 'about', 'members', 'submissions'];
+const pages = ['', 'home', 'login', 'signup', 'profile', 'quizzes', 'quiz/NRT', 'results/AOT'];
 
 before(() => server.ready());
 
