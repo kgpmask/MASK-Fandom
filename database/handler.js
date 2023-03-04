@@ -39,8 +39,8 @@ async function validateUserLogin (creds) {
 	return user.hash === await bcrypt.hash(password, user.salt) ? user._id : false;
 }
 
-// Wondering why this one exists TBH...
-function getAllUsers (id) {
+// Purpose served in admin pages
+function getAllUsers () {
 	return User.find().lean();
 }
 

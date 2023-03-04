@@ -191,7 +191,10 @@ function handler (app, nunjEnv) {
 	// Records of registered people
 	app.get('/registered', async (req, res) => {
 		if (!req.admin) return res.redirect('/');
-		// left blank for goose
+		const records = await dbh.getAllUsers();
+		// const images = require('./images');
+		// records.forEach(user => user.imageLink = images[user.image]);
+		return res.renderFile('/admin/req_records.njk', { records });
 	});
 	// Edit a profile in case of inappropriate words
 	app.get('/edit-profile/:arg', async (req, res) => {
@@ -205,6 +208,12 @@ function handler (app, nunjEnv) {
 	// Quiz Portal
 	app.get('/quiz-portal', async (req, res) => {
 		if (!req.admin) return res.redirect('/');
+		const quizzes = await dbh.getQuizzes();
+		quizzes.forEach(quiz => {
+			quiz.status = new Date().getTime() < new Date(quiz.startTime).getTime() ? 'To be started' :
+				new Date().getTime() < new Date(quiz.endTime).getTime() ? 'Running' : 'Ended';
+		});
+		return res.renderFile('admin/quiz_portal.njk', { quizzes });
 	});
 	// Re-evaluate a quiz's answers
 	app.post('/re-evaluate/:arg', async (req, res) => {
