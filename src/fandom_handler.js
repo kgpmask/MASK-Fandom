@@ -1,8 +1,5 @@
 const axios = require('axios');
-const crypto = require('crypto');
 const fs = require('fs').promises;
-const { restart } = require('nodemon');
-const { render } = require('nunjucks');
 const path = require('path');
 
 const checker = require('./checker.js');
@@ -12,8 +9,8 @@ const handlerContext = {}; // Store cross-request context here
 
 
 function handler (app, nunjEnv) {
-	// Main pages
-
+	// Static Page Routes
+	// Home page
 	app.get(['/', '/home'], async (req, res) => {
 		const sample = [{
 			name: 'How to get into MASK',
@@ -91,29 +88,43 @@ function handler (app, nunjEnv) {
 		const vids = allPosts.filter(post => post.type === 'youtube' && post.hype).splice(0, toBeDisplayed);
 		return res.renderFile('home.njk', { posts, vids, art });
 	});
-    app.get('/login', (req, res) => {
+	// Quiz Details Page
+	app.get('/info', (req, res) => res.renderFile('event_info.njk'));
+
+	// Auth and profile related
+	// Login GET
+	app.get('/login', (req, res) => {
 		if (req.loggedIn) return res.redirect('/');
 		res.renderFile('login.njk');
 	});
+	// Login POST
 	app.post('/login', async (req, res) => {
 		const id = await dbh.validateUserLogin(req.body);
 		if (!id) throw new Error('Credentials don\'t match.');
 		req.cookies.sessionId = dbh.generateSessionRecord(id);
 		return res.send('Login Successful');
 	});
+	// Signup GET
+	app.get('/signup', (req, res) => {
+		if (req.loggedIn) return res.redirect('/');
+		res.send("Bully goose for this page. It's not done yet.");
+	});
+	// Signup POST
+	app.post('/signup', async (req, res) => {
+
+	});
+	// Logout GET
 	app.get('/logout', (req, res) => {
 		if (!req.loggedIn) return res.redirect('/login');
 		return req.logout(() => res.redirect('/'));
 	});
+	// Logout POST
 	app.post('/logout', async (req, res) => {
 		if (!req.user) throw new Error('How are you logging out without even logging in, b-baka.');
 		await res.clearCookie('sessionId');
 		return res.send('Signed out successfully. Mata ne.');
 	});
-	app.get('/signup', (req, res) => {
-		if (req.loggedIn) return res.redirect('/');
-		res.send("Bully goose for this page. It's not done yet.");
-	});
+	// Profile
 	app.get('/profile', async (req, res) => {
 		if (!req.loggedIn) return res.redirect('/');
 		const user = await dbh.getUserStats(req.user._id);
@@ -131,29 +142,56 @@ function handler (app, nunjEnv) {
 			})
 		});
 	});
-    app.get(['/quizzes', '/events'], async (req, res) => {
-		// No specific event queried!
-		//if (PARAMS.mongoless) return res.redirect('/');
-		return res.renderFile('fandom_events.njk', );
+
+	// Event-related pages
+	// Lists the quizzes
+	app.get('/quizzes', async (req, res) => {
+		return res.renderFile('events.njk');
 	});
-	app.get('/fandom', (req, res) => {
-		return res.error(`...uhh I don't think you're supposed to be here...`);
+	// Actual quiz
+	app.get('/quiz/:arg', async (req, res) => {
+		return res.redirect(`/quizzes`);
 		// eslint-disable-next-line no-unreachable
 		return res.renderFile('events/fandom_quiz.njk');
 	});
-    app.get('/record', async (req, res) => {
-        if (!req.admin) return res.redirect('/');
-		//left blank for goose
-    });
-	app.get('/edit_profile', async (req, res) => {
+	// Update Participant Quiz Status
+	app.post('/update-status/:arg', async (req, res) => {
+		// Will be used when the person starts the quiz or moves to another question
+	});
+	// Quiz submit POST function
+	app.post('/submit/:arg', async (req, res) => {});
+
+	// Results page
+	app.get('/results/:arg', async (req, res) => {
+		return res.redirect('/');
+	});
+
+	// Admin-related only
+	// Records of registered people
+	app.get('/registered', async (req, res) => {
 		if (!req.admin) return res.redirect('/');
-		//left blank for goose
+		// left blank for goose
 	});
-	app.get('/success', (req, res) => {
-		return res.renderFile('events/quiz_success.njk');
+	// Edit a profile in case of inappropriate words
+	app.get('/edit-profile/:arg', async (req, res) => {
+		if (!req.admin) return res.redirect('/');
+		// left blank for goose
 	});
-	app.post('/fandom', async (req, res) => {
-		//for post request in quiz submission
+	// Update profile
+	app.post('/update-profile', async (req, res) => {
+		if (!req.admin) return res.status(403).error('Access Denied. Not an admin');
+	});
+	// Quiz Portal
+	app.get('/quiz-portal', async (req, res) => {
+		if (!req.admin) return res.redirect('/');
+	});
+	// Re-evaluate a quiz's answers
+	app.post('/re-evaluate/:arg', async (req, res) => {
+		if (!req.admin) return res.status(403).error('Access Denied. Not an admin');
+	});
+	// Rebuild
+	app.get('/rebuild', async (req, res) => {
+		if (!req.admin) return res.redirect('/');
 	});
 }
 
