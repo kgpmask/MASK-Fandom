@@ -323,7 +323,7 @@ function handler (app, nunjEnv) {
 
 	app.get('/logout', (req, res) => {
 		// Logout
-		//if (!req.user) throw new Error('A- ano... What are you doing here?');
+		if (!req.user) throw new Error('A- ano... What are you doing here?');
 		return res.renderFile('logout.njk');
 	});
 
