@@ -37,12 +37,14 @@
 		async function logout()=> {
 			try{
 				const response = await axios.post("/logout");
-			}catch(e){
+				window.location.href = "/";
+			}
+			catch(e){
 				console.log(e);
 			}
 		};
-		function no() {
-			window.location.href = "/";
+		function no()=>{
+			window.location.href = "/events";
 		};
 	</script>
 {% endblock %}
