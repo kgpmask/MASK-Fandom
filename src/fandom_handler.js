@@ -7,7 +7,6 @@ const dbh = PARAMS.mongoless ? {} : require('../database/handler');
 
 const handlerContext = {}; // Store cross-request context here
 
-
 function handler (app, nunjEnv) {
 	// Static Page Routes
 	// Home page
@@ -159,7 +158,7 @@ function handler (app, nunjEnv) {
 		// Will be used when the person starts the quiz or moves to another question
 	});
 	// Quiz submit POST function
-	app.post('/submit/:arg', async (req, res) => {});
+	app.post('/submit', async (req, res) => {});
 
 	// Results page
 	app.get('/results/:arg', async (req, res) => {
