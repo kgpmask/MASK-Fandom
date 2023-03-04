@@ -214,6 +214,9 @@ function handler (app, nunjEnv) {
 	app.get('/rebuild', async (req, res) => {
 		if (!req.admin) return res.redirect('/');
 	});
+	app.get('/fandom', async (req, res) => {
+		res.renderFile('events/fandom_quiz.njk');
+	});
 }
 
 module.exports = handler;
