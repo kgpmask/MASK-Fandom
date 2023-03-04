@@ -7,32 +7,66 @@
 
 	<div class = "form-container">
 		<form action = '/' method = 'post' id = "signup">
-			<div id = "page1">
+			<div id = "page1" style = "display:block;">
 				<h3>Signup Here</h3>
 				<input type= "text" placeholder = "display name" id = "display-name">
 				<input type="text" placeholder="Username" id="username">
-				<input type="email" placeholder="E-mail adress" id="email"><br>
-				<button id = "get-pics" onclick = "show()">Upload a Profile Picture</button>
-				
-				<div id = "images" style = "display:none;">
-					<img src = "../assets/members/22_jai.webp" class = "profile-picture" >
-					<img src = "../assets/members/22_ankan.webp" class = "profile-picture">
-					<img src = "../assets/members/21_vidunram.webp" class = "profile-picture">
-					<img src = "../assets/members/22_sahil.webp" class = "profile-picture">
-					<img src = "../assets/members/22_snehansh.webp" class = "profile-picture">
+				<input type="email" placeholder="E-mail adress" id="email"><br>		
+			
+			<p style="padding-top: 9px;font-size: 24px;"> Select your profile picture</p>
+	
+				<div id = "images">
+					<img src = "../assets/members/22_jai.webp" class = "profile_picture" >
+					<img src = "../assets/members/22_ankan.webp" class = "profile_picture">
+					<img src = "../assets/members/21_vidunram.webp" class = "profile_picture">
+					<img src = "../assets/members/22_sahil.webp" class = "profile_picture">
+					<img src = "../assets/members/22_snehansh.webp" class = "profile_picture">
+					<img src = "../assets/members/19_manish.webp" class = "profile_picture">
 				</div>
-				
+			<p style="padding-top: 9px;font-size: 24px;"> </p>
+			<div class = "checkbox_container">
+				<div style = "float:inline-start;">
+					<input type = "checkbox" class = "quiz" id = "AOT">
+					<label for = "AOT">Attack on Titans</label>
+				</div>
+				<div style = "float:left;">
+					<input type = "checkbox" class = "quiz" id = "OPM">
+					<label for = "OPM">One Punch Man</label>
+				</div>
+				<div style = "float:right;">
+					<input type = "checkbox" class = "quiz" id = "NRT">
+					<label for = "NRT">Naruto</label>
+				</div>
+				<div style = "float:right;">	
+					<input type = "checkbox" class = "quiz" id = "MHA">
+					<label for = "MHA">My Hero Academia</label>
+				</div>				
+			</div>
 				<input type = "password" placeholder = "Password" id = "password"> 
-				<button id = "nextpage" onclick = "shownextpg()">next</button>
+				<button type = "button" id = "nextpage" onclick = "shownextpg()">next</button>
 			</div>
 
 			<div id = "page2" style = "display:none;">
-				<img src = "../assets/testqr/test.webp" id = "UPI">
+				<img src = "../assets/testqr/test.webp" id = "UPI" style="border-radius: 8px;">
 				<input type = "text" placeholder = "TransactionID">
-				<button id = "prev" onclick = "showprevpg()">previous</button>
-				<button id = "submit">submit</button>
+			<h4><font family = "sans serif">Click on the icons below corresponding to your payment app to find the Transaction ID!</font></h4>
+			<div class = "upi_icons">
+				<img src = "../assets/icons/paytm.png" class = "icons" height = "60px" width = "60px" id = "paytm" onclick = "displaymodal(this)">
+				<img src = "../assets/icons/gpay.png" class = "icons" height = "60px" width = "60px" id = "gpay" onclick = "displaymodal(this)">
+				<img src = "../assets/icons/bhim.png" class = "icons" height = "60px" width = "60px" id = "bhim" onclick = "displaymodal(this)">
+				<img src = "../assets/icons/phonepe.png" class = "icons" height = "60px" width = "60px" id = "phonepe" onclick = "displaymodal(this)">
+			</div>
+			<button type = "button" id = "prev" onclick = "showprevpg()">previous</button>
+			<button id = "submit">submit</button>
 			</div>
 		</form>
+			<div class = "modal-container">
+				<div id = "modal">
+					<span onclick = "closemodal()" class = "closespn">×</span><br>
+					<img class="modalImage" id="modalimg" style = "scale:0.67; translate: 0% -20%;" />
+				</div>
+			</div>
+
 	</div>
 
 {% endblock %}
@@ -47,7 +81,7 @@
 		
 		form{
 			min-height: auto;
-			min-width: 33%;
+			width: 522px;
 			background-color: rgba(255,255,255,0.13);
 			position: absolute;
 			transform: translate(-50%,-50%);
@@ -96,23 +130,71 @@
 		}
 		button{
 			margin-top: 19px;
-			width: 100%;
+			width: 44%;
 			background-color: var(--red);
 			color: white;
-			padding: 15px 0;
+			padding: 12px 0;
 			font-size: 18px;
 			font-weight: 600;
 			border-radius: 12px;
 			cursor: pointer;
 			display = inline;
+			align-items:right;
+			margin-right : 9px;
+			margin-left : 9px;
 		}
+
 		#images{
 			padding : 11px 4px 0px 0px;
 		}
-		.profile-picture:hover{
+		.profile_picture{
+			height : 82px;
+			border-radius : 14px;
+		}
+
+		.profile_picture:hover{
 			transform : scale(1.1);
 		}
 
+		#modal {
+		display: none;
+		position: fixed;
+		z-index: 1;
+		padding-top: 100px;
+		left: 0;
+		top: 0;
+		width: 100%;
+		height: 100%;
+		overflow: auto;
+		background-color: rgb(0, 0, 0);
+		background-color: rgba(0, 0, 0, 0.9);
+		}
+		
+		.closespn{
+			position: absolute;
+			translate: 2200% -128%;
+			transform: scale(3);
+			font-weight: bold;
+		}
+
+		.upi_icons{
+			padding-top:15px;
+		}
+		.icons{
+			padding:0px 5px;
+			border-radius :20px;
+		}
+		
+		h4{
+			padding-top:12px;
+		}
+
+		.modalImage{
+			border-radius:15px;
+		}
+		.checkboxes{
+			height = 10px;
+		}
     </style>	
 {% endblock %}
 
@@ -124,15 +206,26 @@
 		function shownextpg(){
 			document.getElementById("page1").style.display = "none";
 			document.getElementById("page2").style.display = "block";
+			document.getElementById("signup").style.width = "362px";
 		}
 
 		function showprevpg(){
 			document.getElementById("page2").style.display = "none";
 			document.getElementById("page1").style.display = "block";
+			document.getElementById("signup").style.width = "522px";
+
 		}
 
-		function show(){
-			document.getElementById("images").style.display = "block";
+
+		function displaymodal(element){
+			document.getElementById("modalimg").src ='../assets/transactionpages/'+element.id+'.png';
+			document.getElementById("modal").style.display = "block";
+		};
+		
+		function closemodal(){
+			console.log("close")
+			document.getElementById("modal").style.display = "none";
 		}
+		
 	</script>
 {% endblock %}
