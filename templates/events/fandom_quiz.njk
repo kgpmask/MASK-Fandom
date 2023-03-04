@@ -207,13 +207,13 @@
 						case 'gallery':
 							return `
 							<div style="display: flex; flex-direction: row; flex-wrap: wrap;">
-        						{% for img in components.val %}
-            						<img src="{{ img.src }}" class="gallery-image">
-       							{% endfor %}
-    						</div>
+								{% for img in components.val %}
+									<img src="{{ img.src }}" class="gallery-image">
+	   							{% endfor %}
+							</div>
 							`
-                        case 'input':
-                            return `<input type="text" placeholder="Answer" id="answer">`
+						case 'input':
+							return `<input type="text" placeholder="Answer" id="answer">`
 						default:
 							return component.val;
 					}
