@@ -13,7 +13,7 @@
 			<h3>Name: {{ name }}</h3><br/>
 			<h3>Username: {{ username }}</h3><br/>
 			<br/><br/>
-			<h3>Signups:</h3>
+			<h3>Registered for:</h3>
 			<ul class = "registered">
 				{% for anime , bool in signedUpFor %}
 					{% if bool %}
@@ -22,14 +22,6 @@
 				{% endfor %}
 			</ul>
 			<br/><br/>
-			<h3>You can also try registering for:</h3>
-			<ul class = "watchlist">
-				{% for anime , bool in watchlist %}
-					{% if bool %}
-						<li class="otanime"><button><a href = "/">{{ anime }}</a></button></li>{# add the link to register here #}
-					{% endif %}
-				{% endfor %}
-			</ul>
 		</div>
 	</div>
 	<a href="/logout"><button class="rel">Logout</button></a>
