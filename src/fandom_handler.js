@@ -11,71 +11,73 @@ function handler (app, nunjEnv) {
 	// Static Page Routes
 	// Home page
 	app.get(['/', '/home'], async (req, res) => {
-		const sample = [{
-			name: 'How to get into MASK',
-			link: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
-			type: 'youtube',
-			attr: ['Parth Mane'],
-			date: new Date('Oct 25, 2009'),
-			page: '_blank',
-			hype: true
-		},
-		{
-			name: 'Art - Tanjiro Kamado',
-			link: '0025.webp',
-			type: 'art',
-			attr: [ 'Sanjeev Raj Ganji' ],
-			date: new Date(1630261800000),
-			hype: true
-		},
-		{
-			name: 'Art - Saitama',
-			link: '0019.webp',
-			type: 'art',
-			attr: [ 'Garima Mendhe' ],
-			date: new Date(1628879400000),
-			hype: true
-		},
-		{
-			name: 'Art - Kirigakure Shinobi Massacre',
-			link: '0012.webp',
-			type: 'art',
-			attr: [ 'Arpit Das' ],
-			date: new Date(1589308200000),
-			hype: true
-		},
-		{
-			name: 'Art - Garou',
-			link: '0008.webp',
-			type: 'art',
-			attr: [ 'Pritam Mallick' ],
-			date: new Date(1572220800000),
-			hype: true
-		},
-		{
-			name: '「AMV」Phantasy Star Online 2 - Symphony',
-			link: 'https://www.youtube.com/watch?v=GX7TAigwZPw',
-			type: 'youtube',
-			attr: [ 'Hrishabh Kumar Tundwar' ],
-			date: new Date(1673289000000),
-			hype: true
-		},
-		{
-			name: '「AMV」The Garden of Words - A Thousand Years',
-			link: 'https://www.youtube.com/watch?v=9W4eyQ7LP7g',
-			type: 'youtube',
-			attr: [ 'Hrishabh Kumar Tundwar' ],
-			date: new Date(1673289000000),
-			hype: true
-		},
-		{
-			name: '「AMV」Assassination Classroom - Heathens',
-			link: 'https://www.youtube.com/watch?v=unITcghHNVI',
-			type: 'youtube',
-			attr: [ 'Chiranjeet Mishra' ],
-			date: new Date(1673289000000),
-			hype: true
-		}];
+		const sample = [
+			{
+				name: 'How to get into MASK',
+				link: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
+				type: 'youtube',
+				attr: ['Parth Mane'],
+				date: new Date('Oct 25, 2009'),
+				page: '_blank',
+				hype: true
+			},
+			{
+				name: 'Art - Tanjiro Kamado',
+				link: '0025.webp',
+				type: 'art',
+				attr: ['Sanjeev Raj Ganji'],
+				date: new Date(1630261800000),
+				hype: true
+			},
+			{
+				name: 'Art - Saitama',
+				link: '0019.webp',
+				type: 'art',
+				attr: ['Garima Mendhe'],
+				date: new Date(1628879400000),
+				hype: true
+			},
+			{
+				name: 'Art - Kirigakure Shinobi Massacre',
+				link: '0012.webp',
+				type: 'art',
+				attr: ['Arpit Das'],
+				date: new Date(1589308200000),
+				hype: true
+			},
+			{
+				name: 'Art - Garou',
+				link: '0008.webp',
+				type: 'art',
+				attr: ['Pritam Mallick'],
+				date: new Date(1572220800000),
+				hype: true
+			},
+			{
+				name: '「AMV」Phantasy Star Online 2 - Symphony',
+				link: 'https://www.youtube.com/watch?v=GX7TAigwZPw',
+				type: 'youtube',
+				attr: ['Hrishabh Kumar Tundwar'],
+				date: new Date(1673289000000),
+				hype: true
+			},
+			{
+				name: '「AMV」The Garden of Words - A Thousand Years',
+				link: 'https://www.youtube.com/watch?v=9W4eyQ7LP7g',
+				type: 'youtube',
+				attr: ['Hrishabh Kumar Tundwar'],
+				date: new Date(1673289000000),
+				hype: true
+			},
+			{
+				name: '「AMV」Assassination Classroom - Heathens',
+				link: 'https://www.youtube.com/watch?v=unITcghHNVI',
+				type: 'youtube',
+				attr: ['Chiranjeet Mishra'],
+				date: new Date(1673289000000),
+				hype: true
+			}
+		];
 		const allPosts = PARAMS.mongoless ? sample : await dbh.getPosts();
 		const posts = PARAMS.mongoless ? allPosts.splice(0, 2) : allPosts.splice(0, 7);
 		posts.forEach(post => {
@@ -133,8 +135,19 @@ function handler (app, nunjEnv) {
 			points: user.points,
 			quizzes: user.quizData.map(stamp => {
 				const months = [
-					'-', 'January', 'February', 'March', 'April', 'May', 'June',
-					'July', 'August', 'September', 'October', 'November', 'December'
+					'-',
+					'January',
+					'February',
+					'March',
+					'April',
+					'May',
+					'June',
+					'July',
+					'August',
+					'September',
+					'October',
+					'November',
+					'December'
 				];
 				const [year, month, date] = stamp.quizId.split('-');
 				return `${Tools.nth(~~date)} ${months[~~month]}`;
