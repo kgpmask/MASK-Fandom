@@ -5,49 +5,100 @@
 		.user-list {
 			display: flex;
 			flex-direction: row;
+			justify-content: flex-start;
 		}
-		
+
 		{# Note: When mediaport becomes smaller than a set value, make it render in column instead of row #}
 		.user-container {
-			display: flex;
+			display: inline;
 			flex-direction: row;
+			border: 1px solid var(--off-white);
+			border-radius: 10px;
+			padding: 20px;
+			width: 150px;
+			text-align: center;
+			margin: 20px;
 		}
 
 		.user-image {
-			display: block;
+			display: inline-block;
+			margin: auto;
+			height: 80px;
+			width: auto;
+			border: 2px solid var(--off-white);
+			border-radius: 7px;
 		}
 
-		.user-list {
+		.details-container {
+			margin: auto;
+		}
+
+		.details-container>div {
+			margin: 5px auto;
+		}
+
+		.user-name {
+			font-size: 0.8em;
+			color: var(--ghost-gray);
+		}
+
+		.user-signed-up-for {
 			display: flex;
-			flex-direction: column;
+			flex-direction: row;
+			justify-content: space-around;
+		}
+
+		.user-signed-up-for>span {
+			height: 25px;
+			width: 25px;
+			min-height: 25px;
+			min-width: 25px;
+			margin: 10px 5px;
+			padding: 0px;
+			border-radius: 2px;
+			background: white;
+			opacity: 0.2;
+		}
+
+		.user-signed-up-for>span.signed-up {
+			opacity: 1;
 		}
 
 		.button-container {
 			display: flex;
 			flex-direction: row;
+			justify-content: space-around;
 		}
-		
-		
+
+		.button-container>button {
+			background: var(--tinted-gray);
+			border: 1px solid var(--off-white);
+			border-radius: 5px;
+			color: var(--white);
+			padding: 2px 10px;
+		}
 	</style>
 {% endblock %}
 
 {% block pagecontent %}
-	<h1>Records of Registered</h1>
-	<div class='user-list'>
+	<h1>Records of Registered Users</h1>
+	<div class="user-list">
 		{% for record in records %}
-		<div class='user-container'>
-			<img class='user-image' src='{{ record.imageLink }}' alt='{{ record.image }}'>
-			<div class='details-container'>
-				<div class='user-name'> {{ record.name }} </div>
-				<div class='user-username'> {{ record.username }} </div>
-				<div class='user-signed-up-for'>
+		<div class="user-container">
+			<img class="user-image" src="{{ record.imageLink or 'http://localhost:6969/assets/members/21_arghadeep.webp' }}" alt="{{ record.image }}">
+			<br/><br/>
+			<div class="details-container">
+				<div class="user-username">{{ record.username }}</div>
+				<div class="user-name">{{ record.name }}</div>
+				<div class="user-signed-up-for">
 					{% for sauce, signedUp in record.signedUpFor %}
-						{% if signedUp %}<div class='{{ sauce }}-icon'></div>{% endif %}
+						<span class="{{ sauce }}-icon{{ ' signed-up' if signedUp }}"></span>
 					{% endfor %}
 				</div>
-				<div class='button-container'>
-					<button class='edit-record'> Edit </button>
-					<button class='{{ 'payment-done' if record.paymentConfirmed else 'payment-pending' }}'>{{ 'Paid' if record.paymentConfirmed else 'Confirm Payment' }}</button>
+				<br/>
+				<div class="button-container">
+					<button class="edit-record"> Edit </button>
+					<button class="{{ 'payment-done' if record.paymentConfirmed else 'payment-pending' }}">{{ 'Paid' if record.paymentConfirmed else 'Confirm' }}</button>
 				</div>
 			</div>
 		</div>
