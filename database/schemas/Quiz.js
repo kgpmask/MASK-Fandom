@@ -5,9 +5,7 @@ const userQuizDataSchema = new mongoose.Schema({
 	quizId: { type: String, required: true },
 	points: { type: Number, required: true, default: 0 },
 	timeTaken: { type: Number, required: true },
-	records: { type: [{
-		answer: { type: [Number, [String]] }
-	}], required: true }
+	records: { type: [Number, String], required: true }
 });
 
 const questionsSchema = new mongoose.Schema({
