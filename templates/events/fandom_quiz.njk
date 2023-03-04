@@ -7,7 +7,7 @@
 {% block pagecontent %}
 	<div class = "instructions" style = "display:block">
 		<h1 class = "title">Manga and Anime Society Kharagpur</h1>
-		<h2 class = "title">Fandom Quiz</h2><br>
+		<h2 class = "title">Quad Anime Trivia Quiz</h2><br>
 		<div class = "text" style = "text-align:left">
 			<h3>Instructions:</h3>
 			<ol>
@@ -20,8 +20,7 @@
 			</ol>
 		</div>
 		<br>
-		<button id="startQuiz" onclick="startQuiz()" class="rel" style= "display:none">Start</button>
-		<button id="resumeQuiz" onclick="resumeQuiz()" class="rel" style= "display:none">Resume</button>
+		<button id="startQuiz" onclick="startQuiz()" class="rel" >Start</button>
 	</div>
 	<div class="quiz-container" style = "display:none">
 		<div class="countDown">
@@ -218,10 +217,8 @@
 					document.getElementById(`option-${q + 1}-${i}`).innerHTML = generateHTML(question.options[i - 1]);
 				}
 			);
-			//add a logic here to enable start button or the resume button
 			//enabled manual start of quiz
 		}
-		//add a function to resume the quiz
 		// Support for Keyboard input for MCQ type Quiz Questions
 		// Feature: 1,2,3,4 or a,b,c,d or Num1,Num2,Num3,Num4 to select quiz options
 		function preventDefault(event) {
