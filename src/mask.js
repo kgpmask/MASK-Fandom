@@ -9,8 +9,8 @@ const path = require('path');
 
 global.Tools = require('./tools.js');
 const DB = require('../database/database.js');
-const PORT = PARAMS.port ?? require('./config.js').PORT;
-const appHandler = require('./handler.js');
+const PORT =  PARAMS.port ?? require('./config.js').PORT;
+const appHandler = require('./fandom_handler.js');
 const socketio = require('socket.io')();
 const initMiddleware = require('./middleware.js');
 
