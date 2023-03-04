@@ -1,6 +1,20 @@
 {% set navlinks = [{
+	href: 'info',
+	name: 'Info'
+}, {
 	href: 'events',
 	name: 'Events'
+}] %}
+
+{% set adminlinks = [{
+	href: 'records',
+	name: 'Records'
+}, {
+	href: 'quiz-portal',
+	name: 'Portal'
+}, {
+	href: 'results',
+	name: 'Results'
 }] %}
 
 
@@ -24,6 +38,7 @@
 		{% block customjs %}{% endblock %}
 	</head>
 	<body>
+		<!--{{ isAdmin }}-->
 		<div id="page-container">
 			<div id="content-wrap">
 				<div style="max-height:0;max-width:0;overflow:hidden"><input autofocus/></div>
@@ -36,15 +51,17 @@
 								{% for link in navlinks %}
 									<li><a href="/{{ link.href }}" {% if link.href === thispage %} class="active-page" {% endif %} target="_self">{{ link.name }}</a></li>
 								{% endfor %}
+								{%if isAdmin %}
+									{% for link in adminlinks %}
+										<li><a href="/{{ link.href }}" {% if link.href === thispage %} class="active-page" {% endif %} target="_self">{{ link.name }}</a></li>
+									{% endfor %}
+								{% endif %}
 							</div>
 							<div style="float:right;" id="dropdown">
-								<a href="/about" class="dropbtn" target="_self">About</a>
+								<a href="/{{ 'profile' if loggedIn else 'signup' }}" class="dropbtn" target="_self">{{ 'Register' if not LoggedIn else 'Profile' }}</a>
 								<div class="dropdown-content">
-									{% if loggedIn %}
-										<a href="/profile" class="{% if 'profile' === thispage %}active-page {% endif %}{% if userless %}disabled {% endif %}" target="_self">Profile</a>
-									{% else %}
+									{% if not loggedIn %}
 										<a href="/login" class="{% if 'login' === thispage %}active-page {% endif %}{% if userless %}disabled {% endif %}" target="_self">Login</a>
-										<a href="/signup" class="{% if 'login' === thispage %}active-page {% endif %}{% if userless %}disabled {% endif %}" target="_self">Sign up</a>
 									{% endif %}
 								</div>
 							</div>
