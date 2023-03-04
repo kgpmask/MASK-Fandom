@@ -45,6 +45,7 @@ module.exports = function setMiddleware (app) {
 		res.locals.userless = PARAMS.mongoless || PARAMS.userless;
 		res.locals.quizFlag = PARAMS.quiz;
 		req.loggedIn = res.locals.loggedIn = Boolean(req.user);
+		req.admin = req.user?.permissions.find(e => e === 'Admin');
 		next();
 	});
 };

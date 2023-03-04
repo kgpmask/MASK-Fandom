@@ -108,7 +108,7 @@ function handler (app, nunjEnv) {
 	// Signup GET
 	app.get('/signup', (req, res) => {
 		if (req.loggedIn) return res.redirect('/');
-		res.send("Bully goose for this page. It's not done yet.");
+		res.send("Bully Jai for this page. It's not done yet.");
 	});
 	// Signup POST
 	app.post('/signup', async (req, res) => {
@@ -120,8 +120,8 @@ function handler (app, nunjEnv) {
 		return req.logout(() => res.redirect('/'));
 	});
 	// Logout POST
-	app.post('/logout', async (req, res) => {
-		if (!req.user) throw new Error('How are you logging out without even logging in, b-baka.');
+	app.post('/logout', async (req, res, next) => {
+		if (!req.user) return next('How are you logging out without even logging in, b-baka.');
 		await res.clearCookie('sessionId');
 		return res.send('Signed out successfully. Mata ne.');
 	});
@@ -157,12 +157,21 @@ function handler (app, nunjEnv) {
 
 	// Event-related pages
 	// Lists the quizzes
-	app.get('/quizzes', async (req, res) => {
-		return res.renderFile('events.njk');
+	app.get('/events', async (req, res) => {
+		if (!req.user) return res.redirect('/login');
+		const quizzes = (await dbh.getQuizzes()).map(quiz => {
+			return {
+				id: quiz._id,
+				name: quiz._id === 'NRT' ? 'Naruto' : quiz._id,
+				active: (new Date).getTime() >= quiz.startTime.getTime() && (new Date).getTime() < quiz.endTime.getTime()
+				&& (quiz._id === 'SQ1' || req.user.signedUpFor[quiz._id])
+			};
+		});
+		return res.renderFile('events.njk', { quizzes });
 	});
 	// Actual quiz
 	app.get('/quiz/:arg', async (req, res) => {
-		return res.redirect(`/quizzes`);
+		return res.redirect(`/events`);
 		// eslint-disable-next-line no-unreachable
 		return res.renderFile('events/fandom_quiz.njk');
 	});

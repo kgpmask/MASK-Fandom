@@ -10,27 +10,18 @@
 		Feel free to check out people's progress on the <a style="font-size:1.2em;" href="/leaderboard">Leaderboard</a>!
 	</div> #}
 	<br/><br/>
-	<h1>Quizzes</h1>
-	<div id="live-quiz">
-		<a href = "/live" class="livequiz"><button class="live-quiz">Live Quiz</button></a>
-	</div>
+	<h1>Events</h1>
 	<div id="accordion-container">
-	{% for year in years %}
-		<button class="accordion">&nbsp;&nbsp;&nbsp;{{ year.title }}</button>
+		<button class="accordion">Quad Quiz</button>
 		<div class="accordion-panel"><div class="accordion-content">
-			{% for month in year.months %}
-				<div class="month">
-					<h3 style="color:var(--off-white)">{{ month.title }}</h3>
-					<div class="monthposts">
-						{% for issue in month.issues %}
-							<div class="flex-link"{{' title=Attempted' if not quizFlag and issue.href in quizzed }}><a class="issue-link{{ ' disabled' if not quizFlag and issue.href in quizzed }}" href="/quizzes/{{ issue.href }}">{{ '&#128274;&nbsp;' | safe if issue.href in locked }}{{ issue.title }}</a></div>
-						{% endfor %}
-					</div>
+			<div class="month">
+				<div class="monthposts">
+					{% for quiz in quizzes %}
+						<div class="flex-link"{{' title=Disabled' if not quiz.active }}><a class="issue-link{{ ' disabled' if not quiz.active }}" href="/quiz/{{ quiz.id }}">{{ '&#128274;&nbsp;' | safe if not quiz.active }}{{ quiz.name }}</a></div>
+					{% endfor %}
 				</div>
-				{% if not loop.last %} <hr/> {% endif %}
-			{% endfor %}
-		</div></div>
-	{% endfor %}
+			</div>
+		</div>
 	</div>
 {% endblock %}
 
