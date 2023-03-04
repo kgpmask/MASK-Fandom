@@ -11,9 +11,25 @@
 				<span style="font-weight:bold;font-size:1.5em;">{{ name }}</span>
 			</div>
 			<h3>Name: {{ name }}</h3><br/>
-			<h3>Points: {{ points }}</h3>
+			<h3>Username: {{ username }}</h3><br/>
 			<br/><br/>
-			<div>Quizzes attempted: {{ quizzes | join(', ') if quizzes | length else '-' }}</div>
+			<h3>Signups:</h3>
+			<ul class = "registered">
+				{% for anime , bool in signedUpFor %}
+					{% if bool %}
+						<li class="anime"><h2>{{ anime }}</h2></li>
+					{% endif %}
+				{% endfor %}
+			</ul>
+			<br/><br/>
+			<h3>You can also try registering for:</h3>
+			<ul class = "watchlist">
+				{% for anime , bool in watchlist %}
+					{% if bool %}
+						<li class="otanime"><button><a href = "/">{{ anime }}</a></button></li>{# add the link to register here #}
+					{% endif %}
+				{% endfor %}
+			</ul>
 		</div>
 	</div>
 	<a href="/logout"><button class="rel">Logout</button></a>
