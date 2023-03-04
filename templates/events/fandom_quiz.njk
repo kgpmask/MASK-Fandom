@@ -204,6 +204,16 @@
 							return `<audio src="${component.val}" type="audio/mpeg"> </audio>`;
 						case 'title':
 							return `<h3>${component.val}</h3>`;
+						case 'gallery':
+							return `
+							<div style="display: flex; flex-direction: row; flex-wrap: wrap;">
+        						{% for img in components.val %}
+            						<img src="{{ img.src }}" class="gallery-image">
+       							{% endfor %}
+    						</div>
+							`
+                        case 'input':
+                            return `<input type="text" placeholder="Answer" id="answer">`
 						default:
 							return component.val;
 					}
