@@ -285,6 +285,9 @@
 			if (!username) return alert('No username given.');
 			const password = document.getElementById('password').value;
 			if (!password) return alert('No password provided.');
+            if (!password.match(/^(?=[!-~]).{6,20}$/)) {
+                return alert('Password doesn\'t meet the requirements');
+            }
 			if (!password !== document.getElementById('confirm-password').value) return alert('Passwords do not match!');
 			// Page three
 			const transactionID = document.getElementById('transaction-ID').value;
