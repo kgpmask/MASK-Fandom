@@ -53,7 +53,7 @@ function handler (app, nunjEnv) {
 	// Logout GET
 	app.get('/logout', (req, res) => {
 		if (!req.loggedIn) return res.redirect('/login');
-		return req.logout(() => res.redirect('/'));
+		return res.renderFile('logout.njk');
 	});
 	// Logout POST
 	app.post('/logout', async (req, res, next) => {
