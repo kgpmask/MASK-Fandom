@@ -320,10 +320,10 @@ function handler (app, nunjEnv) {
 		res.renderFile('login.njk');
 	});
 
-	app.post('/login', async (req, res, next) => {
+	app.post('/login', async (req, res) => {
 		// req.body = { username, password }
 		const id = await dbh.validateUserLogin(req.body);
-		if (!id) return res.renderFile('login.njk', { error: 'Invalid username/password' });
+		if (!id) throw new Error('Credentials don\'t match.');
 		req.cookies.sessionId = dbh.generateSessionRecord(id);
 		return res.send('Login Successful');
 	});
@@ -334,9 +334,9 @@ function handler (app, nunjEnv) {
 		return res.renderFile('logout.njk');
 	});
 
-	app.post('/logout', async (req, res, next) => {
+	app.post('/logout', async (req, res) => {
 		// Logout page will send a POST request which will execute this block of code
-		if (!req.user) return next(new Error('How are you logging out without even logging in, b-baka.'));
+		if (!req.user) throw new Error('How are you logging out without even logging in, b-baka.');
 		await res.clearCookie('sessionId');
 		return res.send('Signed out successfully. Mata ne.');
 	});
@@ -649,13 +649,13 @@ function handler (app, nunjEnv) {
 			dbh.addLiveResult(...functionArgs).then(() => res.send('Submitted')).catch(e => console.log(e) && res.error(e));
 		}
 	});
-	app.post('/live-end', async (req, res, next) => {
+	app.post('/live-end', async (req, res) => {
 		if (!req.loggedIn) {
 			if (!PARAMS.userless) req.session.returnTo = req.url;
 			return res.renderFile('events/quiz_login.njk');
 		}
 		const user = await dbh.getUser(req.user._id);
-		if (!user.permissions.find(perm => perm === 'quizmaster')) return next(new Error('Access denied'));
+		if (!user.permissions.find(perm => perm === 'quizmaster')) throw new Error('Access denied');
 		io.sockets.in('waiting-for-live-quiz').emit('end-quiz');
 		return res.send('Ended!');
 	});
@@ -737,14 +737,8 @@ function handler (app, nunjEnv) {
 
 	app.use((err, req, res, next) => {
 		if (PARAMS.dev) console.error(err.stack);
-		next(err);
 		// Make POST errors show only the data, and GET errors show the page with the error message
-	});
-	app.get((err, req, res, next) => {
-		res.errorRes(err.message);
-	});
-	app.post((err, req, res, next) => {
-		res.error(err);
+		res.status(500).renderFile('404.njk', { message: 'Server error! This may or may not be due to invalid input.' });
 	});
 
 	app.post((req, res) => {

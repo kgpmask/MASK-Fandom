@@ -14,7 +14,7 @@
 				"connect-mongo": "^4.6.0",
 				"cookie-parser": "^1.4.6",
 				"csurf": "^1.11.0",
-				"express": "^4.18.2",
+				"express": "^4.17.1",
 				"express-session": "^1.17.2",
 				"mongodb": "^4.8.0",
 				"mongoose": "^6.2.4",
@@ -1332,7 +1332,7 @@
 		"node_modules/array-flatten": {
 			"version": "1.1.1",
 			"resolved": "https://registry.npmjs.org/array-flatten/-/array-flatten-1.1.1.tgz",
-			"integrity": "sha512-PCVAQswWemu6UdxsDFFX/+gVeYqKAod3D3UVm91jHwynguOwAvYPhx8nNlM++NqRcK6CxxpUafjmhIdKiHibqg=="
+			"integrity": "sha1-ml9pkFGx5wczKPKgCJaLZOopVdI="
 		},
 		"node_modules/asap": {
 			"version": "2.0.6",
@@ -2296,20 +2296,7 @@
 		"node_modules/express/node_modules/ms": {
 			"version": "2.0.0",
 			"resolved": "https://registry.npmjs.org/ms/-/ms-2.0.0.tgz",
-			"integrity": "sha512-Tpp60P6IUJDTuOq/5Z8cdskzJujfwqfOTkrwIwj7IRISpnkJnT6SyJ4PCPnGMoFjC9ddhal5KVIYtAt97ix05A=="
-		},
-		"node_modules/express/node_modules/setprototypeof": {
-			"version": "1.2.0",
-			"resolved": "https://registry.npmjs.org/setprototypeof/-/setprototypeof-1.2.0.tgz",
-			"integrity": "sha512-E5LDX7Wrp85Kil5bhZv46j8jOeboKq5JMmYM3gVGdGH8xFpPWXUMsNrlODCrkoxMEeNi/XZIwuRvY4XNwYMJpw=="
-		},
-		"node_modules/express/node_modules/statuses": {
-			"version": "2.0.1",
-			"resolved": "https://registry.npmjs.org/statuses/-/statuses-2.0.1.tgz",
-			"integrity": "sha512-RwNA9Z/7PrK06rYLIzFMlaF+l73iwpzsqRIFgbMLbTcLD6cOao82TaWefPXQvB2fOC4AjuYSEndS7N/mTCbkdQ==",
-			"engines": {
-				"node": ">= 0.8"
-			}
+			"integrity": "sha1-VgiurfwAvmwpAd9fmGF4jeDVl8g="
 		},
 		"node_modules/express/node_modules/setprototypeof": {
 			"version": "1.2.0",
@@ -3085,12 +3072,12 @@
 		"node_modules/merge-descriptors": {
 			"version": "1.0.1",
 			"resolved": "https://registry.npmjs.org/merge-descriptors/-/merge-descriptors-1.0.1.tgz",
-			"integrity": "sha512-cCi6g3/Zr1iqQi6ySbseM1Xvooa98N0w31jzUYrXPX2xqObmFGHJ0tQ5u74H3mVh7wLouTseZyYIq39g8cNp1w=="
+			"integrity": "sha1-sAqqVW3YtEVoFQ7J0blT8/kMu2E="
 		},
 		"node_modules/methods": {
 			"version": "1.1.2",
 			"resolved": "https://registry.npmjs.org/methods/-/methods-1.1.2.tgz",
-			"integrity": "sha512-iclAHeNqNm68zFtnZ0e+1L2yUIdvzNoauKU4WBA3VvH/vPFieF7qfRlwUZU+DA9P9bPXIS90ulxoUoCH23sV2w==",
+			"integrity": "sha1-VSmk1nZUE07cxSZmVoNbD4Ua/O4=",
 			"engines": {
 				"node": ">= 0.6"
 			}
@@ -3718,7 +3705,7 @@
 		"node_modules/path-to-regexp": {
 			"version": "0.1.7",
 			"resolved": "https://registry.npmjs.org/path-to-regexp/-/path-to-regexp-0.1.7.tgz",
-			"integrity": "sha512-5DFkuoqlv1uYQKxy8omFBeJPQcdoE07Kv2sferDCrAq1ohOU+MSDswDIbnx3YAM60qIOnYa53wBhXW0EbMonrQ=="
+			"integrity": "sha1-32BBeABfUi8V60SQ5yR6G/qmf4w="
 		},
 		"node_modules/pause": {
 			"version": "0.0.1",
@@ -5802,7 +5789,7 @@
 		"array-flatten": {
 			"version": "1.1.1",
 			"resolved": "https://registry.npmjs.org/array-flatten/-/array-flatten-1.1.1.tgz",
-			"integrity": "sha512-PCVAQswWemu6UdxsDFFX/+gVeYqKAod3D3UVm91jHwynguOwAvYPhx8nNlM++NqRcK6CxxpUafjmhIdKiHibqg=="
+			"integrity": "sha1-ml9pkFGx5wczKPKgCJaLZOopVdI="
 		},
 		"asap": {
 			"version": "2.0.6",
@@ -6476,7 +6463,6 @@
 				"ms": {
 					"version": "2.0.0",
 					"resolved": "https://registry.npmjs.org/ms/-/ms-2.0.0.tgz",
-					"integrity": "sha512-Tpp60P6IUJDTuOq/5Z8cdskzJujfwqfOTkrwIwj7IRISpnkJnT6SyJ4PCPnGMoFjC9ddhal5KVIYtAt97ix05A=="
 					"integrity": "sha1-VgiurfwAvmwpAd9fmGF4jeDVl8g="
 				},
 				"setprototypeof": {
@@ -7078,12 +7064,12 @@
 		"merge-descriptors": {
 			"version": "1.0.1",
 			"resolved": "https://registry.npmjs.org/merge-descriptors/-/merge-descriptors-1.0.1.tgz",
-			"integrity": "sha512-cCi6g3/Zr1iqQi6ySbseM1Xvooa98N0w31jzUYrXPX2xqObmFGHJ0tQ5u74H3mVh7wLouTseZyYIq39g8cNp1w=="
+			"integrity": "sha1-sAqqVW3YtEVoFQ7J0blT8/kMu2E="
 		},
 		"methods": {
 			"version": "1.1.2",
 			"resolved": "https://registry.npmjs.org/methods/-/methods-1.1.2.tgz",
-			"integrity": "sha512-iclAHeNqNm68zFtnZ0e+1L2yUIdvzNoauKU4WBA3VvH/vPFieF7qfRlwUZU+DA9P9bPXIS90ulxoUoCH23sV2w=="
+			"integrity": "sha1-VSmk1nZUE07cxSZmVoNbD4Ua/O4="
 		},
 		"mime": {
 			"version": "1.6.0",
@@ -7528,7 +7514,7 @@
 		"path-to-regexp": {
 			"version": "0.1.7",
 			"resolved": "https://registry.npmjs.org/path-to-regexp/-/path-to-regexp-0.1.7.tgz",
-			"integrity": "sha512-5DFkuoqlv1uYQKxy8omFBeJPQcdoE07Kv2sferDCrAq1ohOU+MSDswDIbnx3YAM60qIOnYa53wBhXW0EbMonrQ=="
+			"integrity": "sha1-32BBeABfUi8V60SQ5yR6G/qmf4w="
 		},
 		"pause": {
 			"version": "0.0.1",

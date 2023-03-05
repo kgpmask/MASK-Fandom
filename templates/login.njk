@@ -4,18 +4,19 @@
 {% set pagetitle = 'Login' %}
 
 {% block pagecontent %}
-	{% if error %}
-		<div style="background-color:var(--red);color:var(--off-white);opacity:0.8" class="text">
-			{{ error if error else 'Invalid username/password' }}
-		</div>
-	{% endif %}
+	<header class='form-header'>
+		<h1><font color = 'white'>SUSSY</h1>
+    </header>
 
-	<div class="form-container">
-		<form>
-			<h3>Login!</h3>
-			<input type="text" placeholder="Username" name="username" id="username">
-			<input type="password" placeholder="Password" name="password" id="password">
-			<button type="button" id="login-button">Login</button>
+	<div class = "form">
+		<form action = '/' method = 'post'>
+        <h3>Login Here</h3>
+
+        <input type="text" placeholder="Username" id="username">
+
+        <input type="password" placeholder="Password" id="password">
+
+        <button>Log In</button>
 		</form>
 	</div>
 
@@ -23,31 +24,29 @@
 
 {% block customcss %}
 	<style media="screen">
-		.form-container {
-			margin-top : 31rem;
-		}
-		form {
-			min-height: auto;
-			min-width: 28%;
-			background-color: rgba(255, 255, 255, 0.13);
+		
+		form{
+			height: 300px;
+			width: 400px;
+			background-color: rgba(255,255,255,0.13);
 			position: absolute;
-			transform: translate(-50%, -50%);
+			transform: translate(-50%,-50%);
 			top: 50%;
 			left: 50%;
 			border-radius: 10px;
 			backdrop-filter: blur(5px);
-			border: 2px solid rgba(255, 255, 255, 0.1);
-			box-shadow: 0 0 40px rgba(8, 7, 16, 0.6);
+			border: 2px solid rgba(255,255,255,0.1);
+			box-shadow: 0 0 40px rgba(8,7,16,0.6);
 			padding: 23px 25px;
 		}
-		form * {
-			font-family: 'Poppins', sans-serif;
+		form *{
+			font-family: 'Poppins',sans-serif;
 			color: #ffffff;
 			letter-spacing: 0.5px;
 			outline: none;
 			border: none;
 		}
-		form h3 {
+		form h3{
 			font-size: 32px;
 			font-weight: 500;
 			line-height: 42px;
@@ -55,11 +54,11 @@
 			margin-bottom:35px;
 		}
 
-		input {
+		input{
 			display: block;
 			height: 50px;
 			width: 90%;
-			background-color: rgba(255, 255, 255, 0.07);
+			background-color: rgba(255,255,255,0.07);
 			border-radius: 12px;
 			padding: 0 20px 4px;
 			margin-top: 12px;
@@ -69,8 +68,8 @@
 		}
 		::placeholder{
 			color: #e5e5e5;
-			font-family: Ubuntu, Roboto, Arial, Open Sans, sans-serif;
-			font-size: 20px;
+			font-family:Ubuntu,Roboto,Arial,Open Sans,sans-serif;
+			font-size:20px;
 		}
 		button{
 			margin-top: 19px;
@@ -83,21 +82,5 @@
 			border-radius: 12px;
 			cursor: pointer;
 		}
-	</style>
+    </style>
 {% endblock %}
-
-{% block customjs %}
-<script>
-	function login () {
-		const username = document.getElementById('username').value;
-		const password = document.getElementById('password').value;
-		axios.post('/login', { username, password })
-			.then(() => window.location.href = '/')
-			.catch(err => console.log(err));
-	}
-
-	window.onload = () => document.getElementById('login-button').onclick = login;
-</script>
-{% endblock %}
-
-{% set scripts = ['https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js'] %}

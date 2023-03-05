@@ -108,22 +108,11 @@ function handler (app, nunjEnv) {
 	// Signup GET
 	app.get('/signup', (req, res) => {
 		if (req.loggedIn) return res.redirect('/');
-		res.renderFile('signup.njk', { images: require('./images') });
+		res.send("Bully Jai for this page. It's not done yet.");
 	});
 	// Signup POST
 	app.post('/signup', async (req, res) => {
-		// req.body = { name, username, password, email, image, signedUpFor, transactionID }
-		try {
-			// Here's hoping Ankan added proper validation in the njk file
-			req.user = await dbh.createNewUser(req.body);
-			// Generate a session for login middleware to recognize
-			req.cookies.sessionId = dbh.generateSessionRecord(req.user.id);
-			// Send a message to indicate successful login
-			return res.send('Successfully logged in');
-		} catch (err) {
-			// Sending an error: Can do next as well, but eh. Using this for now.
-			return res.status(400).error(err);
-		}
+
 	});
 	// Logout GET
 	app.get('/logout', (req, res) => {
