@@ -45,32 +45,22 @@ function getAllUsers (id) {
 }
 
 // Add new record to database
-async function updateUserQuizRecord (stats) { // {userId, quizId, time, score}
-	// This... should be fine as it is
-	const user = await Quiz.UserInfo.findOne({ userId: stats.userId });
-	const userName = (await getUser(stats.userId)).name;
-	const record = user || new Quiz.UserInfo({ userId: stats.userId, userName, points: 0, quizData: [] });
-	if (!record.quizData) record.quizData = [];
-	const key = stats.quizId;
-	if (!key) return record.save();
-	if (record.quizData.find(elm => elm.quizId === key)) return record;
-	else {
-		record.quizData.push({
-			quizId: key,
-			points: stats.score,
-			time: stats.time
-		});
-		record.points += stats.score;
-	}
-	return record.save();
+async function generateUserQuizRecord (creds) {
+	// stats = { userId, quizId }
+	if (await Quiz.UserInfo.findOne(creds)) throw new Error('Record already exists.');
+	const userStat = new Quiz.UserInfo(creds);
+	userStat.endTime = new Date();
+	userStat.points = 0;
+	userStat.records = [];
+	return userStat.save();
 }
 
 // User statistics
-async function getUserStats (userId) {
+async function getUserStats (userId, quizId) {
 	// This should be fine as it is too
-	const user = await Quiz.UserInfo.findOne({ userId });
+	const user = await Quiz.UserInfo.findOne({ userId, quizId });
 	if (user) return user;
-	else return updateUserQuizRecord({ userId });
+	else return generateUserQuizRecord({ userId, quizId });
 }
 
 function getQuizzes () {
@@ -176,7 +166,6 @@ module.exports = {
 	validateUserLogin,
 	getUser,
 	getAllUsers,
-	updateUserQuizRecord,
 	getQuizzes,
 	getUserStats,
 	getLiveQuiz,

@@ -121,7 +121,7 @@ function handler (app, nunjEnv) {
 	});
 	// Logout POST
 	app.post('/logout', async (req, res, next) => {
-		if (!req.user) return next('How are you logging out without even logging in, b-baka.');
+		if (!req.loggedIn) return next('How are you logging out without even logging in, b-baka.');
 		await res.clearCookie('sessionId');
 		return res.send('Signed out successfully. Mata ne.');
 	});
@@ -158,7 +158,7 @@ function handler (app, nunjEnv) {
 	// Event-related pages
 	// Lists the quizzes
 	app.get('/events', async (req, res) => {
-		if (!req.user) return res.redirect('/login');
+		if (!req.loggedIn) return res.redirect('/login');
 		const quizzes = (await dbh.getQuizzes()).map(quiz => {
 			return {
 				id: quiz._id,
@@ -171,9 +171,22 @@ function handler (app, nunjEnv) {
 	});
 	// Actual quiz
 	app.get('/quiz/:arg', async (req, res) => {
-		return res.redirect(`/events`);
-		// eslint-disable-next-line no-unreachable
-		return res.renderFile('events/fandom_quiz.njk');
+		if (!req.loggedIn) res.redirect('/login');
+		const quiz = (await dbh.getQuizzes()).find(e => e === req.params.arg);
+		const questions = [];
+		const userStat = await dbh.getUserStats(req.user._id, req.params.arg);
+		currentQ = userStat.records.length;
+		quiz.questions.forEach((question, i) => i >= currentQ ? questions.push({
+			number: i + 1,
+			question: question.q,
+			options: question.options
+		}) : undefined);
+
+		return res.renderFile('events/fandom_quiz.njk', {
+			currentQ,
+			questions: JSON.stringify(questions),
+			qAmt: questions.length
+		});
 	});
 	// Update Participant Quiz Status
 	app.post('/update-status/:arg', async (req, res) => {
