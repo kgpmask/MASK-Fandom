@@ -198,8 +198,9 @@ function handler (app, nunjEnv) {
 	});
 	// Edit a profile in case of inappropriate words
 	app.get('/edit-profile/:arg', async (req, res) => {
-		if (!req.admin) return res.redirect('/');
-		// left blank for goose
+		// if (!req.admin) return res.redirect('/');
+		const user = await dbh.getUser('933939822073621628860');
+		return res.renderFile('admin/edit_profile.njk', user);
 	});
 	// Update profile
 	app.post('/update-profile', async (req, res) => {
