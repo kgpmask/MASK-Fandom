@@ -12,6 +12,7 @@ const userInfoSchema = new mongoose.Schema({
 		OPM: Boolean,
 		MHA: Boolean
 	},
+	transactionID: { type: Number, required: true },
 	qrScanned: Boolean,
 	paymentConfirmed: Boolean,
 	permissions: { type: [String], default: [] }

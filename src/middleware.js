@@ -28,6 +28,9 @@ module.exports = function setMiddleware (app) {
 		res.notFound = (custom404, ctx) => {
 			res.status(404).renderFile(custom404 || '404.njk', ctx);
 		};
+		res.errorRes = message => {
+			res.status(500).renderFile('error.njk', { message });
+		};
 		res.tryFile = (path, asset, ctx) => {
 			fs.access(path).then(err => {
 				if (err) res.notFound(false, ctx);

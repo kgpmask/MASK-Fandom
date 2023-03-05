@@ -1,0 +1,10 @@
+{% extends "_base.njk" %}
+
+{% set thispage = 'error' %}
+{% set pagetitle = 'Error' %}
+
+{% block pagecontent %}
+	<h1>An error occurred{{ ': ' + message if message else '!' }}</h1>
+	<h4>If you think that this shouldn't have happened, please contact us at 
+		<a href="mailto:kgpmask@gmail.com" target="_blank" rel="noopener noreferrer">kgpmask@gmail.com</a>.</h4>
+{% endblock %}
