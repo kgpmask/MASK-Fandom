@@ -11,11 +11,11 @@
 	{% endif %}
 
 	<div class="form-container">
-		<form action="/login" method="post">
+		<form>
 			<h3>Login!</h3>
-			<input type="text" placeholder="Username" name="username">
-			<input type="password" placeholder="Password" name="password">
-			<button>Login</button>
+			<input type="text" placeholder="Username" name="username" id="username">
+			<input type="password" placeholder="Password" name="password" id="password">
+			<button type="button" id="login-button">Login</button>
 		</form>
 	</div>
 
@@ -85,3 +85,19 @@
 		}
 	</style>
 {% endblock %}
+
+{% block customjs %}
+<script>
+	function login () {
+		const username = document.getElementById('username').value;
+		const password = document.getElementById('password').value;
+		axios.post('/login', { username, password })
+			.then(() => window.location.href = '/')
+			.catch(err => console.log(err));
+	}
+
+	window.onload = () => document.getElementById('login-button').onclick = login;
+</script>
+{% endblock %}
+
+{% set scripts = ['https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js'] %}
