@@ -5,9 +5,25 @@
 {% set pagetitle = 'Events' %}
 
 {% block pagecontent %}
-	<div class="quiz-container">
+	<div class = "instructions" style = "display:block">
+		<h1 class = "title">Manga and Anime Society Kharagpur</h1>
+		<h2 class = "title">Quad Anime Trivia Quiz</h2><br>
+		<div class = "text" style = "text-align:left">
+			<h3>Instructions:</h3>
+			<ol>
+				<li><p>There are 20 questions in total.</p></li><br>
+				<li><p>There are three types of questions:<br>&emsp;&emsp;- Integer type: the answer is allowed only in integer format. For example, if 106 wa seikai, ‘one hundred six’ de wa arimasen(is incorrect).<br>&emsp;&emsp;- Text type: text input is expected. (minor spelling errors are allowed)<br>&emsp;&emsp;- Multiple Choice Type: One of the given options is correct. Selection can be done manually or by selecting 1,2,3,4 on the keyboard.</p></li>
+				<li><p>The total time limit is 15 minutes. There is no time limit for individual questions.</p></li>
+				<li><p>Is back navigation allowed? Mochiron de go jaru (Yes, of course).</p></li>
+				<li><p>The questions are asked in random order, i.e., minna no (everyones) order differs.</p></li>
+				<li><p>Saigo made (finally); points are awarded for correctly answering the questions; the time taken is also included in the evaluation.</p></li>
+			</ol>
+		</div>
+		<br>
+		<button id="startQuiz" onclick="startQuiz()" class="rel" >Start</button>
+	</div>
+	<div class="quiz-container" style = "display:none">
 		<div class="countDown">
-			<button id="startQuiz" onclick="startQuiz()" class="rel">Start</button>
 			<button onclick="prevQ()" style="display:none" class="rel prevQ">Previous</button>
 			<button onclick="nextQ()" style="display:none" class="rel nextQ">Next</button>
 			<br/><br/>
@@ -159,6 +175,13 @@
 		.rad-input:checked~.rad-text {
 			color: hsl(184deg 58% 60%);
 		}
+		.text {
+			color: var(--light-gray);
+			background-color: rgba(255,255,255,.2);
+			padding: 30px 60px;
+			border-radius: 20px;
+			margin: 20px 10%;
+		}
 	</style>
 {% endblock %}
 
@@ -196,7 +219,6 @@
 			);
 			//enabled manual start of quiz
 		}
-
 		// Support for Keyboard input for MCQ type Quiz Questions
 		// Feature: 1,2,3,4 or a,b,c,d or Num1,Num2,Num3,Num4 to select quiz options
 		function preventDefault(event) {
@@ -253,7 +275,8 @@
 			return endTimer;
 		}
 		function startQuiz() {
-			document.getElementById('startQuiz').style.display = 'none';
+			document.getElementsByClassName('instructions')[0].style.display = 'none';
+			document.getElementsByClassName('quiz-container')[0].style.display = 'block';
 			for (button of document.getElementsByClassName('nextQ')) button.style.display = 'inline';
 			for (button of document.getElementsByClassName('prevQ')) button.style.display = 'inline';
 			nextQ();
