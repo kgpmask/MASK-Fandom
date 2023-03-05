@@ -102,7 +102,7 @@ function handler (app, nunjEnv) {
 	app.post('/login', async (req, res) => {
 		const id = await dbh.validateUserLogin(req.body);
 		if (!id) throw new Error('Credentials don\'t match.');
-		req.cookies.sessionId = dbh.generateSessionRecord(id);
+		res.cookie('sessionId', await dbh.generateSessionRecord(id));
 		return res.send('Login Successful');
 	});
 	// Signup GET
@@ -139,31 +139,8 @@ function handler (app, nunjEnv) {
 	// Profile
 	app.get('/profile', async (req, res) => {
 		if (!req.loggedIn) return res.redirect('/');
-		const user = await dbh.getUserStats(req.user._id);
-		return res.renderFile('profile.njk', {
-			name: req.user.name,
-			picture: req.user.picture,
-			points: user.points,
-			quizzes: user.quizData.map(stamp => {
-				const months = [
-					'-',
-					'January',
-					'February',
-					'March',
-					'April',
-					'May',
-					'June',
-					'July',
-					'August',
-					'September',
-					'October',
-					'November',
-					'December'
-				];
-				const [year, month, date] = stamp.quizId.split('-');
-				return `${Tools.nth(~~date)} ${months[~~month]}`;
-			})
-		});
+		req.user.imageLink = require('./images')[req.user.toObject().image]?.src;
+		return res.renderFile('profile.njk', req.user);
 	});
 
 	// Event-related pages
