@@ -2,7 +2,7 @@
 
 {% block pagecontent %}
 	<h1>Admin Quiz Portal</h1>
-	{% for i in range(4) %}
+	{% for quiz in quizzes %}
 		<div class="quiz-list">
 			<div class="quiz-container">
 				<div class = 'quizId' style = "font-weight: bold; font-size:24px">{{quiz._id}}</div>
