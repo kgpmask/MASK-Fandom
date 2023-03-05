@@ -184,7 +184,27 @@ function handler (app, nunjEnv) {
 
 	// Results page
 	app.get('/results/:arg', async (req, res) => {
-		return res.redirect('/');
+		const RES = await dbh.getFandomResult(req.params.arg);
+		if (!RES) return res.notfound();
+		const results = [];
+		RES.forEach(r => {
+			if (!results.find(res => res.uid === r.userID)) {
+				results.push({
+					uid: r.userID,
+					points: r.points,
+					time: r.endTime
+				});
+			}
+		});
+		results.sort((a, b) => {
+			if (a.points === b.points) return a.endTime > b.endTime;
+			return -(a.points > b.points);
+		});
+		results.map((ele, index) => {
+			ele.rank = index + 1;
+			delete ele.time;
+		});
+		return res.renderFile('events/results.njk', { results: results });
 	});
 
 	// Admin-related only
@@ -208,7 +228,7 @@ function handler (app, nunjEnv) {
 	});
 	// Quiz Portal
 	app.get('/quiz-portal', async (req, res) => {
-		// if (!req.admin) return res.redirect('/');
+		if (!req.admin) return res.redirect('/');
 		const quizzes = await dbh.getQuizzes();
 		quizzes.forEach(quiz => {
 			quiz.status = new Date().getTime() < new Date(quiz.startTime).getTime() ? 'To be started' :

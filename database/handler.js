@@ -171,6 +171,11 @@ async function getMembersbyYear (year) {
 	return yearData;
 }
 
+// Get Fandom results (using the quiz id)
+async function getFandomResult (quizID) {
+	return await Quiz.UserInfo.find({ quizID: quizID });
+}
+
 module.exports = {
 	createNewUser,
 	validateUserLogin,
@@ -188,5 +193,6 @@ module.exports = {
 	generateSessionRecord,
 	returnUserFromSession,
 	removeSession,
-	getMembersbyYear
+	getMembersbyYear,
+	getFandomResult
 };
