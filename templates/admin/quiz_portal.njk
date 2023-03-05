@@ -7,7 +7,13 @@
 			<div class="quiz-container">
 				<div class = 'quizId' style = "font-weight: bold; font-size:24px">{{quiz._id}}</div>
 				<div class="details-container">
-					<div class = 'status'>{{quiz.status}}</div>
+					{% if ({{quiz.status}} == "Running") %}
+						<div class = 'status' id = 'status' style = "font-color : green;">{{quiz.status}}</div>
+					{% elif ({{quiz.status}} == "Yet to start") %}
+						<div class = 'status' id = 'status' style = "font-color: yellow;">{{quiz.status}}</div>
+					{% elif ({{quiz.status}} == "Ended") %}
+						<div class = 'status' id = 'status' style = "font-color: red;">{{quiz.status}}</div>
+					{% endif %}
 					<div class="button-container">
 						<button type = "button" class = "stop-quiz">Stop Quiz</button>
 						<button type = "button" class="re-evaluate">Re-Evaluate</button>
@@ -66,3 +72,4 @@
 		}
 	</style>
 {% endblock %}
+
