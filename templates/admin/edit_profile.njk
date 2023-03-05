@@ -4,6 +4,8 @@
 
 {% set thispage = 'edit_profile' %}
 {% set pagetitle = 'Edit Profile' %}
+{% set animes = ['Naruto', 'OPM', 'MHA', 'AOT'] %}
+
 
 {% block pagecontent %}
 
@@ -24,12 +26,16 @@
 			</div>
 			<div>
 				<label for = "password">Password</label>	
-				<input type="text" value = '{{password}}' id="password">
+				<input type="password" value = '{{password}}' id="password">
 			</div>
 			<div class='checkbox-holder'>
 				{% for sauce, signedUp in signedUpFor %}	
-					<label for="{{sauce}}">{{sauce}}</label>
-					<input type="checkbox" class="quiz" id="{{sauce}}" checked="{{signedUp}}">
+					{% if sauce in animes %}
+					<div>
+						<label for="{{sauce}}">{{sauce}}</label>
+						<input type="checkbox" class="quiz" id="{{sauce}}" checked="{{signedUp}}">
+					</div>
+					{% endif %}
 				{% endfor %}
 			</div>
 			<button type = "button" onclick = "editProfile()">Edit Profile</button>
@@ -44,16 +50,15 @@
 			padding : 0px,0px;
 		}
 		.form{
-			margin-bottom:40rem;
+			margin: 7vh auto;
+			display: flex;
+			align-items: center;
+			justify-content: center;
 		}
 		form{
 			height: auto;
 			width: 400px;
 			background-color: rgba(255,255,255,0.13);
-			position: absolute;
-			transform: translate(-50%,-50%);
-			top: 50%;
-			left: 50%;
 			border-radius: 10px;
 			backdrop-filter: blur(5px);
 			border: 2px solid rgba(255,255,255,0.1);
@@ -102,6 +107,16 @@
 			font-weight: 600;
 			border-radius: 12px;
 			cursor: pointer;
+		}
+		.checkbox-holder {
+			display: flex;
+			flex-direction: row;
+			flex-wrap: wrap;
+			justify-content: space-between;
+			align-items: center;
+		}
+		.checkbox-holder input {
+			width: 45px;
 		}
 	</style>
 {% endblock %}
