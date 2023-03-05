@@ -15,72 +15,84 @@ const handlerContext = {}; // Store cross-request context here
 function handler (app, nunjEnv) {
 	// Main pages
 
+	// Set some common values
+	const months = [
+		'-',
+		'January',
+		'February',
+		'March',
+		'April',
+		'May',
+		'June',
+		'July',
+		'August',
+		'September',
+		'October',
+		'November',
+		'December'
+	];
+
 	app.get(['/', '/home'], async (req, res) => {
-		const sample = [{
-			name: 'How to get into MASK',
-			link: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
-			type: 'youtube',
-			attr: ['Parth Mane'],
-			date: new Date('Oct 25, 2009'),
-			page: '_blank',
-			hype: true
-		},
-		{
-			name: 'Art - Tanjiro Kamado',
-			link: '0025.webp',
-			type: 'art',
-			attr: [ 'Sanjeev Raj Ganji' ],
-			date: new Date(1630261800000),
-			hype: true
-		},
-		{
-			name: 'Art - Saitama',
-			link: '0019.webp',
-			type: 'art',
-			attr: [ 'Garima Mendhe' ],
-			date: new Date(1628879400000),
-			hype: true
-		},
-		{
-			name: 'Art - Kirigakure Shinobi Massacre',
-			link: '0012.webp',
-			type: 'art',
-			attr: [ 'Arpit Das' ],
-			date: new Date(1589308200000),
-			hype: true
-		},
-		{
-			name: 'Art - Garou',
-			link: '0008.webp',
-			type: 'art',
-			attr: [ 'Pritam Mallick' ],
-			date: new Date(1572220800000),
-			hype: true
-		},
-		{
-			name: '「AMV」Phantasy Star Online 2 - Symphony',
-			link: 'https://www.youtube.com/watch?v=GX7TAigwZPw',
-			type: 'youtube',
-			attr: [ 'Hrishabh Kumar Tundwar' ],
-			date: new Date(1673289000000),
-			hype: true
-		},
-		{
-			name: '「AMV」The Garden of Words - A Thousand Years',
-			link: 'https://www.youtube.com/watch?v=9W4eyQ7LP7g',
-			type: 'youtube',
-			attr: [ 'Hrishabh Kumar Tundwar' ],
-			date: new Date(1673289000000),
-			hype: true
-		},
-		{
-			name: '「AMV」Assassination Classroom - Heathens',
-			link: 'https://www.youtube.com/watch?v=unITcghHNVI',
-			type: 'youtube',
-			attr: [ 'Chiranjeet Mishra' ],
-			date: new Date(1673289000000),
-			hype: true
-		}];
+		const sample = [
+			{
+				name: 'How to get into MASK',
+				link: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
+				type: 'youtube',
+				attr: ['Parth Mane'],
+				date: new Date('Oct 25, 2009'),
+				page: '_blank',
+				hype: true
+			}, {
+				name: 'Art - Tanjiro Kamado',
+				link: '0025.webp',
+				type: 'art',
+				attr: ['Sanjeev Raj Ganji'],
+				date: new Date(1630261800000),
+				hype: true
+			}, {
+				name: 'Art - Saitama',
+				link: '0019.webp',
+				type: 'art',
+				attr: ['Garima Mendhe'],
+				date: new Date(1628879400000),
+				hype: true
+			}, {
+				name: 'Art - Kirigakure Shinobi Massacre',
+				link: '0012.webp',
+				type: 'art',
+				attr: ['Arpit Das'],
+				date: new Date(1589308200000),
+				hype: true
+			}, {
+				name: 'Art - Garou',
+				link: '0008.webp',
+				type: 'art',
+				attr: ['Pritam Mallick'],
+				date: new Date(1572220800000),
+				hype: true
+			}, {
+				name: '「AMV」Phantasy Star Online 2 - Symphony',
+				link: 'https://www.youtube.com/watch?v=GX7TAigwZPw',
+				type: 'youtube',
+				attr: ['Hrishabh Kumar Tundwar'],
+				date: new Date(1673289000000),
+				hype: true
+			}, {
+				name: '「AMV」The Garden of Words - A Thousand Years',
+				link: 'https://www.youtube.com/watch?v=9W4eyQ7LP7g',
+				type: 'youtube',
+				attr: ['Hrishabh Kumar Tundwar'],
+				date: new Date(1673289000000),
+				hype: true
+			}, {
+				name: '「AMV」Assassination Classroom - Heathens',
+				link: 'https://www.youtube.com/watch?v=unITcghHNVI',
+				type: 'youtube',
+				attr: ['Chiranjeet Mishra'],
+				date: new Date(1673289000000),
+				hype: true
+			}
+		];
 		const allPosts = PARAMS.mongoless ? sample : await dbh.getPosts();
 		const posts = PARAMS.mongoless ? allPosts.splice(0, 2) : allPosts.splice(0, 7);
 		posts.forEach(post => {
@@ -93,14 +105,16 @@ function handler (app, nunjEnv) {
 		return res.renderFile('home.njk', { posts, vids, art });
 	});
 	app.get('/art', async (req, res) => {
-		const sample = [{
-			name: 'Art - Tanjiro Kamado',
-			link: '0025.webp',
-			type: 'art',
-			attr: ['Sanjeev Raj Ganji'],
-			date: new Date(1630261800000),
-			hype: true
-		}];
+		const sample = [
+			{
+				name: 'Art - Tanjiro Kamado',
+				link: '0025.webp',
+				type: 'art',
+				attr: ['Sanjeev Raj Ganji'],
+				date: new Date(1630261800000),
+				hype: true
+			}
+		];
 		const art = PARAMS.mongoless ? sample : await dbh.getPosts('art');
 		return res.renderFile('art.njk', { art });
 	});
@@ -114,7 +128,7 @@ function handler (app, nunjEnv) {
 		return res.renderFile('about.njk');
 	});
 	app.get('/members/:yearName?', async (req, res) => {
-		const   sample = [
+		const sample = [
 			{
 				name: 'Ankan Saha',
 				roll: '22EE10008',
@@ -130,8 +144,7 @@ function handler (app, nunjEnv) {
 					}
 				],
 				position: 'Fresher'
-			},
-			{
+			}, {
 				name: 'Jai Sachdev',
 				roll: '22BT10011',
 				image: '../assets/members/22_jai.webp',
@@ -142,8 +155,7 @@ function handler (app, nunjEnv) {
 					}
 				],
 				position: 'Fresher'
-			},
-			{
+			}, {
 				name: 'Karthikeya S M Yelisetty',
 				roll: '21CS30060',
 				image: '../assets/members/21_karthikeya.webp',
@@ -158,8 +170,7 @@ function handler (app, nunjEnv) {
 					}
 				],
 				position: 'Former Member'
-			},
-			{
+			}, {
 				name: 'Nishkal Prakash',
 				roll: '19CS91R05',
 				image: '../assets/members/19_nishkal.webp',
@@ -178,8 +189,7 @@ function handler (app, nunjEnv) {
 					}
 				],
 				position: 'Research Associate'
-			},
-			{
+			}, {
 				name: 'Parth Mane',
 				roll: '19MF10022',
 				image: '../assets/members/19_parth.webp',
@@ -202,8 +212,7 @@ function handler (app, nunjEnv) {
 					}
 				],
 				position: 'Team Heads'
-			},
-			{
+			}, {
 				name: 'Saumyadip Nandy',
 				roll: '20EC10072',
 				image: '../assets/members/20_saumyadip.webp',
@@ -214,8 +223,7 @@ function handler (app, nunjEnv) {
 					}
 				],
 				position: 'Former Member'
-			},
-			{
+			}, {
 				name: 'Uday Srivastava',
 				roll: '22ME30072',
 				image: '../assets/members/22_uday.webp',
@@ -226,8 +234,7 @@ function handler (app, nunjEnv) {
 					}
 				],
 				position: 'Fresher'
-			},
-			{
+			}, {
 				name: 'Venkatsai Mokshith',
 				roll: '21CS10050',
 				image: '../assets/members/21_venkatsai.webp',
@@ -238,8 +245,7 @@ function handler (app, nunjEnv) {
 					}
 				],
 				position: 'Associate'
-			},
-			{
+			}, {
 				name: 'Vidunram A R',
 				roll: '21EE30033',
 				image: '../assets/members/21_vidunram.webp',
@@ -286,7 +292,8 @@ function handler (app, nunjEnv) {
 			membersObj,
 			membersTitle,
 			prev: yearName - 1 >= 2020 && !PARAMS.mongoless ? `${yearName - 1}-${yearName % 100}` : undefined,
-			next: yearName + 1 <= 2022 && !PARAMS.mongoless ? `${yearName + 1}-${yearName % 100 + 2}` : undefined });
+			next: yearName + 1 <= 2022 && !PARAMS.mongoless ? `${yearName + 1}-${yearName % 100 + 2}` : undefined
+		});
 	});
 
 
@@ -334,19 +341,24 @@ function handler (app, nunjEnv) {
 		return res.send('Signed out successfully. Mata ne.');
 	});
 
-	app.get('/profile', async (req, res, next) => {
-		return next(new Error('Test'));
-		// Fandom-specific deets to be added :/
+	app.get('/profile', async (req, res) => {
+		if (!req.loggedIn) return res.redirect('/');
+		const user = await dbh.getUserStats(req.user._id);
+		return res.renderFile('profile.njk', {
+			name: req.user.name,
+			picture: req.user.picture,
+			points: user.points,
+			quizzes: user.quizData.map(stamp => {
+				const [year, month, date] = stamp.quizId.split('-');
+				return `${Tools.nth(~~date)} ${months[~~month]}`;
+			})
+		});
 	});
 
 
 	// Newsletters, quizzes, and events
 
 	app.get('/newsletters/:target?', (req, res) => {
-		const months = [
-			'-', 'January', 'February', 'March', 'April', 'May', 'June',
-			'July', 'August', 'September', 'October', 'November', 'December'
-		];
 		return fs.readdir(path.join(__dirname, '../templates/newsletters')).then(letters => {
 			const years = {};
 			letters.sort();
@@ -401,10 +413,6 @@ function handler (app, nunjEnv) {
 		const qzs = await dbh.getQuizzes();
 		const QUIZZES = {};
 		qzs.forEach(qz => QUIZZES[qz.unlock.slice(0, 10)] = qz); // TODO Mokshith: Add a quizId field
-		const months = [
-			'-', 'January', 'February', 'March', 'April', 'May', 'June',
-			'July', 'August', 'September', 'October', 'November', 'December'
-		];
 		const quizzes = Object.keys(QUIZZES);
 		quizzes.sort();
 		const index = quizzes.indexOf(req.params.arg);
@@ -470,10 +478,6 @@ function handler (app, nunjEnv) {
 		const qzs = await dbh.getQuizzes();
 		const QUIZZES = {};
 		qzs.forEach(qz => QUIZZES[qz.unlock.slice(0, 10)] = qz); // TODO Mokshith: Add a quizId field
-		const months = [
-			'-', 'January', 'February', 'March', 'April', 'May', 'June',
-			'July', 'August', 'September', 'October', 'November', 'December'
-		];
 		const quizzes = Object.keys(QUIZZES);
 		const years = {};
 		quizzes.sort();
@@ -692,9 +696,9 @@ function handler (app, nunjEnv) {
 	});
 
 	app.get('/fandom', (req, res) => {
-		return res.error(`...uhh I don't think you're supposed to be here...`);
+		// return res.error(`...uhh I don't think you're supposed to be here...`);
 		// eslint-disable-next-line no-unreachable
-		return res.renderFile('fandom_quiz.njk');
+		return res.renderFile('events/fandom_quiz.njk');
 	});
 
 	// Assorted other stuff
@@ -725,7 +729,7 @@ function handler (app, nunjEnv) {
 		}
 		const branch = process.env.WEBHOOK_BRANCH;
 		if (!branch) return res.send('No branch configured for webhooks');
-		if (branch !== 'docker') return res.send('Automatic webhook updates are only enabled on the dev branch');
+		if (branch !== 'dev') return res.send('Automatic webhook updates are only enabled on the dev branch');
 		await Tools.updateCode();
 		res.send('Success!');
 		return process.exit(0);

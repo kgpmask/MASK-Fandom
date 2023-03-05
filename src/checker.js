@@ -69,3 +69,22 @@ exports.checkLiveQuiz = function check (answer, solutions, questionType, basePoi
 		return resolve({ points: finalPoints, timeLeft });
 	});
 };
+
+exports.checkFandomQuiz = function (answer, solution, questionType) {
+	return new Promise((resolve, reject) => {
+		let flag;
+		switch (questionType) {
+			case 'number':
+			case 'mcq': {
+				if (~~answer) return reject('Invalid Answer');
+				flag = ~~answer === solution;
+				break;
+			}
+			case 'text': {
+				flag = solution.map(sol => Tools.levenshtein(Tools.toID(answer), Tools.toID(sol)) < 5).some(Boolean);
+				break;
+			}
+		}
+		return resolve(flag);
+	});
+};

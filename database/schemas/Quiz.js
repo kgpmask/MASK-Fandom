@@ -2,46 +2,43 @@ const mongoose = require('mongoose');
 
 const userQuizDataSchema = new mongoose.Schema({
 	userId: { type: String, required: true, index: true, unique: true },
-	userName: String,
-	points: { type: Number, required: true },
-	quizData: { type: [{
-		quizId: { type: String, required: true },
-		points: { type: Number, required: true, default: 0 },
-		time: Number
-	}], required: true }
+	quizId: { type: String, required: true },
+	points: { type: Number, required: true, default: 0 },
+	endTime: { type: Date, required: true },
+	records: { type: [Number, String], required: true }
 });
 
 const questionsSchema = new mongoose.Schema({
-	_id: { type: String, required: true },
-	// not sure if Part wants to apply RegEx over here to check date
-	unlock: { type: String, required: true },
-	questions: { type: [{
-		q: {
-			type: [{
-				val: { type: String, required: true },
-				type: { type: String, enum: ['title', 'text', 'image'], required: true }
-			}],
-			required: true
-		},
-		options: {
-			type: [{
-				val: { type: String, required: true },
-				type: { type: String, enum: ['text', 'image'], required: true }
-			}],
-			required: true
-		},
-		// PS: Change this if Phantom asks for not-so-MCQ questions ;-;
-		solution: { type: Number, required: true, min: 1, max: 4 }
-	}], required: true },
-	random: {
-		type: [{
-			amount: { type: Number, required: true },
-			from: { type: [Number], required: true }
-		}]
-	}
+	_id: { type: String, required: true, enum: ['NRT', 'OPM', 'AOT', 'MHA'] },
+	startTime: { type: String, required: true }, // timeStamp of start time
+	endTime: { type: String, required: true }, // start time + 21m (20m quiz, 1 min for forced submissions)
+	questions: [
+		{
+			points: { type: Number, required: true },
+			q: [
+				{
+					type: { type: String, required: true, enum: ['text', 'image', 'audio', 'video', 'table', 'gallery'] },
+					value: { type: [String, [String]], required: true }
+				}
+			],
+			options: [
+				{
+					type: { type: String, required: true, enum: ['text', 'number', 'mcq'] },
+					// only when MCQ
+					value: [
+						{
+							type: { type: String, required: true, enum: ['text', 'image'] },
+							value: { type: String, required: true }
+						}
+					]
+				}
+			],
+			solution: { type: [Number, [String]], required: true }
+		}
+	]
 });
 
-questionsSchema.set('collection', 'fanodm-questions');
+questionsSchema.set('collection', 'fandom-questions');
 userQuizDataSchema.set('collection', 'fandom-records');
 
 module.exports = {
