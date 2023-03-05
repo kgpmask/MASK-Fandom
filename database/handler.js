@@ -10,14 +10,14 @@ const Session = require('./schemas/Session');
 
 // Handle newly registered user or normal login
 async function createNewUser (profile) {
-	// Yeah... profile is pretty much explained over here.
-	const { name, username, password } = profile;
-	let user = await getUserByUsername(username);
+	// profile = { name, username, password, email, image, signedUpFor, transactionID }
+	let user = await getUserByUsername(profile.username);
 	if (user) throw new Error('User with username already exists :(');
-	user = new User({ _id: [...Array(21)].map(() => Math.floor(10 * Math.random() + '')).join(''), name, username });
+	user = new User({ _id: [...Array(21)].map(() => Math.floor(10 * Math.random() + '')).join('') });
+	Object.keys(profile).filter(key => key !== 'password').forEach(key => user[key] = profile[key]);
 	// Generate a salt and hash. Then save them both.
 	user.salt = await bcrypt.genSalt(7);
-	user.hash = await bcrypt.hash(password, user.salt);
+	user.hash = await bcrypt.hash(profile.password, user.salt);
 	return user.save();
 }
 
@@ -35,7 +35,7 @@ function getUserByUsername (username) {
 async function validateUserLogin (creds) {
 	const { username, password } = creds;
 	const user = await getUserByUsername(username);
-	if (!user) throw new Error('User does not exist!');
+	if (!user) return false;
 	return user.hash === await bcrypt.hash(password, user.salt) ? user._id : false;
 }
 
