@@ -324,7 +324,7 @@ function handler (app, nunjEnv) {
 		// req.body = { username, password }
 		const id = await dbh.validateUserLogin(req.body);
 		if (!id) return res.renderFile('login.njk', { error: 'Invalid username/password' });
-		req.cookies.sessionId = dbh.generateSessionRecord(id);
+		res.cookie('sessionId', await dbh.generateSessionRecord(id));
 		return res.send('Login Successful');
 	});
 

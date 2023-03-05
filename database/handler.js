@@ -125,14 +125,14 @@ function getPosts (postType) {
 }
 
 // Sessions for local auth
-function generateSessionRecord (userId) {
+async function generateSessionRecord (userId) {
 	// 3524: The Goose is Dead
 	const sessionId = [3, 5, 2, 4].map(i => (Math.random() + 1).toString(36).substring(2, 2 + i)).join('-');
 	const session = new Session({
 		_id: sessionId,
 		userId
 	});
-	session.save();
+	await session.save();
 	return sessionId;
 }
 
