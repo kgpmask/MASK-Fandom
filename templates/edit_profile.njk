@@ -13,10 +13,10 @@
 		<h3>Edit Profile</h3>
 		
 		{% for record in records %}
-			<input type="text" placeholder={{records.id}} id="id" readonly>
-			<input type="text" value = {{records.name}} id="name" class = "edit" readonly>
-			<input type="text" value = {{records.username}} id="username" class = "edit" readonly>
-			<input type="text" value = {{records.password}} id="password" class = "edit" readonly>
+			<input type="text" placeholder='{{record.id}}' id="id" readonly>
+			<input type="text" value = '{{record.name}}' id="name" class = "edit" readonly>
+			<input type="text" value = '{{record.username}}' id="username" class = "edit" readonly>
+			<input type="text" value = '{{record.password}}' id="password" class = "edit" readonly>
 			<div class="checkbox_container">
 				{% for sauce, signedUp in record.signedUpFor %}	
 					<div class='checkbox-holder'>
