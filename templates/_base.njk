@@ -58,7 +58,7 @@
 								{% endif %}
 							</div>
 							<div style="float:right;" id="dropdown">
-								<a href="/{{ 'profile' if loggedIn else 'signup' }}" class="dropbtn" target="_self">{{ 'Register' if not LoggedIn else 'Profile' }}</a>
+								<a href="/{{ 'profile' if loggedIn else 'signup' }}" class="dropbtn" target="_self">{{ 'Register' if not loggedIn else 'Profile' }}</a>
 								<div class="dropdown-content">
 									{% if not loggedIn %}
 										<a href="/login" class="{% if 'login' === thispage %}active-page {% endif %}{% if userless %}disabled {% endif %}" target="_self">Login</a>

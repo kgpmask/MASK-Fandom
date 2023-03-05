@@ -15,7 +15,7 @@ function handler (app, nunjEnv) {
 		return res.renderFile('fandom_home.njk', { notif });
 	});
 	// Quiz Details Page
-	app.get('/info', (req, res) => res.renderFile('fandom_info.njk'));
+	app.get('/info', (req, res) => res.renderFile('events/fandom_info.njk'));
 
 	// Auth and profile related
 	// Login GET
