@@ -270,6 +270,7 @@
 			// Page one
 			const name = document.getElementById('display-name').value;
 			if (!name.trim()) return alert('Empty Name');
+			if (name.match(/^([a-zA-Z0-9\.])+$/)) return alert('Name doesn\'t meet requirements');
 			const email = document.getElementById('email').value;
 			if (!email.trim()) return alert('Empty Email Address');
 			const image = selectedImage;
@@ -283,11 +284,12 @@
 			// Page two
 			const username = document.getElementById('username').value;
 			if (!username) return alert('No username given.');
+			if (username.match(/^([\-\.]*?\w*)+$/)) return alert('Username doesn\'t meet requirements');
 			const password = document.getElementById('password').value;
 			if (!password) return alert('No password provided.');
-            if (!password.match(/^(?=[!-~]).{6,20}$/)) {
-                return alert('Password doesn\'t meet the requirements');
-            }
+			if (!password.match(/^(?=.*[!-~]).{6,20}$/)) {
+				return alert('Password doesn\'t meet the requirements');
+			}
 			if (!password !== document.getElementById('confirm-password').value) return alert('Passwords do not match!');
 			// Page three
 			const transactionID = document.getElementById('transaction-ID').value;
