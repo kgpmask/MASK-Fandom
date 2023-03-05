@@ -1,3 +1,5 @@
+{% set scripts = ['https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js'] %}
+
 {% extends "_base.njk" %}
 
 {% set thispage = 'edit_profile' %}
@@ -106,6 +108,7 @@
 
 {% block customjs %}
 	<script>
+		const axios = require('')
 		function editProfile(){
 			console.log('Sending POST request');
 			axios.post('/edit_profile',{
