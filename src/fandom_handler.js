@@ -214,7 +214,7 @@ function handler (app, nunjEnv) {
 		const records = await dbh.getAllUsers();
 		// const images = require('./images');
 		// records.forEach(user => user.imageLink = images[user.image]);
-		return res.renderFile('/admin/req_records.njk', { records });
+		return res.renderFile('/admin/reg_records.njk', { records });
 	});
 	// Edit a profile in case of inappropriate words
 	app.get('/edit-profile/:arg', async (req, res) => {
