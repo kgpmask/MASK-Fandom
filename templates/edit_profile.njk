@@ -5,37 +5,36 @@
 
 {% block pagecontent %}
 	<header class='form-header'>
-		<h1><font color = 'white'>SUSSY</h1>
+		<h1><font color = 'white'></h1>
 	</header>
 
 	<div class = "form">
 		<form action = '/' method = 'post'>
 		<h3>Edit Profile</h3>
-
-		<input type="text" placeholder="ID" id="id">
-		<input type="text" placeholder="Name" id="name">
-		<input type="text" placeholder="Username" id="username">
-		<input type="text" placeholder="Password" id="password">
-		<div class="checkbox_container">
-			<div class='checkbox-holder'>
-				<input type="checkbox" class="quiz" id="AOT">
-				<label for="AOT">Attack on Titan</label>
+		
+		{% for record in records %}
+			<input type="text" placeholder={{records.id}} id="id" readonly>
+			<input type="text" value = {{records.name}} id="name" class = "edit" readonly>
+			<input type="text" value = {{records.username}} id="username" class = "edit" readonly>
+			<input type="text" value = {{records.password}} id="password" class = "edit" readonly>
+			<div class="checkbox_container">
+				{% for sauce, signedUp in record.signedUpFor %}	
+					<div class='checkbox-holder'>
+						{{% if signedUp %}}
+							<input type="checkbox" class="quiz" id="{{sauce}}" class = "edit" checked readonly>
+							<label for="AOT">{{sauce}}</label>
+						{{% endif %}}
+						{{% elif not signedUp %}}
+							<input type="checkbox" class="quiz" id="{{sauce}}" class = "edit"  readonly>
+							<label for="AOT">{{sauce}}</label>
+						{{% elif %}}
+					</div>
+				{% endfor %}
+				</div>
 			</div>
-			<div class='checkbox-holder'>
-				<input type="checkbox" class="quiz" id="OPM">
-				<label for="OPM">One Punch Man</label>
-			</div>
-			<div class='checkbox-holder'>
-				<input type="checkbox" class="quiz" id="NRT">
-				<label for="NRT">Naruto</label>
-			</div>
-			<div class='checkbox-holder'>
-				<input type="checkbox" class="quiz" id="MHA">
-				<label for="MHA">My Hero Academia</label>
-			</div>				
-		</div>
-
-		<button>Edit Profile</button>
+		{% endfor %}
+	
+			<button type = "button" onclick = "makeEditable()">Edit Profile</button>
 		</form>
 	</div>
 
@@ -102,4 +101,12 @@
 			cursor: pointer;
 		}
 	</style>
+{% endblock %}
+
+{% block customjs %}
+	<script>
+		function makeEditable(){
+			document.querySelectorAll('.edit').removeAttribute('readonly');
+		}
+	</script>
 {% endblock %}
