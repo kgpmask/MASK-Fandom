@@ -38,13 +38,13 @@
 								{% endfor %}
 							</div>
 							<div style="float:right;" id="dropdown">
-								<a href="/about" class="dropbtn" target="_self">About</a>
+								<a class="dropbtn" target="_self">Account</a>
 								<div class="dropdown-content">
 									{% if loggedIn %}
 										<a href="/profile" class="{% if 'profile' === thispage %}active-page {% endif %}{% if userless %}disabled {% endif %}" target="_self">Profile</a>
 									{% else %}
 										<a href="/login" class="{% if 'login' === thispage %}active-page {% endif %}{% if userless %}disabled {% endif %}" target="_self">Login</a>
-										<a href="/signup" class="{% if 'login' === thispage %}active-page {% endif %}{% if userless %}disabled {% endif %}" target="_self">Sign up</a>
+										<a href="/signup" class="{% if 'signup' === thispage %}active-page {% endif %}{% if userless %}disabled {% endif %}" target="_self">Sign Up</a>
 									{% endif %}
 								</div>
 							</div>
@@ -58,14 +58,12 @@
 							<a href="/{{ link.href }}" target="_self"><div class="lettuce{% if link.href == thispage %} active-page {% endif %}" >{{ link.name }}</div></a>
 							{% if not loop.last %}<hr class="minor"/>{% endif %}
 						{% endfor %}
-						<a href="/about" target="_self"><div class="lettuce{% if 'about' == thispage %} active-page {% endif %}" id="most-bottom">Our Society</div></a>
 						<hr class="minor lower-border"/>
-						<a href="/members" target="_self"><div class="lettuce{% if 'members' == thispage %} active-page{% endif %}" id="almost-bottom">Our Members</div></a>
-						<hr class="minor lower-border lower-border-upper"/>
 						{% if loggedIn %}
-							<a href="/profile" target="_self"><div class="lettuce{% if 'profile' == thispage %} active-page{% endif %}{% if userless %} disabled{% endif %}" id="top-bottom">Profile</div></a>
+							<a href="/profile" target="_self"><div class="lettuce{% if 'profile' == thispage %} active-page{% endif %}{% if userless %} disabled{% endif %}" id="most-bottom">Profile</div></a>
 						{% else %}
-							<a href="/login" target="_self"><div class="lettuce{% if 'login' == thispage %} active-page{% endif %}{% if userless %} disabled{% endif %}" id="top-bottom">Login</div></a>
+							<a href="/login" target="_self"><div class="lettuce{% if 'login' == thispage %} active-page{% endif %}{% if userless %} disabled{% endif %}" id="almost-bottom">Login</div></a>
+							<a href="/signup" target="_self"><div class="lettuce{% if 'signup' == thispage %} active-page {% endif %}" id="most-bottom">Sign Up</div></a>
 						{% endif %}
 						<hr class="border-bottom"/>
 					</div>
@@ -79,8 +77,7 @@
 				{% endblock %}
 				<div id="pagecontent">
 					{% block pagecontent %}
-						
-							Huh, this is an empty page.
+						Huh, this is an empty page.
 					{% endblock %}
 				<div>
 			</div>
