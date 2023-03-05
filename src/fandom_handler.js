@@ -228,7 +228,7 @@ function handler (app, nunjEnv) {
 	});
 	// Quiz Portal
 	app.get('/quiz-portal', async (req, res) => {
-		// if (!req.admin) return res.redirect('/');
+		if (!req.admin) return res.redirect('/');
 		const quizzes = await dbh.getQuizzes();
 		quizzes.forEach(quiz => {
 			quiz.status = new Date().getTime() < new Date(quiz.startTime).getTime() ? 'To be started' :
