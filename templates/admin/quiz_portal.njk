@@ -1,0 +1,66 @@
+{% extends '_base.njk' %}
+
+{% block pagecontent %}
+	<h1>Admin Quiz Portal</h1>
+	{% for quiz in quizzes %}
+		<div class="quiz-list">
+			<div class="quiz-container">
+				<div class = 'quizId' style = "font-weight: bold; font-size:24px">{{quiz._id}}</div>
+				<div class="details-container">
+					<div class = 'status'>{{quiz.status}}</div>
+					<div class="button-container">
+						<button type = "button" class = "stop-quiz">Stop Quiz</button>
+						<button type = "button" class="re-evaluate">Re-Evaluate</button>
+					</div>
+				</div>
+			</div>
+		</div>
+	{% endfor %}
+{% endblock %}
+
+{% block customcss %}
+	<style>
+		.quiz-list {
+			display: inline-flex;
+		}
+
+		/* {# Note: When mediaport becomes smaller than a set value, make it render in column instead of row #} */
+		.quiz-container {
+			display: inline;
+			flex-direction: row;
+			border: 1px solid var(--off-white);
+			border-radius: 10px;
+			padding: 20px;
+			width: 150px;
+			text-align: center;
+			margin: 20px;
+		}
+
+		.details-container {
+			margin: auto;
+		}
+
+		.details-container>div {
+			margin: 10px -18px;
+		}
+
+		.user-name {
+			font-size: 0.8em;
+			color: var(--ghost-gray);
+		}
+
+		.button-container {
+			display: flex;
+			flex-direction: row;
+			justify-content: space-around;
+		}
+
+		.button-container>button {
+			background: var(--tinted-gray);
+			border: 1px solid var(--off-white);
+			border-radius: 5px;
+			color: var(--white);
+			padding: 2px 10px;
+		}
+	</style>
+{% endblock %}
