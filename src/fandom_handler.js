@@ -174,20 +174,27 @@ function handler (app, nunjEnv) {
 		if (!req.loggedIn) return res.redirect('/login');
 		const quiz = (await dbh.getQuizzes()).find(e => e._id === req.params.arg);
 		const questions = [];
-
+		const types = [];
 		const userStat = await dbh.getUserStats(req.user._id, req.params.arg);
 		currentQ = userStat.records.length;
-		quiz.questions.forEach((question, i) => i >= currentQ ? questions.push({
+		quiz.questions.forEach((question, i) => i >= currentQ ? types.push(question.options.type) && questions.push({
 			number: i + 1,
 			question: question.q,
 			options: question.options
 		}) : undefined);
 
 		return res.renderFile('events/fandom_quiz.njk', {
+			id: req.params.arg,
 			currentQ,
+			types,
 			questions: JSON.stringify(questions),
 			qAmt: questions.length
 		});
+	});
+	// Time left fetcher
+	app.post('/time-left', async (req, res) => {
+		const quiz = (await dbh.getQuizzes()).find(quiz => quiz._id === req.body.id);
+		return res.send(Math.min(20 * 60, (new Date(quiz.endTime).getTime() - new Date().getTime()) / 1000).toString());
 	});
 	// Update Participant Quiz Status
 	app.post('/update-status/:arg', async (req, res) => {
@@ -195,6 +202,8 @@ function handler (app, nunjEnv) {
 	});
 	// Quiz submit POST function
 	app.post('/submit', async (req, res) => {});
+
+	app.post('/misc', (req, res) => res.send(500));
 
 	// Results page
 	app.get('/results/:arg', async (req, res) => {
