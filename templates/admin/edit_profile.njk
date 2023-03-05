@@ -4,41 +4,49 @@
 {% set pagetitle = 'Edit Profile' %}
 
 {% block pagecontent %}
-	<header class='form-header'>
-		<h1><font color = 'white'></h1>
-	</header>
 
 	<div class = "form">
 		<form action = '/' method = 'post'>
-		<h3>Edit Profile</h3>
-		<input type="text" placeholder='{{_id}}' id="id" readonly><label for = "id">ID</label>
-		<input type="text" value = '{{name}}' id="name" class = "edit" ><label for = "name">Name</label>
-		<input type="text" value = '{{username}}' id="username" class = "edit" ><label for = "username">Username</label>
-		<input type="text" value = '{{password}}' id="password" class = "edit" ><label for = "password">Password</label>
-		<div class="checkbox_container">
+			<h3>Edit Profile</h3>
+			<div>
+				<label for = "id">ID</label>
+				<input type="text" placeholder='{{_id}}' id="id" readonly>
+			</div>
+			<div>
+				<label for = "name">Name</label>
+				<input type="text" value = '{{name}}' id="name">
+			</div>
+			<div>
+				<label for = "username">Username</label>	
+				<input type="text" value = '{{username}}' id="username">
+			</div>
+			<div>
+				<label for = "password">Password</label>	
+				<input type="text" value = '{{password}}' id="password">
+			</div>
 			<div class='checkbox-holder'>
-				{% for sauce, signedUp in signedUpFor %}
-					<input type="checkbox" class="quiz" id="{{sauce}}" class = "edit" checked = '{{signedUp}}'>
+				{% for sauce, signedUp in signedUpFor %}	
 					<label for="{{sauce}}">{{sauce}}</label>
+					<input type="checkbox" class="quiz" id="{{sauce}}" checked="{{signedUp}}">
 				{% endfor %}
 			</div>
-		</div>
-		<button type = "button" onclick = "editProfile()">Edit Profile</button>
-	</form>
+			<button type = "button" onclick = "editProfile()">Edit Profile</button>
+		</form>
 	</div>
-
 
 {% endblock %}
 
 {% block customcss %}
 	<style media="screen">
-		.form{
-			margin-bottom : 40rem;
+		label{
+			padding : 0px,0px;
 		}
-
+		.form{
+			margin-bottom:40rem;
+		}
 		form{
 			height: auto;
-			width: fit-content;
+			width: 400px;
 			background-color: rgba(255,255,255,0.13);
 			position: absolute;
 			transform: translate(-50%,-50%);
@@ -73,8 +81,8 @@
 			border-radius: 12px;
 			padding: 0 20px 4px;
 			margin-top: 12px;
+			margin-bottom : 12px;
 			font-size: 17px;
-
 			font-weight: 300;
 		}
 		::placeholder{
@@ -106,10 +114,10 @@
 				username,
 				password,
 				signedUpFor
-			}).then(()=>{
-				console.log("Edited Profile successfully");
+			}).then(() => {
+				console.log('Edited User Data Successfully');
 				window.location.href = '/';
-			}).catch (err => console.log(err));
+			}).catch(err => console.log(err));
 		}
 	</script>
 {% endblock %}
