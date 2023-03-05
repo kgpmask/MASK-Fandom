@@ -171,9 +171,10 @@ function handler (app, nunjEnv) {
 	});
 	// Actual quiz
 	app.get('/quiz/:arg', async (req, res) => {
-		if (!req.loggedIn) res.redirect('/login');
-		const quiz = (await dbh.getQuizzes()).find(e => e === req.params.arg);
+		if (!req.loggedIn) return res.redirect('/login');
+		const quiz = (await dbh.getQuizzes()).find(e => e._id === req.params.arg);
 		const questions = [];
+
 		const userStat = await dbh.getUserStats(req.user._id, req.params.arg);
 		currentQ = userStat.records.length;
 		quiz.questions.forEach((question, i) => i >= currentQ ? questions.push({
