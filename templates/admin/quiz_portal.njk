@@ -29,6 +29,21 @@
 			</div>
 		</div>
 	{% endfor %}
+	<div id="answer-container">
+		<div id="answers" style="display: flex; flex-direction: column;">
+			<h2>Answers for NRT</h2>
+			<table>
+				<tr>
+					<th>Question</th>
+					<th>Answers</th>
+				</tr>
+				<tr>
+					<td>Hello</td>
+					<td>Hello</td>
+				</tr>
+			</table>
+		</div>
+	</div>
 {% endblock %}
 
 {% block customjs %}
@@ -46,7 +61,7 @@
 	}
 
 	function show_answers (quizID) {
-		const quiz = JSON.parse(await axios.post('/get-quiz', { _id: quizID }));
+		const quiz = JSON.parse(await axios.post('/get-quiz', { _id: quizID })); // get in format [{question: "QUestion" , solution: "Answer"}]
 		// Ankan over to you
 	}
 
@@ -91,6 +106,21 @@
 			justify-content: space-around;
 			height: 33px;
 			width: 187px;
+		}
+
+		#answer-container{
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			border: 1px solid var(--off-white);
+			border-radius: 10px;
+			padding: 20px;
+			text-align: center;
+			margin: 20px;
+		}
+
+		#answers{
+			margin: 25px;
 		}
 
 		.button-container>button {
