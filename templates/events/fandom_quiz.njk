@@ -21,7 +21,12 @@
 			</ol>
 		</div>
 		<br>
-		<button id="startQuiz" onclick="startQuiz().catch(console.log)" class="rel" type="button">Start</button>
+		<button id="startQuiz" class="rel" type="button">Start</button>
+		<script>
+			document.getElementById('startQuiz').addEventListener('click', e => {
+				startQuiz().catch(console.log);
+			});
+		</script>
 	</div>
 	<div class="quiz-container" style = "display:none">
 		<div class="countDown">
@@ -44,11 +49,11 @@
 								{% if types[q - 1] == 'mcq' %}
 									{% for i in range(1, 5) %}
 										<div class="option">
-											<label  class="rad-label">
+											<div class="rad-label">
 												<input type="radio" id="answer-{{ q }}-{{ i }}" name="answer-{{ q }}" class="rad-input" value="{{ i }}"/>
 												<div class="rad-design"></div>
 												<div class="rad-text" id="option-{{ q }}-{{ i }}" for="answer-{{ q }}-{{ i }}"></div>
-											</label><br/>
+											</div><br/>
 										</div>
 									{% endfor %}
 								{% else %}
@@ -151,7 +156,6 @@
 			function decrement () {
 				if (cancel) return;
 				document.getElementById('count').innerHTML = timeVal;
-				console.log(timeVal);
 				timeVal--;
 				if (timeVal >= 0) setTimeout(decrement, 1000);
 				else endQuiz();
@@ -163,7 +167,7 @@
 			document.getElementsByClassName('instructions')[0].style.display = 'none';
 			document.getElementsByClassName('quiz-container')[0].style.display = 'block';
 			for (let button of document.getElementsByClassName('nextQ')) button.style.display = 'inline';
-			const timerLength = await axios.post('/time-left', { id }).data;
+			const timerLength = (await axios.post('/time-left', { id })).data;
 			await nextQ(false);
 			timer(timerLength);
 			return false;
@@ -184,7 +188,6 @@
 		}
 		
 		function endQuiz () {
-			console.log('ASDF');
 			document.getElementById('quiz').submit();
 		}
 	</script>
