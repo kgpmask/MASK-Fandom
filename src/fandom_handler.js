@@ -93,6 +93,7 @@ function handler (app, nunjEnv) {
 		const questions = [];
 		const types = [];
 		const userStat = await dbh.getUserStats(req.user._id, req.params.arg);
+		if (userStat.status === 'Submitted') return res.redirect('/submitted');
 		currentQ = userStat.records.length;
 		quiz.questions.forEach((question, i) => i >= currentQ ? types.push(question.options.type) && questions.push({
 			number: i + 1,
@@ -109,19 +110,31 @@ function handler (app, nunjEnv) {
 		});
 	});
 	// Time left fetcher
-	app.post('/time-left', async (req, res) => {
-		const quiz = (await dbh.getQuizzes()).find(quiz => quiz._id === req.body.id);
+	app.post('/time-left/:id', async (req, res) => {
+		const quiz = (await dbh.getQuizzes()).find(quiz => quiz._id === req.params.id);
 		if (!quiz) throw new Error('Unable to find the quiz!');
 		return res.send(Math.min(20 * 60, (new Date(quiz.endTime).getTime() - new Date().getTime()) / 1000).toString());
 	});
 	// Update Participant Quiz Status
-	app.post('/update-status/:arg', async (req, res) => {
+	app.post('/update-status/:id', async (req, res) => {
 		// Will be used when the person starts the quiz or moves to another question
+		const { answer } = req.body;
+		await dbh.updateUserStats(req.user._id, req.params.id, answer);
+		return res.status(200).send('Success');
 	});
 	// Quiz submit POST function
-	app.post('/submit', async (req, res) => {});
+	app.post('/submit/:id', async (req, res) => {
+		try {
+			await dbh.updateUserStats(req.user._id, req.params.id, 1.063);
+			return res.redirect('/submitted');
+		} catch (err) {
+			return res.error(err);
+		}
+	});
 
-	app.post('/misc', (req, res) => res.status(500).send('...'));
+	app.get('/submitted', (req, res) => {
+		return res.send("Submitted...");
+	});
 
 	// Results page
 	app.get('/results/:arg', async (req, res) => {

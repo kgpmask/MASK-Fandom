@@ -4,8 +4,9 @@ const userQuizDataSchema = new mongoose.Schema({
 	userId: { type: String, required: true, index: true, unique: true },
 	quizId: { type: String, required: true },
 	points: { type: Number, required: true, default: 0 },
+	status: { type: String, required: true, enum: ['Attempting', 'Submitted'], default: 'Attempting' },
 	endTime: { type: Date, required: true },
-	records: { type: [Number, String], required: true }
+	records: { type: [String], required: true }
 });
 
 const questionsSchema = new mongoose.Schema({

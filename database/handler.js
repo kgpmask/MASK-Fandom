@@ -49,7 +49,7 @@ async function generateUserQuizRecord (creds) {
 	// stats = { userId, quizId }
 	if (await Quiz.UserInfo.findOne(creds)) throw new Error('Record already exists.');
 	const userStat = new Quiz.UserInfo(creds);
-	userStat.endTime = new Date();
+	userStat.endTime = new Date(new Date().getTime() + 20 * 60 * 1000);
 	userStat.points = 0;
 	userStat.records = [];
 	return userStat.save();
@@ -61,6 +61,14 @@ async function getUserStats (userId, quizId) {
 	const user = await Quiz.UserInfo.findOne({ userId, quizId });
 	if (user) return user;
 	else return generateUserQuizRecord({ userId, quizId });
+}
+
+async function updateUserStats (userId, quizId, answer) {
+	const user = await getUserStats(userId, quizId);
+	if (user.status === 'Submitted') throw new Error('Updating a submitted record!!');
+	if (answer === 1.063) user.status = 'Submitted';
+	else user.records.push(answer);
+	return user.save();
 }
 
 function getQuizzes () {
@@ -168,6 +176,7 @@ module.exports = {
 	getAllUsers,
 	getQuizzes,
 	getUserStats,
+	updateUserStats,
 	getLiveQuiz,
 	getLiveResult,
 	getAllLiveResults,

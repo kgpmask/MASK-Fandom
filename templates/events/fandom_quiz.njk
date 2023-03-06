@@ -37,16 +37,17 @@
 		<div class="question-zone">
 			<div id="count"></div>
 			<br/>
-			<button onclick="endQuiz()" style="display:none" class="rel submit">Submit</button>
+			<button onclick="endQuiz()" style="display:none" class="rel submit" id='submit-button'>Submit</button>
 			<form id="quiz" class="quizzes" method="POST" action='/misc'>
-				{% for q in range(1, qAmt + 1) %}
+				{% for q in range(currentQ + 1, qAmt + currentQ + 1) %}
 					<div id="qbox-{{ q }}" style="display:none">
 						<fieldset>
 							<legend>Question [{{ q }}]</legend><br/>
 							<div id="question-{{ q }}"></div>
+							<div id="type-{{ q }}"> Type: {{ types[q - currentQ - 1] }} </div>
 							<br/>
 							<div id="options-{{ q }}" class="options">
-								{% if types[q - 1] == 'mcq' %}
+								{% if types[q - currentQ - 1] == 'mcq' %}
 									{% for i in range(1, 5) %}
 										<div class="option">
 											<div class="rad-label">
@@ -58,7 +59,7 @@
 									{% endfor %}
 								{% else %}
 									<div class="option">
-										<input type="text" id="answer-{{ i }}" name="answer-{{ i }}"/>
+										<input type="text" id="answer-{{ q }}" name="answer-{{ q }}"/>
 									</div>
 								{% endif %}
 							</div>
@@ -77,6 +78,7 @@
 {% block customjs %}
 	<script>
 		const id = '{{ id }}';
+		const startQ = {{ currentQ }};
 		let currentQ = {{ currentQ }};
 		let timeVal = 0;
 		let globalTimer;
@@ -142,9 +144,6 @@
 				// TODO: Ignore if no input is selected
 				if (document.querySelector(`input[name="answer-${currentQ}"]:checked`)) nextQ();
 				preventDefault(event);
-			} else if (n === 8 || n === 37) {
-				prevQ();
-				preventDefault(event);
 			}
 		});
 		function timer (timerLength) {
@@ -167,7 +166,7 @@
 			document.getElementsByClassName('instructions')[0].style.display = 'none';
 			document.getElementsByClassName('quiz-container')[0].style.display = 'block';
 			for (let button of document.getElementsByClassName('nextQ')) button.style.display = 'inline';
-			const timerLength = (await axios.post('/time-left', { id })).data;
+			const timerLength = (await axios.post(`/time-left/${ id }`)).data;
 			await nextQ(false);
 			timer(timerLength);
 			return false;
@@ -175,20 +174,27 @@
 		}
 		async function nextQ (submit = true) {
 			// if (currentTimer) currentTimer();
+			if (submit) {
+				const answer = document.querySelector(`input[name="answer-${currentQ}"]${qs[currentQ - startQ - 1].options.type === "mcq" ? ":checked" : ""}`)?.value;
+				if (qs[currentQ - startQ - 1].options.type === "number" && !~~answer) return alert('Answering non-numeric value in number field');
+				await axios.post('/update-status/{{ id }}', { answer });
+			}
 			for (button of document.getElementsByClassName('nextQ')) button.disabled = false;
 			const c = currentQ;
-			if (c >= qAmt){
+			if (c >= qAmt + startQ ) {
 				for (button of document.getElementsByClassName('submit')) button.style.display = 'inline';
-				document.getElementById(`qbox-${c}`).style.display = 'none';
+				document.getElementById(`qbox-${c}`) ? document.getElementById(`qbox-${c}`).style.display = 'none' : '';
 				for (button of document.getElementsByClassName('nextQ')) button.disabled = true;
 			} else document.getElementById(`qbox-${c + 1}`).style.display = 'block';
-			if (c) document.getElementById(`qbox-${c}`).style.display = 'none';
+			if (c) document.getElementById(`qbox-${c}`)?.parentElement?.removeChild(document.getElementById(`qbox-${c}`));
 			currentQ++;
 			// if (submit) await axios.post('/update-record', );
 		}
 		
-		function endQuiz () {
-			document.getElementById('quiz').submit();
+		async function endQuiz () {
+			// document.getElementById('quiz').submit();
+			document.getElementById('submit-button').disabled = true;
+ 			window.location.href = (await axios.post('/submit/{{ id }}')).request.responseURL;
 		}
 	</script>
 {% endblock %}
