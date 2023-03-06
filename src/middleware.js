@@ -18,7 +18,17 @@ module.exports = function setMiddleware (app) {
 	app.use('/assets', express.static(path.join(__dirname, '..', 'assets')));
 
 	app.use((req, res, next) => {
-		res.renderFile = (files, ctx) => {
+		res.locals.mongoless = PARAMS.mongoless;
+		res.locals.userless = PARAMS.mongoless || PARAMS.userless;
+		res.locals.quizFlag = PARAMS.quiz;
+		req.loggedIn = res.locals.loggedIn = Boolean(req.user);
+		req.admin = req.user?.permissions.find(e => e === 'Admin');
+		next();
+	});
+
+	app.use((req, res, next) => {
+		res.renderFile = (files, ctx = {}) => {
+			ctx.isAdmin = req.admin;
 			if (!Array.isArray(files)) files = [files];
 			return res.render(path.join(__dirname, '../templates', ...files), ctx);
 		};
@@ -27,6 +37,9 @@ module.exports = function setMiddleware (app) {
 		};
 		res.notFound = (custom404, ctx) => {
 			res.status(404).renderFile(custom404 || '404.njk', ctx);
+		};
+		res.errorRes = message => {
+			res.status(500).renderFile('error.njk', { message });
 		};
 		res.tryFile = (path, asset, ctx) => {
 			fs.access(path).then(err => {
@@ -37,15 +50,6 @@ module.exports = function setMiddleware (app) {
 			});
 		};
 
-		next();
-	});
-
-	app.use((req, res, next) => {
-		res.locals.mongoless = PARAMS.mongoless;
-		res.locals.userless = PARAMS.mongoless || PARAMS.userless;
-		res.locals.quizFlag = PARAMS.quiz;
-		req.loggedIn = res.locals.loggedIn = Boolean(req.user);
-		req.admin = req.user?.permissions.find(e => e === 'Admin');
 		next();
 	});
 };

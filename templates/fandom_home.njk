@@ -1,0 +1,82 @@
+{% extends '_base.njk' %}
+
+{% set thispage = 'home' %}
+{% set pagetitle = 'Quad Anime Trivia Quiz' %}
+
+{% set buttonlinks = [{
+	name: 'Information',
+	href: '/info'
+}, {
+	name: 'Events',
+	href: '/events'
+}, {
+	name: 'Register',
+	href: '/signup'
+}, {
+	name: 'Profile',
+	href: '/profile'
+}] %}
+
+{% block pagecontent %}
+	<div class='notification-banner'>「 {{ notif if notif else 'Under Development...' }} 」</div>
+	<hr style="width: 90%; margin-left: 5%;">
+	<div class='text' style='max-width: 70%; margin-left: 15%; text-align: center;'>
+		This section currently contains filler text which will be replaced with the actual text to be used in the website for the <s>Yodan</s> Quad Anime Trivia Quiz.<br>
+		<br>
+		Meanwhile, check out the main page at <a href='https://www.youtube.com/watch?v=dQw4w9WgXcQ'>kgpmask.club</a>
+	</div>
+	<br>
+	<div class='link-container'>
+		{% for link in buttonlinks %}
+			{% if (loggedIn and link.name != 'Register') or (not loggedIn and link.name != 'Profile') %}
+				<a class='button-link' href='{{ link.href }}' target='_self'>{{ link.name }}</a>
+			{% endif %}
+		{% endfor %}
+	</div>
+{% endblock %}
+
+{% block customcss %}
+	<link rel="stylesheet" type="text/css" href="/assets/styles/home.css"/>
+	<style>
+		.notification-banner {
+			margin: 10px 5%;
+			width: 90%
+			text-align: center;
+			color: var(--error-red);
+			font-size: 116%;
+			font-weight: 60;
+		}
+
+		.link-container {
+			display: flex;
+			flex-direction: row;
+			flex-wrap: wrap;
+			width: 70%;
+			margin-left: 15%;
+			align-items: center;
+			justify-content: center;
+		}
+
+		.button-link {
+			display: block;
+			border: solid 3px var(--off-white);
+			margin: 10px;
+			border-radius: 12px;
+			padding: 15px;
+			font-size: 100%;
+			transition: background-color 0.3s, color 0.3s, font-weight 0.3s;
+			text-decoration: none;
+		}
+
+		.button-link:hover {
+			font-weight: 125;
+			color: var(--error-red);
+			background-color: var(--abyss);
+		}
+	</style>
+{% endblock %}
+
+{% block customjs %}
+	<script>
+	</script>
+{% endblock %}
