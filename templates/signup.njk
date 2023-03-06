@@ -16,7 +16,7 @@
 		<form action='/' method='post' id="signup">
 			<div id="page1" style="display:block;">
 				<input type= "text" placeholder="Display name" id="display-name">
-				<input type="email" placeholder="E-mail address" id="email">
+				<input type="email" placeholder="Email address" id="email">
 				<hr style="width: 80%; border: solid 1px var(--off-white); margin: 15px 10% 5px;">
 				<p style="padding-top: 9px;font-size: 130%;">Select your profile picture</p>
 				<div id="images">
@@ -71,7 +71,94 @@
 	</div>
 
 {% endblock %}
- 
+
+{% block customjs %}
+	<script>
+		let currentPage = 1;
+		const max = (a, b) => a > b ? a : b;
+		const min = (a, b) => a < b ? a : b;
+		let selectedImage;
+
+		function shownextpg () {
+			document.getElementById(`page${currentPage}`).style.display = 'none';
+			currentPage = min(3, ++currentPage);
+			document.getElementById(`page${currentPage}`).style.display = 'block';
+		}
+
+		function showprevpg () {
+			document.getElementById(`page${currentPage}`).style.display = 'none';
+			currentPage = max(1, --currentPage);
+			document.getElementById(`page${currentPage}`).style.display = 'block';
+		}
+
+
+		function displaymodal (element) {
+			document.getElementById('modalimg').src = '../assets/transactionpages/' + element.id + '.png';
+			document.getElementById('modal').style.display = 'block';
+		};
+		
+		function closemodal () {
+			// console.log('close');
+			document.getElementById('modal').style.display = 'none';
+		}
+		
+		function signUp () {
+			// Page one
+			const name = document.getElementById('display-name').value;
+			if (!name.trim()) return alert('Empty Name');
+			if (!name.match(/^(?!.*\.{2})[a-zA-Z0-9. ]*$/)) return alert('Name doesn\'t meet requirements');
+			const email = document.getElementById('email').value;
+			if (!email.trim()) return alert('Empty Email Address');
+			if (!email.match(/^((?!.*\.{2})[a-zA-Z0-9\.\-\_]*)@((?!.*\.{2})[a-zA-Z\.\-\_]*).[a-zA-z]{2,3}$/)) return alert('Invalid e-mail address');
+			const image = selectedImage;
+			if (!image) return alert('Image not selected.')
+			const signedUpFor = {};
+			{% for sauce in sauces %}
+				signedUpFor.{{ sauce.name if sauce.name == 'Naruto' else sauce.id }} = document.getElementById('{{ sauce.id }}').checked;
+			{% endfor %}
+			if (!Object.values(signedUpFor).some(Boolean)) return alert('Sign up for at least one quiz.');
+			console.log({ name, email, image, signedUpFor })
+			// Page two
+			const username = document.getElementById('username').value;
+			if (!username) return alert('No username given.');
+			if (!username.match(/^(?!.*[\._]{2,})[\w\.]*$/)) return alert('Username doesn\'t meet requirements');
+			const password = document.getElementById('password').value;
+			if (!password) return alert('No password provided.');
+			if (!password.match(/^(?=.*[!-~]).{6,20}$/)) {
+				return alert('Password doesn\'t meet the requirements');
+			}
+			if (password !== document.getElementById('confirm-password').value) return alert('Passwords do not match!');
+			// Page three
+			const transactionID = document.getElementById('transaction-ID').value;
+			if (!transactionID) return alert('Transaction ID not provided. Signup requires transaction ID');
+			console.log('Sending POST request');
+			axios.post('/signup', {
+				name,
+				username,
+				password,
+				email,
+				image,
+				signedUpFor,
+				transactionID
+			}).then(() => window.location.href = '/')
+			.catch(e => console.log(e));
+		}
+
+		window.onload = () => {
+			[...document.getElementById('images').children].forEach(child => child.addEventListener('click', () => {
+				try {
+					document.getElementById(`img-${selectedImage}`).classList.remove('selected-image');
+				}
+				catch (e) { console.log('Throwing error'); }
+				finally {
+					selectedImage = child.alt;
+					document.getElementById(`img-${selectedImage}`).classList.add('selected-image');
+				}
+			}));
+		}
+	</script>
+{% endblock %}
+
 {% block customcss %}
 	<style media="screen">
 		.form-container{
@@ -232,95 +319,6 @@
 			height: 60px !important;
 		}
 	</style>
-{% endblock %}
-
-
-
-{% block customjs %}
-	<script>
-		let currentPage = 1;
-		const max = (a, b) => a > b ? a : b;
-		const min = (a, b) => a < b ? a : b;
-		let selectedImage;
-
-		function shownextpg () {
-			document.getElementById(`page${currentPage}`).style.display = 'none';
-			currentPage = min(3, ++currentPage);
-			document.getElementById(`page${currentPage}`).style.display = 'block';
-		}
-
-		function showprevpg () {
-			document.getElementById(`page${currentPage}`).style.display = 'none';
-			currentPage = max(1, --currentPage);
-			document.getElementById(`page${currentPage}`).style.display = 'block';
-		}
-
-
-		function displaymodal (element) {
-			document.getElementById('modalimg').src = '../assets/transactionpages/' + element.id + '.png';
-			document.getElementById('modal').style.display = 'block';
-		};
-		
-		function closemodal () {
-			// console.log('close');
-			document.getElementById('modal').style.display = 'none';
-		}
-		
-		function signUp () {
-			// Page one
-			const name = document.getElementById('display-name').value;
-			if (!name.trim()) return alert('Empty Name');
-			if (!name.match(/^(?!.*\.{2})[a-zA-Z0-9. ]*$/)) return alert('Name doesn\'t meet requirements');
-			const email = document.getElementById('email').value;
-			if (!email.trim()) return alert('Empty Email Address');
-			if (!email.match(/^((?!.*\.{2})[a-zA-Z0-9\.\-\_]*)@((?!.*\.{2})[a-zA-Z\.\-\_]*).[a-zA-z]{2,3}$/)) return alert('Invalid e-mail address');
-			const image = selectedImage;
-			if (!image) return alert('Image not selected.')
-			const signedUpFor = {};
-			{% for sauce in sauces %}
-				signedUpFor.{{ sauce.name if sauce.name == 'Naruto' else sauce.id }} = document.getElementById('{{ sauce.id }}').checked;
-			{% endfor %}
-			if (!Object.values(signedUpFor).some(Boolean)) return alert('Sign up for at least one quiz.');
-			console.log({ name, email, image, signedUpFor })
-			// Page two
-			const username = document.getElementById('username').value;
-			if (!username) return alert('No username given.');
-			if (!username.match(/^(?!.*[\._]{2,})[\w\.]*$/)) return alert('Username doesn\'t meet requirements');
-			const password = document.getElementById('password').value;
-			if (!password) return alert('No password provided.');
-			if (!password.match(/^(?=.*[!-~]).{6,20}$/)) {
-				return alert('Password doesn\'t meet the requirements');
-			}
-			if (password !== document.getElementById('confirm-password').value) return alert('Passwords do not match!');
-			// Page three
-			const transactionID = document.getElementById('transaction-ID').value;
-			if (!transactionID) return alert('Transaction ID not provided. Signup requires transaction ID');
-			console.log('Sending POST request');
-			axios.post('/signup', {
-				name,
-				username,
-				password,
-				email,
-				image,
-				signedUpFor,
-				transactionID
-			}).then(() => window.location.href = '/')
-			.catch(e => console.log(e));
-		}
-
-		window.onload = () => {
-			[...document.getElementById('images').children].forEach(child => child.addEventListener('click', () => {
-				try {
-					document.getElementById(`img-${selectedImage}`).classList.remove('selected-image');
-				}
-				catch (e) { console.log('Throwing error'); }
-				finally {
-					selectedImage = child.alt;
-					document.getElementById(`img-${selectedImage}`).classList.add('selected-image');
-				}
-			}));
-		}
-	</script>
 {% endblock %}
 
 {% set scripts = ['https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js'] %}

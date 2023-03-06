@@ -34,16 +34,16 @@
 
 {% block customjs %}
 	<script>
-		async function logout()=> {
-			try{
+		async function logout () {
+			try {
 				const response = await axios.post("/logout");
 				window.location.href = "/";
 			}
-			catch(e){
+			catch (e) {
 				console.log(e);
 			}
 		};
-		function no()=>{
+		function no () {
 			window.location.href = "/events";
 		};
 	</script>
