@@ -11,6 +11,7 @@
 		<div class = "text" style = "text-align:left">
 			<h3>Instructions:</h3>
 			<ol>
+				{# Iesvs Christ get a better description here :sob: #}
 				<li><p>There are 20 questions in total.</p></li><br>
 				<li><p>There are three types of questions:<br>&emsp;&emsp;- Integer type: the answer is allowed only in integer format. For example, if 106 wa seikai, ‘one hundred six’ de wa arimasen(is incorrect).<br>&emsp;&emsp;- Text type: text input is expected. (minor spelling errors are allowed)<br>&emsp;&emsp;- Multiple Choice Type: One of the given options is correct. Selection can be done manually or by selecting 1,2,3,4 on the keyboard.</p></li>
 				<li><p>The total time limit is 15 minutes. There is no time limit for individual questions.</p></li>
@@ -20,7 +21,7 @@
 			</ol>
 		</div>
 		<br>
-		<button id="startQuiz" onclick="startQuiz()" class="rel" type="button">Start</button>
+		<button id="startQuiz" onclick="startQuiz().catch(console.log)" class="rel" type="button">Start</button>
 	</div>
 	<div class="quiz-container" style = "display:none">
 		<div class="countDown">
@@ -52,7 +53,7 @@
 									{% endfor %}
 								{% else %}
 									<div class="option">
-										<input type="text" id="answer-{{ i }}" name="answer-{{ i }}">
+										<input type="text" id="answer-{{ i }}" name="answer-{{ i }}"/>
 									</div>
 								{% endif %}
 							</div>
@@ -66,6 +67,127 @@
 		<button onclick="nextQ()" style="display:none" class="rel nextQ" type="button">Next</button>
 	</div>
 	<br/><br/>
+{% endblock %}
+
+{% block customjs %}
+	<script>
+		const id = '{{ id }}';
+		let currentQ = {{ currentQ }};
+		let timeVal = 0;
+		let globalTimer;
+		let next = false;
+		let currentTimer;
+		const qAmt = {{ qAmt }};
+		const qs = {{ questions | safe }};
+		function generateHTML (components) {
+			return components.map(component => {
+				switch (component.type) {
+					case 'image':
+						return `<img src="${component.value}" class="option-image" style="${component.style || ''}"/>`;
+					case 'mp3':
+						return `<audio src="${component.value}" type="audio/mpeg"> </audio>`;
+					case 'title':
+						return `<h3>${component.value}</h3>`;
+					case 'gallery':
+						const images = components.value.map(img => `<img src="${img.src}" class="gallery-image">`).join('');
+						return `<div style="display: flex; flex-direction: row; flex-wrap: wrap;"> ${images} </div>`
+					default:
+						return component.value;
+				}
+			}).join('<br/>');
+		}
+		window.onload = () => {
+			[...document.getElementsByTagName('button')].forEach(button => button.addEventListener('click', (event) => event.preventDefault()))
+			qs.forEach((question, q) => {
+				document.getElementById(`question-${q + currentQ + 1}`).innerHTML = generateHTML(question.question);
+				if (question.options.type !== 'mcq') return;
+				for (let i = 1; i <= 4; i++) 
+					document.getElementById(`option-${q + currentQ + 1}-${i}`).innerHTML = generateHTML(question.options.value[i - 1]);
+				}
+			);
+			// Enabled manual start of quiz
+		}
+		// Support for Keyboard input for MCQ type Quiz Questions
+		// Feature: 1,2,3,4 or a,b,c,d or Num1,Num2,Num3,Num4 to select quiz options
+		function preventDefault (event) {
+			event.stopImmediatePropagation();
+			event.preventDefault();
+			event.stopPropagation();
+		}
+		window.addEventListener('keydown', function (event) {
+			let e = 0;
+			const n = event.keyCode;
+			// Daheck are these variable names
+			keys = [48, 64, 96]; //[48: 1-4, 64 A-D, 96:NUM1-4]
+			keys.forEach(k => {
+				if (k < n && n < k + 5) return e = n - k;
+			});
+			if (e) {
+				// Select the corresponding option
+				op = document.getElementById(`option-${currentQ}-${e}`);
+				op.click();
+				// Was trying a feature to allow focus on a checked element
+				op.scrollIntoView();
+				// op.focus({ focusVisible: true });
+				preventDefault(event);
+			} else if (n === 27) {
+				const chkOpt = document.querySelector(`input[name="answer-${currentQ}"]:checked`);
+				if (chkOpt) chkOpt.checked = false
+			} else if (n === 13 || n === 39) {
+				// TODO: Ignore if no input is selected
+				if (document.querySelector(`input[name="answer-${currentQ}"]:checked`)) nextQ();
+				preventDefault(event);
+			} else if (n === 8 || n === 37) {
+				prevQ();
+				preventDefault(event);
+			}
+		});
+		function timer (timerLength) {
+			timeVal = timerLength;
+			let cancel = false;
+			function endTimer () {
+				cancel = true;
+			}
+			function decrement () {
+				if (cancel) return;
+				document.getElementById('count').innerHTML = timeVal;
+				console.log(timeVal);
+				timeVal--;
+				if (timeVal >= 0) setTimeout(decrement, 1000);
+				else endQuiz();
+			}
+			decrement();
+			return endTimer;
+		}
+		async function startQuiz () {
+			document.getElementsByClassName('instructions')[0].style.display = 'none';
+			document.getElementsByClassName('quiz-container')[0].style.display = 'block';
+			for (let button of document.getElementsByClassName('nextQ')) button.style.display = 'inline';
+			const timerLength = await axios.post('/time-left', { id }).data;
+			await nextQ(false);
+			timer(timerLength);
+			return false;
+			// Here, we have started a global timer with value = timerLength
+		}
+		async function nextQ (submit = true) {
+			// if (currentTimer) currentTimer();
+			for (button of document.getElementsByClassName('nextQ')) button.disabled = false;
+			const c = currentQ;
+			if (c >= qAmt){
+				for (button of document.getElementsByClassName('submit')) button.style.display = 'inline';
+				document.getElementById(`qbox-${c}`).style.display = 'none';
+				for (button of document.getElementsByClassName('nextQ')) button.disabled = true;
+			} else document.getElementById(`qbox-${c + 1}`).style.display = 'block';
+			if (c) document.getElementById(`qbox-${c}`).style.display = 'none';
+			currentQ++;
+			// if (submit) await axios.post('/update-record', );
+		}
+		
+		function endQuiz () {
+			console.log('ASDF');
+			document.getElementById('quiz').submit();
+		}
+	</script>
 {% endblock %}
 
 {% block customcss %}
@@ -185,135 +307,6 @@
 			margin: 20px 10%;
 		}
 	</style>
-{% endblock %}
-
-{% block customjs %}
-	<script>
-		const id = '{{ id }}';
-		let currentQ = {{ currentQ }};
-		let timeVal = 0;
-		let globalTimer;
-		let next = false;
-		let currentTimer;
-		const qAmt = {{ qAmt }};
-		const qs = {{ questions | safe }};
-		function generateHTML(components) {
-			return components
-				.map(component => {
-					switch (component.type) {
-						case 'image':
-							return console.log(component) || `<img src="${component.value}" class="option-image" style="${component.style || ''}"/>`;
-						case 'mp3':
-							return `<audio src="${component.value}" type="audio/mpeg"> </audio>`;
-						case 'title':
-							return `<h3>${component.value}</h3>`;
-						case 'gallery':
-							const images = [];
-							components.value.forEach(img => (
-								images.push(`<img src="${ img.src }" class="gallery-image">`)
-							));
-							return `<div style="display: flex; flex-direction: row; flex-wrap: wrap;"> ${images.join()} </div>`
-						default:
-							return component.value;
-					}
-				})
-				.join('<br/>');
-		}
-		window.onload = () => {
-			[...document.getElementsByTagName('button')].forEach(button => button.addEventListener('click', (event) => event.preventDefault()))
-			qs.forEach((question, q) => {
-				document.getElementById(`question-${q + currentQ + 1}`).innerHTML = generateHTML(question.question);
-				if (question.options.type !== 'mcq') return;
-				console.log(question.options)
-				for (let i = 1; i <= 4; i++) 
-					document.getElementById(`option-${q + currentQ + 1}-${i}`).innerHTML = generateHTML(question.options.value[i - 1]);
-				}
-			);
-			//enabled manual start of quiz
-		}
-		// Support for Keyboard input for MCQ type Quiz Questions
-		// Feature: 1,2,3,4 or a,b,c,d or Num1,Num2,Num3,Num4 to select quiz options
-		function preventDefault(event) {
-			event.stopImmediatePropagation();
-			event.preventDefault();
-			event.stopPropagation();
-		}
-		window.addEventListener('keydown', function (event) {
-			let e = 0;
-			const n = event.keyCode;
-			// Daheck are these variable names
-			keys = [48, 64, 96]; //[48: 1-4, 64 A-D, 96:NUM1-4]
-			keys.forEach(k => {
-				if (k < n && n < k + 5) return e = n - k;
-			});
-			if (e) {
-				// Select the corresponding option
-				op = document.getElementById(`option-${currentQ}-${e}`);
-				op.click();
-				// Was trying a feature to allow focus on a checked element
-				op.scrollIntoView();
-				// op.focus({ focusVisible: true });
-				preventDefault(event);
-			}
-			else if (n === 27) {
-				const chkOpt = document.querySelector(`input[name="answer-${currentQ}"]:checked`);
-				if (chkOpt) chkOpt.checked = false
-			}
-			else if (n === 13 || n === 39) {
-				// TODO: Ignore if no input is selected
-				if (document.querySelector(`input[name="answer-${currentQ}"]:checked`)) nextQ();
-				preventDefault(event);
-			}
-			else if (n === 8 || n === 37) {
-				prevQ();
-				preventDefault(event);
-			}
-
-		});
-		function timer() {
-			timeVal = globalTimer;
-			let cancel = false;
-			function endTimer () {
-				cancel = true;
-			}
-			function decrement () {
-				if (cancel) return;
-				document.getElementById('count').innerHTML = timeVal;
-				timeVal--;
-				if (timeVal >= 0) setTimeout(decrement, 1000);
-				else endQuiz();
-			}
-			decrement();
-			return endTimer;
-		}
-		async function startQuiz() {
-			document.getElementsByClassName('instructions')[0].style.display = 'none';
-			document.getElementsByClassName('quiz-container')[0].style.display = 'block';
-			for (button of document.getElementsByClassName('nextQ')) button.style.display = 'inline';
-			globalTimer = await axios.post('/time-left', { id });
-			await nextQ(false);
-			timer();
-			return false;
-			// Here, we have started a global timer with value = globalTimer
-		}
-		async function nextQ (submit = true) {
-			// if (currentTimer) currentTimer();
-			for (button of document.getElementsByClassName('nextQ')) button.disabled = false;
-			const c = currentQ;
-			if (c >= qAmt){
-				for (button of document.getElementsByClassName('submit')) button.style.display = 'inline';
-				document.getElementById(`qbox-${c}`).style.display = 'none';
-				for (button of document.getElementsByClassName('nextQ')) button.disabled = true;
-			} else document.getElementById(`qbox-${c + 1}`).style.display = 'block';
-			if (c) document.getElementById(`qbox-${c}`).style.display = 'none';
-			currentQ++;
-			if (submit) await axios.post('/update-record', );
-		}
-		
-		function endQuiz(){
-			document.getElementById('quiz').submit();
-		}
-	</script>
 {% endblock %}
 
 {% set scripts = ['https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js'] %}

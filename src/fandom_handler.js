@@ -33,7 +33,8 @@ function handler (app, nunjEnv) {
 	// Signup GET
 	app.get('/signup', (req, res) => {
 		if (req.loggedIn) return res.redirect('/');
-		res.renderFile('signup.njk', { images: require('./images') });
+		const images = require('./images.json');
+		res.renderFile('signup.njk', { images });
 	});
 	// Signup POST
 	app.post('/signup', async (req, res) => {
@@ -70,6 +71,9 @@ function handler (app, nunjEnv) {
 
 	// Event-related pages
 	// Lists the quizzes
+	app.get('/fandom', (req, res) => {
+		return res.renderFile('events/fandom_quiz.njk');
+	});
 	app.get('/events', async (req, res) => {
 		if (!req.loggedIn) return res.redirect('/login');
 		const quizzes = (await dbh.getQuizzes()).map(quiz => {
@@ -107,6 +111,7 @@ function handler (app, nunjEnv) {
 	// Time left fetcher
 	app.post('/time-left', async (req, res) => {
 		const quiz = (await dbh.getQuizzes()).find(quiz => quiz._id === req.body.id);
+		if (!quiz) throw new Error('Unable to find the quiz!');
 		return res.send(Math.min(20 * 60, (new Date(quiz.endTime).getTime() - new Date().getTime()) / 1000).toString());
 	});
 	// Update Participant Quiz Status
@@ -116,7 +121,7 @@ function handler (app, nunjEnv) {
 	// Quiz submit POST function
 	app.post('/submit', async (req, res) => {});
 
-	app.post('/misc', (req, res) => res.send(500));
+	app.post('/misc', (req, res) => res.status(500).send('...'));
 
 	// Results page
 	app.get('/results/:arg', async (req, res) => {
