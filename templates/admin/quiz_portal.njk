@@ -22,27 +22,14 @@
 						<button type = "button" class="re-evaluate  {{ 'disabled' if quiz.status != 'Ended' }}" onclick="re_eval({{ quiz.id }})">Re-Evaluate</button>
 					</div>
 					<div class="button-container">
-						<button type = "button" class="answers {{ 'disabled' if quiz.status != 'Ended' }}" onclick="show_answers({{ quiz_id }})">Show Answers</button>
+						<button type = "button" class="answers" onclick="show_answers('{{ quiz._id }}')">Show Answers</button>
 						<button type = "button" class="results {{ 'disabled' if quiz.status == 'To be started' }}" onclick="(() => window.location.href = '/results/{{ quiz.id }}')()">Show Results</button>
 					</div>
 				</div>
 			</div>
 		</div>
 	{% endfor %}
-	<div id="answer-container">
-		<div id="answers" style="display: flex; flex-direction: column;">
-			<h2>Answers for NRT</h2>
-			<table>
-				<tr>
-					<th>Question</th>
-					<th>Answers</th>
-				</tr>
-				<tr>
-					<td>Hello</td>
-					<td>Hello</td>
-				</tr>
-			</table>
-		</div>
+	<div id="answer-container" style="display: none;">
 	</div>
 {% endblock %}
 
@@ -60,9 +47,37 @@
 			.catch(err => alert(err));
 	}
 
-	function show_answers (quizID) {
-		const quiz = JSON.parse(await axios.post('/get-quiz', { _id: quizID })); // get in format [{question: "QUestion" , solution: "Answer"}]
-		// Ankan over to you
+	async function show_answers (quizID) {
+		const question = (await axios.post('/quiz/'+quizID)).data.questions;
+		let ele = document.getElementById('answer-container');
+		if( ele.style.display === 'none' ) ele.style.display = 'flex';
+		else {
+			[...ele.children].forEach(e => {
+    			ele.removeChild(e);
+			});
+		}
+		const div = document.createElement('div');
+		div.style = 'display: flex; flex-direction: column;'
+		div.id = 'answers';
+		const code = [`
+			<h2>Answers for ${quizID}</h2>
+			<table>
+				<tr>
+					<th>Question</th>
+					<th>Answers</th>
+				</tr>
+		`];
+		question.forEach(elem => {
+			code.push(`
+				<tr>
+					<td>${elem.q[0].value}</td>
+					<td>${elem.options.type === 'mcq' ? elem.options.value[elem.solution - 1][0].value : Array.isArray(elem.solution) ? elem.solution.join(", ") : elem.solution}</td>
+				</tr>
+			`)
+		});
+		code.push(`</table>`);
+		div.innerHTML = code.join('');
+		ele.appendChild(div);
 	}
 
 </script>
@@ -139,3 +154,4 @@
 	</style>
 {% endblock %}
 
+{% set scripts = ['https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js'] %}

@@ -92,6 +92,10 @@ function handler (app, nunjEnv) {
 		// eslint-disable-next-line no-unreachable
 		return res.renderFile('events/fandom_quiz.njk');
 	});
+	app.post('/quiz/:arg', async (req, res) => {
+		const quiz = (await dbh.getQuizzes()).find(e => e._id === req.params.arg);
+		return res.send(quiz);
+	});
 	// Update Participant Quiz Status
 	app.post('/update-status/:arg', async (req, res) => {
 		// Will be used when the person starts the quiz or moves to another question
