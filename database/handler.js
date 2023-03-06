@@ -35,7 +35,7 @@ function getUserByUsername (username) {
 async function validateUserLogin (creds) {
 	const { username, password } = creds;
 	const user = await getUserByUsername(username);
-	if (!user) return false;
+	if (!user) throw new Error('User does not exist');
 	return user.hash === await bcrypt.hash(password, user.salt) ? user._id : false;
 }
 

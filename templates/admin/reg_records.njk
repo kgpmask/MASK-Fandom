@@ -1,5 +1,8 @@
 {% extends '../_base.njk' %}
 
+{% set thispage = 'registered' %}
+{% set pagetitle = 'Records of Registreed' %}
+
 {% block customcss %}
 	<style>
 		.user-list {
@@ -85,7 +88,7 @@
 	<div class="user-list">
 		{% for record in records %}
 		<div class="user-container">
-			<img class="user-image" src="{{ record.imageLink or 'http://localhost:6969/assets/members/21_arghadeep.webp' }}" alt="{{ record.image }}">
+			<img class="user-image" src="{{ record.imageLink }}" alt="{{ record.image }}">
 			<br/><br/>
 			<div class="details-container">
 				<div class="user-username">{{ record.username }}</div>
@@ -97,7 +100,7 @@
 				</div>
 				<br/>
 				<div class="button-container">
-					<button class="edit-record"> Edit </button>
+					<button class="edit-record" onclick="(() => window.location.href='/edit-profile/{{ record._id }}')()"> Edit </button>
 					<button class="{{ 'payment-done' if record.paymentConfirmed else 'payment-pending' }}">{{ 'Paid' if record.paymentConfirmed else 'Confirm' }}</button>
 				</div>
 			</div>

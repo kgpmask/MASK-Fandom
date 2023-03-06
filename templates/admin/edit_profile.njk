@@ -1,10 +1,9 @@
-{% set scripts = ['https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js'] %}
-
 {% extends "_base.njk" %}
 
 {% set thispage = 'edit_profile' %}
 {% set pagetitle = 'Edit Profile' %}
 {% set animes = ['Naruto', 'OPM', 'MHA', 'AOT'] %}
+{% set scripts = ['https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js'] %}
 
 
 {% block pagecontent %}
@@ -32,8 +31,8 @@
 				{% for sauce, signedUp in signedUpFor %}	
 					{% if sauce in animes %}
 					<div>
-						<label for="{{sauce}}">{{sauce}}</label>
-						<input type="checkbox" class="quiz" id="{{sauce}}" checked="{{signedUp}}">
+						<label for="{{ sauce }}">{{ sauce }}</label>
+						<input type="checkbox" class="quiz" id="{{ sauce }}" {{ 'checked' if signedUp }}>
 					</div>
 					{% endif %}
 				{% endfor %}
@@ -127,19 +126,6 @@
 
 {% block customjs %}
 	<script>
-		const axios = require('')
-		function editProfile(){
-			console.log('Sending POST request');
-			axios.post('/edit_profile',{
-				_id,
-				name,
-				username,
-				password,
-				signedUpFor
-			}).then(() => {
-				console.log('Edited User Data Successfully');
-				window.location.href = '/';
-			}).catch(err => console.log(err));
-		}
+		
 	</script>
 {% endblock %}

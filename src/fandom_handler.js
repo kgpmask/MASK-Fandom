@@ -25,10 +25,14 @@ function handler (app, nunjEnv) {
 	});
 	// Login POST
 	app.post('/login', async (req, res) => {
-		const id = await dbh.validateUserLogin(req.body);
-		if (!id) throw new Error('Credentials don\'t match.');
-		res.cookie('sessionId', await dbh.generateSessionRecord(id));
-		return res.send('Login Successful');
+		try {
+			const id = await dbh.validateUserLogin(req.body);
+			if (!id) throw new Error('Credentials don\'t match.');
+			res.cookie('sessionId', await dbh.generateSessionRecord(id));
+			return res.send('Login Successful');
+		} catch (err) {
+			return res.error(rrr);
+		}
 	});
 	// Signup GET
 	app.get('/signup', (req, res) => {
@@ -42,7 +46,7 @@ function handler (app, nunjEnv) {
 			// Here's hoping Ankan added proper validation in the njk file
 			req.user = await dbh.createNewUser(req.body);
 			// Generate a session for login middleware to recognize
-			req.cookies.sessionId = dbh.generateSessionRecord(req.user.id);
+			res.cookies.sessionId = await dbh.generateSessionRecord(req.user.id);
 			// Send a message to indicate successful login
 			return res.send('Successfully logged in');
 		} catch (err) {
@@ -125,14 +129,15 @@ function handler (app, nunjEnv) {
 	app.get('/registered', async (req, res) => {
 		if (!req.admin) return res.redirect('/');
 		const records = await dbh.getAllUsers();
-		// const images = require('./images');
-		// records.forEach(user => user.imageLink = images[user.image]);
+		const images = require('./images');
+		records.forEach(user => user.imageLink = console.log(user.image) ?? images[user.image]?.src);
+		console.log(records);
 		return res.renderFile('/admin/reg_records.njk', { records });
 	});
 	// Edit a profile in case of inappropriate words
-	app.get('/edit-profile/:arg', async (req, res) => {
-		// if (!req.admin) return res.redirect('/');
-		const user = await dbh.getUser('933939822073621628860');
+	app.get('/edit-profile/:id', async (req, res) => {
+		if (!req.admin) return res.redirect('/');
+		const user = await dbh.getUser(req.params.id);
 		return res.renderFile('admin/edit_profile.njk', user);
 	});
 	// Update profile

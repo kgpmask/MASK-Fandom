@@ -1,5 +1,8 @@
 {% extends '_base.njk' %}
 
+{% set pagetitle = 'Quiz Portal' %}
+{% set thispage = 'quiz-portal' %}
+
 {% block pagecontent %}
 	<h1>Admin Quiz Portal</h1>
 	{% for quiz in quizzes %}
@@ -15,17 +18,39 @@
 						<div class = 'status' id = 'status' style = "color: #ff8585;">{{quiz.status}}</div>
 					{% endif %} {% endif %}
 					<div class="button-container">
-						<button type = "button" class = "stop-quiz">Stop Quiz</button>
-						<button type = "button" class="re-evaluate">Re-Evaluate</button>
+						<button type = "button" class = "stop-quiz {{ 'disabled' if quiz.status != 'Running' }}" onclick="stop({{ quiz.id }})">Stop Quiz</button>
+						<button type = "button" class="re-evaluate  {{ 'disabled' if quiz.status != 'Ended' }}" onclick="re_eval({{ quiz.id }})">Re-Evaluate</button>
 					</div>
 					<div class="button-container">
-						<button type = "button" class="answers">Show Answers</button>
-						<button type = "button" class="results">Show Results</button>
+						<button type = "button" class="answers {{ 'disabled' if quiz.status != 'Ended' }}" onclick="show_answers({{ quiz_id }})">Show Answers</button>
+						<button type = "button" class="results {{ 'disabled' if quiz.status == 'To be started' }}" onclick="(() => window.location.href = '/results/{{ quiz.id }}')()">Show Results</button>
 					</div>
 				</div>
 			</div>
 		</div>
 	{% endfor %}
+{% endblock %}
+
+{% block customjs %}
+<script>
+	function stop (quizID) {
+		axios.post(`/stop-quiz/${quizID}`)
+			.then(res => console.log(res.data))
+			.catch(err => alert(err));
+	}
+
+	function re_eval (quizID) {
+		axios.post(`/sre-evaluate/${quizID}`)
+			.then(res => console.log(res.data))
+			.catch(err => alert(err));
+	}
+
+	function show_answers (quizID) {
+		const quiz = JSON.parse(await axios.post('/get-quiz', { _id: quizID }));
+		// Ankan over to you
+	}
+
+</script>
 {% endblock %}
 
 {% block customcss %}
@@ -62,18 +87,24 @@
 		.button-container {
 			display: flex;
 			flex-direction: row;
+			flex-wrap: wrap;
 			justify-content: space-around;
 			height: 33px;
 			width: 187px;
 		}
 
 		.button-container>button {
+			margin: 5% 3px;
+			width: 40%;
 			background: var(--tinted-gray);
 			border: 1px solid var(--off-white);
 			border-radius: 5px;
-			flex-basis: 100%;
 			color: var(--white);
 			padding: 2px 10px;
+		}
+
+		.disabled {
+			color: var(--light-gray) !important;
 		}
 	</style>
 {% endblock %}
