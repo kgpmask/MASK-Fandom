@@ -46,11 +46,12 @@ function handler (app, nunjEnv) {
 			// Here's hoping Ankan added proper validation in the njk file
 			req.user = await dbh.createNewUser(req.body);
 			// Generate a session for login middleware to recognize
-			res.cookie('sessionId', await dbh.generateSessionRecord(id));
+			res.cookie('sessionId', await dbh.generateSessionRecord(req.user._id));
 			// Send a message to indicate successful login
 			return res.send('Successfully logged in');
 		} catch (err) {
 			// Sending an error: Can do next as well, but eh. Using this for now.
+			console.log(err);
 			return res.status(400).error(err);
 		}
 	});
