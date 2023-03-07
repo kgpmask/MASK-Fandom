@@ -63,14 +63,12 @@
 			<h2>Answers for ${quizID}</h2>
 			<table>
 				<tr>
-					<th>Question</th>
 					<th>Answers</th>
 				</tr>
 		`];
 		question.forEach(elem => {
 			code.push(`
 				<tr>
-					<td>${elem.q[0].value}</td>
 					<td>${elem.options.type === 'mcq' ? elem.options.value[elem.solution - 1][0].value : Array.isArray(elem.solution) ? elem.solution.join(", ") : elem.solution}</td>
 				</tr>
 			`)
