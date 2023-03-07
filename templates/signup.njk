@@ -87,13 +87,8 @@
 		let currentPage = 1;
 		const max = (a, b) => a > b ? a : b;
 		const min = (a, b) => a < b ? a : b;
-		const selectedImages = {
-			'Naruto': '',
-			'MHA': '',
-			'OPM': '',
-			'AOT': ''
-		};
-
+		let selectedImage;
+		let selectedSauce;
 		function shownextpg () {
 			document.getElementById(`page${currentPage}`).style.display = 'none';
 			currentPage = min(3, ++currentPage);
@@ -124,16 +119,14 @@
 			const email = document.getElementById('email').value;
 			if (!email.trim()) return alert('Empty Email Address');
 			if (!email.match(/^((?!.*\.{2})[a-zA-Z0-9\.\-\_]*)@((?!.*\.{2})[a-zA-Z\.\-\_]*).[a-zA-z]{2,3}$/)) return alert('Invalid e-mail address');
-			const images = selectedImages;
-			for (const [key, value] of Object.entries(images)) {
-  				if (value === '') return alert('Images not selected.')
-			}
+			const image = selectedImage;
+			if (!image) return alert('Images not selected.');
 			const signedUpFor = {};
 			{% for sauce in sauces %}
 				signedUpFor.{{ sauce.name if sauce.name == 'Naruto' else sauce.id }} = document.getElementById('{{ sauce.id }}').checked;
 			{% endfor %}
 			if (!Object.values(signedUpFor).some(Boolean)) return alert('Sign up for at least one quiz.');
-			console.log({ name, email, selectedImages, signedUpFor })
+			// console.log({ name, email, selectedImage, signedUpFor })
 			// Page two
 			const username = document.getElementById('username').value;
 			if (!username) return alert('No username given.');
@@ -148,7 +141,7 @@
 			const transactionID = document.getElementById('transaction-ID').value;
 			if (!~~transactionID) return alert('Transaction ID not provided. Signup requires transaction ID');
 			if (!transactionID.match(/^\d{12}$/)) return alert('Transaction ID provided is invalid!');
-			console.log('Sending POST request');
+			// console.log('Sending POST request');
 			axios.post('/signup', {
 				name,
 				username,
@@ -164,15 +157,17 @@
 		window.onload = () => {
 			[...document.getElementsByClassName('image-array')].forEach(ele => {
 				[...ele.children].forEach(child => {
-					child.addEventListener('click', () => {
+					child.addEventListener('click', (event) => {
+						console.log(event)
 						sauce = ele.getAttribute('value');
 						try {
-							document.getElementById(`img-${sauce}-${selectedImages[sauce]}`).classList.remove('selected-image');
+							document.getElementById(`img-${selectedImage}`).classList.remove('selected-image');
 						}
 						catch (e) { console.log('Throwing error');}
 						finally {
-							selectedImages[ele.getAttribute('value')] = child.alt;
-							document.getElementById(`img-${sauce}-${selectedImages[sauce]}`).classList.add('selected-image');
+							selectedSauce = sauce;
+							selectedImage = event.srcElement.id.slice(4, );
+							event.srcElement.classList.add('selected-image');
 						}
 					});
 				});
