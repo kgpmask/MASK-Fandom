@@ -106,7 +106,7 @@ function handler (app, nunjEnv) {
 	// Results page
 	app.get('/results/:arg', async (req, res) => {
 		const RES = await dbh.getFandomResult(req.params.arg);
-		if (!RES) return res.notfound();
+		if (!RES.some(Boolean)) return res.notFound();
 		const results = [];
 		RES.forEach(r => {
 			if (!results.find(res => res.uid === r.userID)) {

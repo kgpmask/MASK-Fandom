@@ -172,8 +172,8 @@ async function getMembersbyYear (year) {
 }
 
 // Get Fandom results (using the quiz id)
-async function getFandomResult (quizID) {
-	return await Quiz.UserInfo.find({ quizID: quizID });
+async function getFandomResult (quizId) {
+	return await Quiz.UserInfo.find({ quizId });
 }
 
 module.exports = {
