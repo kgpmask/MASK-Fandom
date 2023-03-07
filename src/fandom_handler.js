@@ -133,6 +133,10 @@ function handler (app, nunjEnv) {
 	app.get('/rebuild', async (req, res) => {
 		if (!req.admin) return res.redirect('/');
 	});
+	app.use((req, res) => {
+		// Catch-all 404
+		res.notFound();
+	});
 }
 
 module.exports = handler;
