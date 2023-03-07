@@ -42,11 +42,12 @@ function handler (app, nunjEnv) {
 			// Here's hoping Ankan added proper validation in the njk file
 			req.user = await dbh.createNewUser(req.body);
 			// Generate a session for login middleware to recognize
-			res.cookie('sessionId', await dbh.generateSessionRecord(id));
+			res.cookie('sessionId', await dbh.generateSessionRecord(req.user.id));
 			// Send a message to indicate successful login
 			return res.send('Successfully logged in');
 		} catch (err) {
 			// Sending an error: Can do next as well, but eh. Using this for now.
+			console.log(err);
 			return res.status(400).error(err);
 		}
 	});
@@ -64,7 +65,8 @@ function handler (app, nunjEnv) {
 	// Profile
 	app.get('/profile', async (req, res) => {
 		if (!req.loggedIn) return res.redirect('/');
-		req.user.imageLink = require('./images')[req.user.toObject().image]?.src;
+		const [sauce, char] = req.user.image.split('-');
+		req.user.imageLink = require('./images')[sauce][char];
 		return res.renderFile('profile.njk', req.user);
 	});
 
