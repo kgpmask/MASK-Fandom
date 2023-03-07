@@ -17,32 +17,44 @@
 	href: 'https://www.kgpmask.club'
 }] %}
 
+{% set shirts = ['naruto', 'aot', 'opm', 'mha'] %}
+
 {% block pagecontent %}
 	<div class='notification-banner'>「 {{ 'Limited seats only. Register fast!!!' }} 」</div>
 	<hr style="width: 90%; margin-left: 5%;">
 	<div class='text' style='max-width: 70%; margin-left: 15%; text-align: center;'>
-		Welcome to the <b>Quad Anime Fandom Quiz</b>, hosted by Manga and Anime Society Kharagpur.<br>
+		<p style="font-size: 120%;">Welcome to the <b>Quad Anime Trivia Quiz</b>, hosted by Manga and Anime Society Kharagpur.<br></p>
 		<br>
 		<p style="text-align: left;">We have four quizzes in store for you. The quizzes and their times are given below.</p>
 		<ul style="text-align: left; margin-left: 45px; margin-top: 5px;">
-			<li><b>One Punch Man:</b> 3:00 PM to 3:30 PM</li>
-			<li><b>My Hero Academia:</b> 3:40 PM to 4:10 PM</li>
-			<li><b>Attack On Titan:</b> 4:20 PM to 4:50 PM</li>
-			<li><b>Naruto:</b> 5:00 PM to 5:30 PM</li>
+			<li>3:00 PM&nbsp| <b>One Punch Man:</b> Upto and including Season 2</li>
+			<li>3:40 PM&nbsp| <b>My Hero Academia:</b> Upto and including Season 5</li>
+			<li>4:20 PM&nbsp| <b>Attack On Titan:</b> Upto and including Season 4 Part 2</li>
+			<li>5:00 PM&nbsp| <b>Naruto:</b> Complete Naruto and Shippuden</li>
 		</ul>
 		<br>
 		<h3 style="text-align: left; margin: 5px;"> Quiz Instructions </h3>
-		<p style="text-align: left; margin-left: 35px;">The registration fee for each quiz is <b {# style="color: var(--error-red);" #}>₹40.</b> You are allowed to register for multiple quizzes using the same user account. For further registrations, however, contact us at the event.</p>
-		<p style="text-align: left; margin-left: 35px;">Each quiz will have 20 questions and will last 20 minutes. The quiz must be attempted using a laptop, so bring your own laptops.</p>
+		<p style="text-align: left; margin-left: 35px;">The registration fee <u><b>for each quiz</b></u> is <b {# style="color: var(--error-red);" #}>₹40.</b> You are allowed to register for multiple quizzes using the same user account. For further registrations, however, contact us at the event. Note that the entry fee is <b>non-refundable</b></p>
+		<p style="text-align: left; margin-left: 35px;">Each quiz will have 20 questions and will last 20 minutes. <b>The quiz must be attempted using a laptop, so bring your own laptops.</b></p>
 		<p style="text-align: left; margin-left: 35px;">No extra time will be provided in case of late entry. Furthermore, in case of a tie in the number of points, the one who submits the quickest is ranked above the other, irrespective of the start time.</p>
 		<br>
 		<h3 style="text-align: left; margin: 5px;"> Prizes </h3>
-		<p style="text-align: left; margin-left: 35px;">Prizes will be provided to the top <b {# style="color: var(--error-red);" #}>20%</b>  of the participants. </p>
+		<p style="text-align: left; margin-left: 35px;">Prizes will be provided to the top <b {# style="color: var(--error-red);" #}>20%</b>  of the participants of each quiz. </p>
+		<ul style="text-align: left; margin-left: 75px; margin-top: 5px;">
+			<li><b>First Place:</b> A T-shirt</li>
+			<li><b>Second Place:</b> A poster</li>
+			<li><b>Third Place:</b> 4 manga panels</li>
+			<li><b>Rest</b> of the winners will get a manga panel each</li>
+		</ul>
+		<div class="prize-image-container">
+			{% for shirt in shirts %}<img src="/assets/fandom/prizes/{{ shirt }}.webp">{% endfor %}
+		</div>
 		<br>
 		<h3 style="text-align: left; margin: 5px;">Event Details</h3>
 		<p style="text-align: left; margin-left: 35px;"><b>Date:</b> 12<sup>th</sup> March 2023 (Sunday)</p>
 		<p style="text-align: left; margin-left: 35px;"><b>Venue:</b> Multipurpose Hall, Gymkhana</p>
 		<br>
+		<p style="text-align: left;">In case of any query, contact us at <a href='mailto:kgpmask@gmail.com'>kgpmask@gmail.com</a></p>
 	</div>
 	<br>
 	<div class='link-container'>
@@ -91,6 +103,20 @@
 			font-weight: 125;
 			color: var(--error-red);
 			background-color: var(--abyss);
+		}
+
+		.prize-image-container {
+			display: flex;
+			flex-direction: row;
+			flex-wrap: wrap;
+			align-items: center;
+			justify-content: center;
+		}
+
+		.prize-image-container img {
+			max-width: 270px;
+			max-height: 50vh;
+			margin: 5px;
 		}
 	</style>
 {% endblock %}
