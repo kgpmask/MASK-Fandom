@@ -4,9 +4,6 @@
 {% set pagetitle = 'Quad Anime Trivia Quiz' %}
 
 {% set buttonlinks = [{
-	name: 'Information',
-	href: '/info'
-}, {
 	name: 'Events',
 	href: '/events'
 }, {
@@ -15,15 +12,37 @@
 }, {
 	name: 'Profile',
 	href: '/profile'
+}, {
+	name: 'Main Website',
+	href: 'https://www.kgpmask.club'
 }] %}
 
 {% block pagecontent %}
-	<div class='notification-banner'>「 {{ notif if notif else 'Under Development...' }} 」</div>
+	<div class='notification-banner'>「 {{ 'Limited seats only. Register fast!!!' }} 」</div>
 	<hr style="width: 90%; margin-left: 5%;">
 	<div class='text' style='max-width: 70%; margin-left: 15%; text-align: center;'>
-		This section currently contains filler text which will be replaced with the actual text to be used in the website for the <s>Yodan</s> Quad Anime Trivia Quiz.<br>
+		Welcome to the <b>Quad Anime Fandom Quiz</b>, hosted by Manga and Anime Society Kharagpur.<br>
 		<br>
-		Meanwhile, check out the main page at <a href='https://www.youtube.com/watch?v=dQw4w9WgXcQ'>kgpmask.club</a>
+		<p style="text-align: left;">We have four quizzes in store for you. The quizzes and their times are given below.</p>
+		<ul style="text-align: left; margin-left: 45px; margin-top: 5px;">
+			<li><b>One Punch Man:</b> 3:00 PM to 3:30 PM</li>
+			<li><b>My Hero Academia:</b> 3:40 PM to 4:10 PM</li>
+			<li><b>Attack On Titan:</b> 4:20 PM to 4:50 PM</li>
+			<li><b>Naruto:</b> 5:00 PM to 5:30 PM</li>
+		</ul>
+		<br>
+		<h3 style="text-align: left; margin: 5px;"> Quiz Instructions </h3>
+		<p style="text-align: left; margin-left: 35px;">The registration fee for each quiz is <b {# style="color: var(--error-red);" #}>₹40.</b> You are allowed to register for multiple quizzes using the same user account. For further registrations, however, contact us at the event.</p>
+		<p style="text-align: left; margin-left: 35px;">Each quiz will have 20 questions and will last 20 minutes. The quiz must be attempted using a laptop, so bring your own laptops.</p>
+		<p style="text-align: left; margin-left: 35px;">No extra time will be provided in case of late entry. Furthermore, in case of a tie in the number of points, the one who submits the quickest is ranked above the other, irrespective of the start time.</p>
+		<br>
+		<h3 style="text-align: left; margin: 5px;"> Prizes </h3>
+		<p style="text-align: left; margin-left: 35px;">Prizes will be provided to the top <b {# style="color: var(--error-red);" #}>20%</b>  of the participants. </p>
+		<br>
+		<h3 style="text-align: left; margin: 5px;">Event Details</h3>
+		<p style="text-align: left; margin-left: 35px;"><b>Date:</b> 12<sup>th</sup> March 2023 (Sunday)</p>
+		<p style="text-align: left; margin-left: 35px;"><b>Venue:</b> Multipurpose Hall, Gymkhana</p>
+		<br>
 	</div>
 	<br>
 	<div class='link-container'>
