@@ -25,10 +25,14 @@ function handler (app, nunjEnv) {
 	});
 	// Login POST
 	app.post('/login', async (req, res) => {
-		const id = await dbh.validateUserLogin(req.body);
-		if (!id) throw new Error('Credentials don\'t match.');
-		res.cookie('sessionId', await dbh.generateSessionRecord(id));
-		return res.send('Login Successful');
+		try {
+			const id = await dbh.validateUserLogin(req.body);
+			if (!id) throw new Error('Credentials don\'t match.');
+			res.cookie('sessionId', await dbh.generateSessionRecord(id));
+			return res.send('Login Successful');
+		} catch (e) {
+			return res.error(e);
+		}
 	});
 	// Signup GET
 	app.get('/signup', (req, res) => {

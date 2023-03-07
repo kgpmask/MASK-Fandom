@@ -152,7 +152,10 @@
 				signedUpFor,
 				transactionID
 			}).then(() => window.location.href = '/')
-			.catch(e => console.log(e));
+			.catch(e => {
+				console.log(e);
+				return alert(e.response.data);
+			});
 		}
 
 		window.onload = () => {
