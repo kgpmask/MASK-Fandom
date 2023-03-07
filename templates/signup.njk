@@ -125,9 +125,7 @@
 			if (!email.trim()) return alert('Empty Email Address');
 			if (!email.match(/^((?!.*\.{2})[a-zA-Z0-9\.\-\_]*)@((?!.*\.{2})[a-zA-Z\.\-\_]*).[a-zA-z]{2,3}$/)) return alert('Invalid e-mail address');
 			const images = selectedImages;
-			for (const [key, value] of Object.entries(images)) {
-  				if (value === '') return alert('Images not selected.')
-			}
+			if (Object.values(selectedImages).every(x => x === '')) return alert('Images not selected');
 			const signedUpFor = {};
 			{% for sauce in sauces %}
 				signedUpFor.{{ sauce.name if sauce.name == 'Naruto' else sauce.id }} = document.getElementById('{{ sauce.id }}').checked;
