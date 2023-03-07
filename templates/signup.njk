@@ -5,7 +5,7 @@
 
 {% set sauces = [
 	{ name: 'Attack On Titan', id: 'AOT' },
-	{ name: 'Naruto', id: 'NRT' },
+	{ name: 'Naruto', id: 'Naruto' },
 	{ name: 'One Punch Man', id: 'OPM' },
 	{ name: 'My Hero Academia', id: 'MHA' }
 ] %}
@@ -20,8 +20,17 @@
 				<hr style="width: 80%; border: solid 1px var(--off-white); margin: 15px 10% 5px;">
 				<p style="padding-top: 9px;font-size: 130%;">Select your profile picture</p>
 				<div id="images">
-					{% for char, image in images %}
-						<img src="{{ image.src }}" alt="{{ char }}" id="img-{{ char }}">
+					{% for sauce, data in images %}
+							<div class="image-array-heading" value="{{ sauce }}">
+								<p style="font-size: 20px;">
+									{{ sauce }}
+								</p>
+							</div>
+							<div id="{{ sauce }}-images" class="image-array collasp" value="{{ sauce }}">
+								{% for char, image in data %}
+									<img src="{{ image }}" alt="{{ char }}" id="img-{{ sauce }}-{{ char }}">
+								{% endfor %}
+							</div>
 					{% endfor %}
 				</div>
 				<hr style="width: 80%; border: solid 1px var(--off-white); margin: 15px 10% 5px;">
@@ -38,17 +47,18 @@
 			</div>
 			<div id="page2" style="display:none;">
 				<p style="padding-top: 9px;font-size: 150%;">Authentication</p>
-				<input type="text" placeholder="Username" id="username">
-				<input type="password" placeholder="Password" id="password">
+				<input type="text" placeholder="Set Username" id="username">
+				<input type="password" placeholder="Set Password" id="password">
 				<input type="password" placeholder="Confirm Password" id="confirm-password">
 				<button type="button" class="prev" onclick="showprevpg()">Previous</button>
 				<button type="button" class="nextpage" onclick="shownextpg()">Next</button>
 			</div>
 			<div id="page3" style="display:none;">
 				<p style="padding-top: 9px;font-size: 150%;">Payment</p>
-				<p style="padding-top: 9px;font-size: 100%;">Scan the following QR code to proceed with your payment. Fill the transaction ID in the field.</p>
+				<p style="padding-top: 9px;font-size: 100%;">Scan the following QR code to proceed with your payment. Fill the transaction ID in the field.<br>
+				<b style="color: var(--error-red);">Rs. 40</b> per quiz you have registered for.</p>
 				<hr style="width: 80%; border: solid 1px var(--off-white); margin: 15px 10%;">
-				<img src="../assets/testqr/test.webp" id="UPI" style="border-radius: 8px;">
+				<img src="../assets/fandom/qrcode.webp" id="UPI" style="border-radius: 8px; max-width: 80%;">
 				<input type="text" placeholder="Transaction ID" id='transaction-ID'>
 				<h4><font family="sans serif">Click on the icons below corresponding to your payment app to find the Transaction ID in sample transactions!</font></h4>
 				<div class="upi_icons">
@@ -77,7 +87,12 @@
 		let currentPage = 1;
 		const max = (a, b) => a > b ? a : b;
 		const min = (a, b) => a < b ? a : b;
-		let selectedImage;
+		const selectedImages = {
+			'Naruto': '',
+			'MHA': '',
+			'OPM': '',
+			'AOT': ''
+		};
 
 		function shownextpg () {
 			document.getElementById(`page${currentPage}`).style.display = 'none';
@@ -90,7 +105,6 @@
 			currentPage = max(1, --currentPage);
 			document.getElementById(`page${currentPage}`).style.display = 'block';
 		}
-
 
 		function displaymodal (element) {
 			document.getElementById('modalimg').src = '../assets/transactionpages/' + element.id + '.png';
@@ -110,14 +124,16 @@
 			const email = document.getElementById('email').value;
 			if (!email.trim()) return alert('Empty Email Address');
 			if (!email.match(/^((?!.*\.{2})[a-zA-Z0-9\.\-\_]*)@((?!.*\.{2})[a-zA-Z\.\-\_]*).[a-zA-z]{2,3}$/)) return alert('Invalid e-mail address');
-			const image = selectedImage;
-			if (!image) return alert('Image not selected.')
+			const images = selectedImages;
+			for (const [key, value] of Object.entries(images)) {
+  				if (value === '') return alert('Images not selected.')
+			}
 			const signedUpFor = {};
 			{% for sauce in sauces %}
 				signedUpFor.{{ sauce.name if sauce.name == 'Naruto' else sauce.id }} = document.getElementById('{{ sauce.id }}').checked;
 			{% endfor %}
 			if (!Object.values(signedUpFor).some(Boolean)) return alert('Sign up for at least one quiz.');
-			console.log({ name, email, image, signedUpFor })
+			console.log({ name, email, selectedImages, signedUpFor })
 			// Page two
 			const username = document.getElementById('username').value;
 			if (!username) return alert('No username given.');
@@ -130,7 +146,8 @@
 			if (password !== document.getElementById('confirm-password').value) return alert('Passwords do not match!');
 			// Page three
 			const transactionID = document.getElementById('transaction-ID').value;
-			if (!transactionID) return alert('Transaction ID not provided. Signup requires transaction ID');
+			if (!~~transactionID) return alert('Transaction ID not provided. Signup requires transaction ID');
+			if (!transactionID.match(/^\d{12}$/)) return alert('Transaction ID provided is invalid!');
 			console.log('Sending POST request');
 			axios.post('/signup', {
 				name,
@@ -145,17 +162,34 @@
 		}
 
 		window.onload = () => {
-			[...document.getElementById('images').children].forEach(child => child.addEventListener('click', () => {
-				try {
-					document.getElementById(`img-${selectedImage}`).classList.remove('selected-image');
-				}
-				catch (e) { console.log('Throwing error'); }
-				finally {
-					selectedImage = child.alt;
-					document.getElementById(`img-${selectedImage}`).classList.add('selected-image');
-				}
-			}));
-		}
+			[...document.getElementsByClassName('image-array')].forEach(ele => {
+				[...ele.children].forEach(child => {
+					child.addEventListener('click', () => {
+						sauce = ele.getAttribute('value');
+						try {
+							document.getElementById(`img-${sauce}-${selectedImages[sauce]}`).classList.remove('selected-image');
+						}
+						catch (e) { console.log('Throwing error');}
+						finally {
+							selectedImages[ele.getAttribute('value')] = child.alt;
+							document.getElementById(`img-${sauce}-${selectedImages[sauce]}`).classList.add('selected-image');
+						}
+					});
+				});
+			});
+			[...document.getElementsByClassName('image-array-heading')].forEach(ele => {
+				ele.addEventListener('click', () => {
+					[...document.getElementsByClassName('image-array')].forEach(el => {
+						if (el.getAttribute('value') === ele.getAttribute('value')) {
+							el.classList.remove('collasp');
+						}
+						else if (!el.classList.contains('collasp')) {
+							el.classList.add('collasp');
+						}
+					});
+				});
+			});
+		};
 	</script>
 {% endblock %}
 
@@ -163,8 +197,9 @@
 	<style media="screen">
 		.form-container{
 			{# margin-top : 43rem; #}
-			margin-bottom : 63rem;
-			display : block;
+			margin-bottom: 63rem;
+			display: flex;
+			justify-content: center;
 		}
 		
 		form{
@@ -173,9 +208,6 @@
 			max-width: 540px;
 			background-color: rgba(255,255,255,0.13);
 			position: absolute;
-			transform: translate(-50%,-50%);
-			top: 50%;
-			left: 50%;
 			border-radius: 10px;
 			backdrop-filter: blur(5px);
 			border: 2px solid rgba(255,255,255,0.1);
@@ -248,9 +280,20 @@
 			margin-right : 9px;
 			margin-left : 9px;
 		}
-
-		#images{
-			padding : 11px 4px 0px 0px;
+		.collasp{
+			display: none;
+		}
+		.image-array>img{
+			margin: 10px;
+			width: 50px;
+			height: 50px;
+		}
+		.image-array-heading{
+			background-color: rgba(255,255,255,0.07);
+			margin-top: 5px;
+			width: 80%;
+			padding: 10px 0px 10px 0px;
+			border-radius: 12px
 		}
 		.profile_picture{
 			height : 82px;
@@ -300,19 +343,14 @@
 
 		#images {
 			display: flex;
-			flex-direction: row;
+			flex-direction: column;
 			flex-wrap: wrap;
 			align-items: center;
 			justify-content: center;
+			padding : 11px 4px 0px 0px;
 		}
 
-		#images > img {
-			margin: 10px;
-			width: 50px;
-			height: 50px;
-		}
-
-		#images > .selected-image {
+		.image-array > .selected-image {
 			margin: 1px !important;
 			border: solid 4px var(--dark-red);
 			width: 60px !important;
