@@ -18,6 +18,7 @@ async function createNewUser (profile) {
 	// Generate a salt and hash. Then save them both.
 	user.salt = await bcrypt.genSalt(7);
 	user.hash = await bcrypt.hash(profile.password, user.salt);
+	user.rollno = user.rollno?.toUpperCase();
 	return user.save();
 }
 

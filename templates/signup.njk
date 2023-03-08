@@ -116,18 +116,18 @@
 		function validatePageOne () {
 			const name = document.getElementById('display-name').value.trim();
 			if (!name) return alert('Empty Name');
-			if (!name.match(/^(?!.*\.{2})[a-zA-Z0-9. ]*$/)) return alert('Name doesn\'t meet requirements');
+			if (!name.match(/^[a-zA-Z0-9. ]*$/)) return alert('Name doesn\'t meet requirements');
 			const email = document.getElementById('email').value.trim();
-			if (!email) return alert('Empty Email Address');
-			if (!email.match(/^((?!.*\.{2})[a-zA-Z0-9\.\-\_]*)@((?!.*\.{2})[a-zA-Z\.\-\_]*).[a-zA-z]{2,3}$/)) return alert('Invalid e-mail address');
+			if (!email) return alert('Empty email address');
+			if (!email.match(/^[a-zA-Z0-9\.\-\_]*@[a-zA-Z\.\-\_]*.[a-zA-z]{2,4}$/)) return alert('Invalid email address');
 			const rollno = document.getElementById('rollno').value.trim();
 			if (!rollno) return alert('Roll number not found');
-			if (!rollno.match(/^[12][89012][A-Z]{2}[0-9][A-Z0-9]{2}\d\d$/)) return alert('Roll number invalid');
+			if (!rollno.match(/^[12][89012][A-Z]{2}[0-9][A-Z0-9]{2}\d\d$/i)) return alert('Roll number is invalid');
 			const image = selectedImage;
-			if (!image) return alert('Images not selected.');
+			if (!image) return alert('Profile picture not selected.');
 			const signedUpFor = {};
 			{% for sauce in sauces %}
-				signedUpFor.{{ sauce.name if sauce.name === 'Naruto' else sauce.id }} = document.getElementById('{{ sauce.id }}').checked;
+				signedUpFor.{{ sauce.id }} = document.getElementById('{{ sauce.id }}').checked;
 			{% endfor %}
 			if (!Object.values(signedUpFor).some(Boolean)) return alert('Sign up for at least one quiz.');
 			return true;
@@ -136,11 +136,14 @@
 		function validatePageTwo () {
 			const username = document.getElementById('username').value;
 			if (!username) return alert('No username given.');
-			if (!username.match(/^(?!.*[\._]{2,})[\w\.]*$/)) return alert('Username doesn\'t meet requirements');
+			// if (!username.match(/^(?!.*[\._]{2,})[\w\.]*$/)) return alert('Username doesn\'t meet requirements');
+			// Removing the arbitrary requirements
+			// ...actually let's remove HTML-breaking stuff
+			if (username.match(/[<>]/)) return alert(`The characters < and > are not permitted in usernames.`);
 			const password = document.getElementById('password').value;
 			if (!password) return alert('No password provided.');
-			if (!password.match(/^(?=.*[!-~]).{6,20}$/)) {
-				return alert('Password doesn\'t meet the requirements');
+			if (!password.match(/^.{6,24}$/)) {
+				return alert('Password must be between 6 and 24 characters long');
 			}
 			if (password !== document.getElementById('confirm-password').value) return alert('Passwords do not match!');
 			return true;
@@ -157,6 +160,18 @@
 			if (!validatePageOne()) return;
 			if (!validatePageTwo()) return;
 			if (!validatePageThree()) return;
+
+			const name = document.getElementById('display-name').value.trim();
+			const email = document.getElementById('email').value.trim();
+			const rollno = document.getElementById('rollno').value.trim();
+			const image = selectedImage;
+			const signedUpFor = {};
+			{% for sauce in sauces %}
+				signedUpFor.{{ sauce.id }} = document.getElementById('{{ sauce.id }}').checked;
+			{% endfor %}
+			const username = document.getElementById('username').value;
+			const password = document.getElementById('password').value;
+			const transactionID = document.getElementById('transaction-ID').value;
 
 			axios.post('/signup', {
 				name,

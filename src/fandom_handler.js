@@ -4,6 +4,7 @@ const path = require('path');
 
 const checker = require('./checker.js');
 const dbh = PARAMS.mongoless ? {} : require('../database/handler');
+const fandomImages = require('./images');
 
 const handlerContext = {}; // Store cross-request context here
 
@@ -37,13 +38,32 @@ function handler (app, nunjEnv) {
 	// Signup GET
 	app.get('/signup', (req, res) => {
 		if (req.loggedIn) return res.redirect('/');
-		res.renderFile('signup.njk', { images: require('./images') });
+		res.renderFile('signup.njk', { images: fandomImages });
 	});
 	// Signup POST
 	app.post('/signup', async (req, res) => {
-		// req.body = { name, username, password, email, image, signedUpFor, transactionID }
+		// req.body = { name, username, rollno, password, email, image, signedUpFor, transactionID }
 		try {
 			// Here's hoping Ankan added proper validation in the njk file
+			// Goose what did we say about only having client-side validation...
+			const { name, username, rollno, password, email, image, signedUpFor, transactionID } = req.body;
+			if (!name.match(/^[a-zA-Z0-9. ]*$/)) throw new Error('Name doesn\'t meet requirements');
+			if (!email) throw new Error('Empty email address');
+			if (!email.match(/^[a-zA-Z0-9\.\-\_]*@[a-zA-Z\.\-\_]*.[a-zA-z]{2,4}$/)) throw new Error('Invalid email address');
+			// Ankan, for the future, use lookarounds and arbitrary matches - like `(?!.*) - VERY carefully`
+			if (!rollno) throw new Error('Roll number not found');
+			if (!rollno.match(/^[12][89012][A-Z]{2}[0-9][A-Z0-9]{2}\d\d$/i)) throw new Error('Roll number is invalid');
+			if (!image) throw new Error('Valid profile picture not selected.');
+			const [sauce, char] = image?.split('-');
+			if (!fandomImages[sauce]?.hasOwnProperty(char)) throw new Error('Invalid profile picture selected');
+			console.log(signedUpFor);
+			if (!Object.keys(fandomImages).map(k => signedUpFor[k]).some(v => v)) throw new Error('Sign up for at least one quiz.');
+			if (!username) throw new Error('No username given.');
+			if (username.match(/[<>]/)) throw new Error(`The characters < and > are not permitted in usernames.`);
+			if (!password.match(/^.{6,24}$/)) throw new Error('Password must be between 6 and 24 characters long');
+			if (!transactionID.match(/^\d{12}$/)) throw new Error('Transaction ID provided is invalid!');
+			// Validated...
+
 			req.user = await dbh.createNewUser(req.body);
 			// Generate a session for login middleware to recognize
 			res.cookie('sessionId', await dbh.generateSessionRecord(req.user.id));
@@ -51,7 +71,6 @@ function handler (app, nunjEnv) {
 			return res.send('Successfully logged in');
 		} catch (err) {
 			// Sending an error: Can do next as well, but eh. Using this for now.
-			console.log(err);
 			return res.status(400).error(err);
 		}
 	});
@@ -70,7 +89,7 @@ function handler (app, nunjEnv) {
 	app.get('/profile', async (req, res) => {
 		if (!req.loggedIn) return res.redirect('/');
 		const [sauce, char] = req.user.image.split('-');
-		req.user.imageLink = require('./images')[sauce][char];
+		req.user.imageLink = fandomImages[sauce][char];
 		return res.renderFile('profile.njk', req.user);
 	});
 
