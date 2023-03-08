@@ -56,7 +56,6 @@ function handler (app, nunjEnv) {
 			if (!image) throw new Error('Valid profile picture not selected.');
 			const [sauce, char] = image?.split('-');
 			if (!fandomImages[sauce]?.hasOwnProperty(char)) throw new Error('Invalid profile picture selected');
-			console.log(signedUpFor);
 			if (!Object.keys(fandomImages).map(k => signedUpFor[k]).some(v => v)) throw new Error('Sign up for at least one quiz.');
 			if (!username) throw new Error('No username given.');
 			if (username.match(/[<>]/)) throw new Error(`The characters < and > are not permitted in usernames.`);
