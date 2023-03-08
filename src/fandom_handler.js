@@ -165,6 +165,16 @@ function handler (app, nunjEnv) {
 			return res.error(err);
 		}
 	});
+	// Mark as present (can't attempt quiz without being marked present)
+	app.post('/mark-present', async (req, res) => {
+		try {
+			if (!req.admin) return res.status(403).send('Access Denied. Not an admin!');
+			await dbh.markUserAsPresent(req.body.id);
+			return res.send('Marked as present');
+		} catch (err) {
+			return res.error(err);
+		}
+	});
 	// Quiz Portal
 	app.get('/quiz-portal', async (req, res) => {
 		// if (!req.admin) return res.redirect('/');

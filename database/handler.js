@@ -67,6 +67,14 @@ async function confirmPayment (userId) {
 	return user.save();
 }
 
+// Mark as present
+async function markUserAsPresent (userId) {
+	const user = await getUser(userId);
+	if (!user) throw new Error('Invalid User ID!');
+	user.qrScanned = true;
+	return user.save();
+}
+
 // Add new record to database
 async function updateUserQuizRecord (stats) { // {userId, quizId, time, score}
 	// This... should be fine as it is
@@ -206,6 +214,7 @@ module.exports = {
 	getAllUsers,
 	editUserDetails,
 	confirmPayment,
+	markUserAsPresent,
 	updateUserQuizRecord,
 	getQuizzes,
 	getUserStats,

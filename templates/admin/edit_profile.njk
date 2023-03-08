@@ -47,8 +47,8 @@
 				{% endfor %}
 			</div>
 			<div class='button-container'>
-				<button type = "button" onclick = "console.log('Click')" style='margin: 5px;' {{'disabled' if qrScanned}}>{{'Payment Confirmed' if qrScanned else 'Confirm Payment' }}</button>
-				<button type = "button" onclick = "console.log('Click')" style='margin: 5px;' {{'disabled' if qrScanned}}>{{ 'Marked Present' if qrScanned else 'Mark Present' }}</button>
+				<button type = "button" onclick = "confirmPayment()" style='margin: 5px;' {{'disabled' if paymentConfirmed}} id='payment'>{{'Payment Confirmed' if paymentConfirmed else 'Confirm Payment' }}</button>
+				<button type = "button" onclick = "markPresence()" style='margin: 5px;' {{'disabled' if qrScanned}} id='present'>{{ 'Marked Present' if qrScanned else 'Mark Present' }}</button>
 				<button type = "button" onclick = "updateProfile()" style='margin: 5px;'>Confirm Changes</button>
 			</div>
 		</form>
@@ -174,11 +174,28 @@
 			try {
 				const response = await axios.post('/confirm-payment', { userId });
 				if (response.data === 'Confirmation successful') {
-					const button = document.getElementById(`payment-${userId}`);
-					button.classList.replace('payment-pending', 'payment-done');
-					button.innerHTML = 'Paid';
+					const button = document.getElementById(`payment`);
+					button.disabled = true;
+					button.innerHTML = 'Payment Confirmed';
 					return alert('Payment has been confirmed!');
 				}
+			} catch (err) {
+				return alert(err.response.data);
+			}
+		}
+
+		async function markPresence () {
+			const id = document.getElementById('id').placeholder.trim();
+			const username = document.getElementById('username').placeholder.trim();
+			if (!confirm(`Do you want to mark ${username} as present?`)) return;
+			try {
+				const response = await axios.post('/mark-present', { id });
+				if (response.data === 'Marked as present') {
+					const button = document.getElementById(`present`);
+					button.disabled = true;
+					button.innerHTML = 'Marked Present';
+					return alert(`Marked as present. ${username} can now attempt the quizzes.`);
+				} else return alert(response.data);
 			} catch (err) {
 				return alert(err.response.data);
 			}
