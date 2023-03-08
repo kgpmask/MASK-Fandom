@@ -16,8 +16,9 @@
 	<div class="form-container">
 		<form action='/' method='post' id="signup">
 			<div id="page1" style="display:block;">
-				<input type= "text" placeholder="Display name" id="display-name">
-				<input type="email" placeholder="Email address" id="email">
+				<input type= "text" placeholder="Display Name" id="display-name">
+				<input type="email" placeholder="Email Address" id="email">
+				<input type="text" placeholder="Roll Number" id="rollno">
 				<hr style="width: 80%; border: solid 1px var(--off-white); margin: 15px 10% 5px;">
 				<p style="padding-top: 9px;font-size: 130%;">Select your profile picture</p>
 				<div id="images">
@@ -113,12 +114,15 @@
 		}
 
 		function validatePageOne () {
-			const name = document.getElementById('display-name').value;
-			if (!name.trim()) return alert('Empty Name');
+			const name = document.getElementById('display-name').value.trim();
+			if (!name) return alert('Empty Name');
 			if (!name.match(/^(?!.*\.{2})[a-zA-Z0-9. ]*$/)) return alert('Name doesn\'t meet requirements');
-			const email = document.getElementById('email').value;
-			if (!email.trim()) return alert('Empty Email Address');
+			const email = document.getElementById('email').value.trim();
+			if (!email) return alert('Empty Email Address');
 			if (!email.match(/^((?!.*\.{2})[a-zA-Z0-9\.\-\_]*)@((?!.*\.{2})[a-zA-Z\.\-\_]*).[a-zA-z]{2,3}$/)) return alert('Invalid e-mail address');
+			const rollno = document.getElementById('rollno').value.trim();
+			if (!rollno) return alert('Roll number not found');
+			if (!rollno.match(/^[12][89012][A-Z]{2}[0-9][A-Z0-9]{2}\d\d$/)) return alert('Roll number invalid');
 			const image = selectedImage;
 			if (!image) return alert('Images not selected.');
 			const signedUpFor = {};
@@ -159,6 +163,7 @@
 				username,
 				password,
 				email,
+				rollno,
 				image,
 				signedUpFor,
 				transactionID
