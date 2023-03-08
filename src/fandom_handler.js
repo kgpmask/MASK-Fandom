@@ -185,6 +185,15 @@ function handler (app, nunjEnv) {
 		});
 		return res.renderFile('admin/quiz_portal.njk', { quizzes });
 	});
+	app.get('/show-answers/:arg', async (req,res) => {
+		const quiz = (await dbh.getQuizzes.find(e => e._id === req.params.arg));
+		const questions = [];
+		quiz.questions.forEach(question => {questions.push({ 
+				question
+			});
+		});
+		return res.renderFile('admin/quiz_solutions.njk', { questions });
+	});
 	// Re-evaluate a quiz's answers
 	app.post('/re-evaluate/:arg', async (req, res) => {
 		if (!req.admin) return res.status(403).send('Access Denied. Not an admin');

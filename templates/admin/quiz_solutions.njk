@@ -1,0 +1,23 @@
+{% extends '../_base.njk' %}
+
+{% set thispage = 'show-answers' %}
+{% set pagetitle = 'quiz solutions' %}
+
+
+
+{% block pagecontent %}
+	{% for question in questions %}
+        <div class = "solution_container">
+            <div class = "question-number">
+                <h3>{{ question.number }}</h3>
+            </div>
+            <div class = "solution">
+                <p class = "solution">{{ question.solution }}</p>
+            </div>
+        </div>
+    {% endfor %}
+{% endblock %}
+
+{% block customcss %}
+        
+{% endblock %}
