@@ -25,10 +25,14 @@ function handler (app, nunjEnv) {
 	});
 	// Login POST
 	app.post('/login', async (req, res) => {
-		const id = await dbh.validateUserLogin(req.body);
-		if (!id) throw new Error('Credentials don\'t match.');
-		res.cookie('sessionId', await dbh.generateSessionRecord(id));
-		return res.send('Login Successful');
+		try {
+			const id = await dbh.validateUserLogin(req.body);
+			if (!id) throw new Error('Credentials don\'t match.');
+			res.cookie('sessionId', await dbh.generateSessionRecord(id));
+			return res.send('Login Successful');
+		} catch (e) {
+			return false;
+		}
 	});
 	// Signup GET
 	app.get('/signup', (req, res) => {
@@ -89,6 +93,10 @@ function handler (app, nunjEnv) {
 	// Actual quiz
 	app.get('/quiz/:arg', async (req, res) => {
 		if (!req.loggedIn) return res.redirect('/login');
+		if (!req.user.signedUpFor[req.params.arg]) {
+			// made it compatible for testing... may remove later
+			if (!(PARAMS.dev && req.params.arg === 'SQ1')) return res.redirect('/events');
+		}
 		const quiz = (await dbh.getQuizzes()).find(e => e._id === req.params.arg);
 		const questions = [];
 		const types = [];
@@ -111,12 +119,20 @@ function handler (app, nunjEnv) {
 	});
 	// Time left fetcher
 	app.post('/time-left/:id', async (req, res) => {
+		if (!req.user.signedUpFor[req.params.id]) {
+			// made it compatible for testing... may remove later
+			if (!(PARAMS.dev && req.params.id === 'SQ1')) return res.error('Not registered');
+		}
 		const quiz = (await dbh.getQuizzes()).find(quiz => quiz._id === req.params.id);
 		if (!quiz) throw new Error('Unable to find the quiz!');
 		return res.send(Math.min(20 * 60, (new Date(quiz.endTime).getTime() - new Date().getTime()) / 1000).toString());
 	});
 	// Update Participant Quiz Status
 	app.post('/update-status/:id', async (req, res) => {
+		if (!req.user.signedUpFor[req.params.id]) {
+			// made it compatible for testing... may remove later
+			if (!(PARAMS.dev && req.params.id === 'SQ1')) return res.error('Not registered');
+		}
 		// Will be used when the person starts the quiz or moves to another question
 		const { answer } = req.body;
 		await dbh.updateUserStats(req.user._id, req.params.id, answer);
@@ -124,6 +140,10 @@ function handler (app, nunjEnv) {
 	});
 	// Quiz submit POST function
 	app.post('/submit/:id', async (req, res) => {
+		if (!req.user.signedUpFor[req.params.id]) {
+			// made it compatible for testing... may remove later
+			if (!(PARAMS.dev && req.params.id === 'SQ1')) return res.error('Not registered');
+		}
 		try {
 			await dbh.updateUserStats(req.user._id, req.params.id, 1.063);
 			return res.redirect('/submitted');

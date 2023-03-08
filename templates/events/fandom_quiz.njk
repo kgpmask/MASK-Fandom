@@ -50,11 +50,11 @@
 								{% if types[q - currentQ - 1] == 'mcq' %}
 									{% for i in range(1, 5) %}
 										<div class="option">
-											<div class="rad-label">
+											<label class="rad-label">
 												<input type="radio" id="answer-{{ q }}-{{ i }}" name="answer-{{ q }}" class="rad-input" value="{{ i }}"/>
 												<div class="rad-design"></div>
 												<div class="rad-text" id="option-{{ q }}-{{ i }}" for="answer-{{ q }}-{{ i }}"></div>
-											</div><br/>
+											</label><br/>
 										</div>
 									{% endfor %}
 								{% else %}
@@ -125,11 +125,13 @@
 			let e = 0;
 			const n = event.keyCode;
 			// Daheck are these variable names
-			keys = [48, 64, 96]; //[48: 1-4, 64 A-D, 96:NUM1-4]
+			keys = [48, 64, 96]; //[[49-52 = 1-4], [65-68 = A-D], [97-100:NUM1-NUM4]]
 			keys.forEach(k => {
+				// Here we check if the input code is in between the range of the keys
 				if (k < n && n < k + 5) return e = n - k;
 			});
 			if (e) {
+				// e = 1 || 2 || 3 || 4
 				// Select the corresponding option
 				op = document.getElementById(`option-${currentQ}-${e}`);
 				op.click();
