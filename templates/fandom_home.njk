@@ -20,47 +20,62 @@
 {% set shirts = ['naruto', 'aot', 'opm', 'mha'] %}
 
 {% block pagecontent %}
-	<div class='notification-banner'>「 {{ 'Limited seats only. Register fast!!!' }} 」</div>
+	<div class="notification-banner">「 {{ 'Limited seats only. Register quickly!' }} 」</div>
 	<hr style="width: 90%; margin-left: 5%;">
-	<div class='text' style='max-width: 70%; text-align: center;'>
-		<p style="font-size: 120%;">Welcome to the <b>Quad Anime Trivia Quiz</b>, hosted by Manga and Anime Society Kharagpur.<br></p>
-		<br>
-		<p style="text-align: left;">We have four quizzes in store for you. The quizzes and their times are given below.</p>
-		<ul style="text-align: left; margin-left: 45px; margin-top: 5px;">
-			<li>3:00 PM&nbsp| <b>One Punch Man:</b> Upto and including Season 2</li>
-			<li>3:40 PM&nbsp| <b>My Hero Academia:</b> Upto and including Season 5</li>
-			<li>4:20 PM&nbsp| <b>Attack On Titan:</b> Upto and including Season 4 Part 2</li>
-			<li>5:00 PM&nbsp| <b>Naruto:</b> Complete Naruto and Shippuden</li>
+	<div class="text" style='max-width: 70%; text-align: center;'>
+		<p style="font-size: 1.3em;">Welcome to the <b>Quad Anime Trivia Quiz</b>, hosted by Manga & Anime Society Kharagpur.<br/></p>
+		<br/>
+		<p style="text-align: justify;">We have four quizzes in store for you. The quizzes and their times are given below.</p>
+		<ul style="text-align: justify; margin-left: 45px; margin-top: 5px;">
+			<li>3:00 PM&nbsp;| <b>One Punch Man:</b> Up to, and including, Season 2</li>
+			<li>3:40 PM&nbsp;| <b>My Hero Academia:</b> Up to, and including, Season 5</li>
+			<li>4:20 PM&nbsp;| <b>Attack On Titan:</b> Up to, and including, Season 4 - Part 2</li>
+			<li>5:00 PM&nbsp;| <b>Naruto:</b> Complete Naruto and Shippuden</li>
 		</ul>
-		<br>
-		<h3 style="text-align: left; margin: 5px;"> Quiz Instructions </h3>
-		<p style="text-align: left; margin-left: 35px;">The registration fee <u><b>for each quiz</b></u> is <b {# style="color: var(--error-red);" #}>₹40.</b> You are allowed to register for multiple quizzes using the same user account. For further registrations, however, contact us at the event. Note that the entry fee is <b>non-refundable</b></p>
-		<p style="text-align: left; margin-left: 35px;">Each quiz will have 20 questions and will last 20 minutes. <b>The quiz must be attempted using a laptop, so bring your own laptops.</b></p>
-		<p style="text-align: left; margin-left: 35px;">No extra time will be provided in case of late entry. Furthermore, in case of a tie in the number of points, the one who submits the quickest is ranked above the other, irrespective of the start time.</p>
-		<br>
-		<h3 style="text-align: left; margin: 5px;"> Prizes </h3>
-		<p style="text-align: left; margin-left: 35px;">Prizes will be provided to the top <b {# style="color: var(--error-red);" #}>20%</b>  of the participants of each quiz. </p>
-		<ul style="text-align: left; margin-left: 75px; margin-top: 5px;">
+		<br/>
+		<h3 style="text-align: justify; margin: 5px;">Quiz Instructions</h3>
+		<ul class="list-of-rules">
+			<li>The registration fee <u><b>for each quiz</b></u> is <b>₹40.</b></li>
+			<li>You are allowed to register for multiple quizzes using the same user account.</li>
+			<li>For further registrations, contact us at the event.</li>
+			<li>Note that the entry fee is <b>non-refundable</b>.</li>
+			<li>Each quiz will have 20 questions and will last 20 minutes.</li>
+			<li><b>The quiz must be attempted using a laptop, so bring your own laptops</b>.</li>
+			<li>No extra time will be provided in case of late entry.</li>
+			<li>In case of a tie in the number of points, the one who submits the quickest is ranked above the other, irrespective of the start time.</li>
+		</ul>
+		<br/>
+		<h3 style="text-align: justify; margin: 5px;">Prizes</h3>
+		<p style="text-align: left; margin-left: 35px">Prizes will be provided to the top <b>20%</b> of participants in each quiz.</p>
+		<ul style="text-align: justify; margin-left: 75px; margin-top: 5px;">
 			<li><b>First Place:</b> A T-shirt</li>
 			<li><b>Second Place:</b> A poster</li>
 			<li><b>Third Place:</b> 4 manga panels</li>
-			<li><b>Rest</b> of the winners will get a manga panel each</li>
+			<li><b>All other winners</b> will receive a manga panel each</li>
 		</ul>
-		<div class="prize-image-container">
-			{% for shirt in shirts %}<img src="/assets/fandom/prizes/{{ shirt }}.webp">{% endfor %}
-		</div>
-		<br>
-		<h3 style="text-align: left; margin: 5px;">Event Details</h3>
-		<p style="text-align: left; margin-left: 35px;"><b>Date:</b> 12<sup>th</sup> March 2023 (Sunday)</p>
-		<p style="text-align: left; margin-left: 35px;"><b>Venue:</b> Multipurpose Hall, Gymkhana</p>
-		<br>
-		<p style="text-align: left;">In case of any query, contact us at <a href='mailto:kgpmask@gmail.com'>kgpmask@gmail.com</a></p>
+		<br/>
+		<section class="prize-image-container">
+			<ul>
+				<li><img src="/assets/fandom/prizes/opm.webp"></li>
+				<li><img src="/assets/fandom/prizes/mha.webp"></li>
+			</ul>
+			<ul>
+				<li><img src="/assets/fandom/prizes/aot.webp"></li>
+				<li><img src="/assets/fandom/prizes/naruto.webp"></li>
+			</ul>
+		</section>
+		<br/>
+		<h3 style="text-align: justify; margin: 5px;">Event Details</h3>
+		<li><b>Date:</b> 12<sup>th</sup> March 2023 (Sunday)</li>
+		<li><b>Venue:</b> Multipurpose Hall, Gymkhana</li>
+		<br/>
+		<p style="text-align: justify;">In case of any queries, contact us at <a href='mailto:kgpmask@gmail.com'>kgpmask@gmail.com</a>.</p>
 	</div>
-	<br>
-	<div class='link-container'>
+	<br/>
+	<div class="link-container">
 		{% for link in buttonlinks %}
 			{% if (loggedIn and link.name != 'Register') or (not loggedIn and link.name != 'Profile') %}
-				<a class='button-link' href='{{ link.href }}' target='_self'>{{ link.name }}</a>
+				<a class="button-link" href='{{ link.href }}' target='_self'>{{ link.name }}</a>
 			{% endif %}
 		{% endfor %}
 	</div>
@@ -75,7 +90,7 @@
 			text-align: center;
 			color: var(--error-red);
 			font-size: 116%;
-			font-weight: 60;
+			font-weight: bold;
 		}
 
 		.link-container {
@@ -100,23 +115,42 @@
 		}
 
 		.button-link:hover {
-			font-weight: 125;
-			color: var(--error-red);
-			background-color: var(--abyss);
+			color: var(--red);
+			background-color: var(--dark-gray);
 		}
 
-		.prize-image-container {
+		section {
 			display: flex;
-			flex-direction: row;
-			flex-wrap: wrap;
-			align-items: center;
 			justify-content: center;
+			flex-flow: row wrap;
 		}
 
-		.prize-image-container img {
+		section ul {
+			display: flex;
+			justify-content: center;
+			flex-flow: row wrap;
+			padding: 0;
+			margin: 0;
+		}
+
+		section ul li {
+			list-style: none;
+			padding: 20px;
+			margin: 20px;
+		}
+
+
+		li img {
 			max-width: 270px;
 			max-height: 50vh;
 			margin: 5px;
+			border-radius: 10px;
+		}
+
+		.list-of-rules li, .text li {
+			text-align: justify;
+			margin-left: 35px;
+			line-height: 1.4;
 		}
 	</style>
 {% endblock %}
