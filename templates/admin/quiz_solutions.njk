@@ -14,13 +14,18 @@
             </div>
             <div class = "solution">
                 {% if question.options.type == 'mcq' %} 
-                    <p class = "solution">{{ question.options.value[question.solution-1] }}</p>
+                    <p class = "solution">: {{ question.options.value[(question.solution)-1][0].value }}</p>
                 {% else %}
-                    <p class = "solution">{{ quesiton.solution }}</p>
+                    <p class = "solution">: {{ question.solution }}</p> 
                 {% endif %}
                 </div>
         </div>
     {% endfor %}
+{% endblock %}
+
+{% block customjs %}
+    <script>
+    </script>
 {% endblock %}
 
 {% block customcss %}
@@ -29,10 +34,11 @@
                 border: solid white 3px;
                 border-radius: 5px;
                 height: auto;
-                width: auto;
+                width: 90%;
                 display: flex;
                 flex-direction: row;
-                margin-block: 10px;
+                margin-left: 10px;
+                margin-bottom: 4px;
             }
         </style>
 {% endblock %}
