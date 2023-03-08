@@ -16,16 +16,25 @@
 				<input type="text" placeholder='{{_id}}' id="id" readonly>
 			</div>
 			<div>
+				<label for = "email">Email</label>
+				<input type="text" placeholder='{{email}}' id="email" readonly>
+			</div>
+			
+			<div>
 				<label for = "name">Name</label>
-				<input type="text" value = '{{name}}' id="name">
+				<input type="text" value = '{{name}}' placeholder='{{name}}' id="name">
 			</div>
 			<div>
 				<label for = "username">Username</label>	
-				<input type="text" value = '{{username}}' id="username">
+				<input type="text" value = '{{username}}' placeholder='{{username}}' id="username">
 			</div>
 			<div>
 				<label for = "password">Password</label>	
-				<input type="password" value = '{{password}}' id="password">
+				<input type="password" placeholder='unchanged' id="password">
+			</div>
+			<div>
+				<label for = "transaction-id">Transaction ID</label>
+				<input type="text" placeholder='{{ transactionID }}' id="transaction-id" readonly>
 			</div>
 			<div class='checkbox-holder'>
 				{% for sauce, signedUp in signedUpFor %}	
@@ -37,7 +46,11 @@
 					{% endif %}
 				{% endfor %}
 			</div>
-			<button type = "button" onclick = "editProfile()">Edit Profile</button>
+			<div class='button-container'>
+				<button type = "button" onclick = "console.log('Click')" style='margin: 5px;' {{'disabled' if qrScanned}}>{{'Payment Confirmed' if qrScanned else 'Confirm Payment' }}</button>
+				<button type = "button" onclick = "console.log('Click')" style='margin: 5px;' {{'disabled' if qrScanned}}>{{ 'Marked Present' if qrScanned else 'Mark Present' }}</button>
+				<button type = "button" onclick = "updateProfile()" style='margin: 5px;'>Confirm Changes</button>
+			</div>
 		</form>
 	</div>
 
@@ -92,7 +105,7 @@
 			font-weight: 300;
 		}
 
-		#id::placeholder{
+		#id::placeholder,#email::placeholder, #transaction-id::placeholder, #password::placeholder{
 			color : grey;
 		}
 		::placeholder{
@@ -121,11 +134,54 @@
 		.checkbox-holder input {
 			width: 45px;
 		}
+		.button-container {
+			display: flex;
+			flex-direction: row;
+			align-items: center;
+			justify-content: center;
+			flex-wrap: wrap;
+		}
+		.button-container button {
+			width: 47%;
+
+		}
 	</style>
 {% endblock %}
 
 {% block customjs %}
 	<script>
-		
+		async function updateProfile () {
+			const _id = document.getElementById('id').placeholder.trim();
+			const name = document.getElementById('name').value.trim() || document.getElementById('name').placeholder.trim();
+			const username = document.getElementById('username').value.trim() || document.getElementById('username').placeholder.trim();
+			const password = document.getElementById('password').value.trim();
+			try {
+				const response = await axios.post('/update-profile', { _id, name, username, password });
+				if (response.data === 'Updated successfully') {
+					alert('Data has been updated successfully.');
+					window.location.href = '/registered';
+				} else return alert(response.data);
+			} catch (err) {
+				// console.log(err);
+				return alert(err.response.data);
+			}
+		}
+
+		async function confirmPayment () {
+			const username = document.getElementById('username').placeholder.trim();
+			const userId = document.getElementById('id').placeholder.trim();
+			if (!confirm(`Do you want to confirm the payment for '${username}'?`)) return;
+			try {
+				const response = await axios.post('/confirm-payment', { userId });
+				if (response.data === 'Confirmation successful') {
+					const button = document.getElementById(`payment-${userId}`);
+					button.classList.replace('payment-pending', 'payment-done');
+					button.innerHTML = 'Paid';
+					return alert('Payment has been confirmed!');
+				}
+			} catch (err) {
+				return alert(err.response.data);
+			}
+		}
 	</script>
 {% endblock %}

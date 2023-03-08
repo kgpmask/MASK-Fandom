@@ -157,7 +157,13 @@ function handler (app, nunjEnv) {
 	});
 	// Update profile
 	app.post('/update-profile', async (req, res) => {
-		if (!req.admin) return res.status(403).send('Access Denied. Not an admin');
+		try {
+			if (!req.admin) return res.status(403).send('Access Denied. Not an admin');
+			await dbh.editUserDetails(req.body);
+			return res.send('Updated successfully');
+		} catch (err) {
+			return res.error(err);
+		}
 	});
 	// Quiz Portal
 	app.get('/quiz-portal', async (req, res) => {

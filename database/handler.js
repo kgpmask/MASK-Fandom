@@ -44,6 +44,21 @@ function getAllUsers () {
 	return User.find().lean();
 }
 
+// Edit user details
+async function editUserDetails (details) {
+	// details = { _id, name, username, password };
+	const user = await getUser(details._id);
+	if (!user) throw new Error('Invalid User ID');
+	if (user.username !== details.username && details.username) {
+		const userByUsername = await getUserByUsername(details.username);
+		if (userByUsername) throw new Error('Username already exists.');
+	}
+	user.username = details.username || user.username;
+	user.name = details.name ?? user.name;
+	if (details.password) user.hash = bcrypt.hash(details.password, user.salt);
+	return user.save();
+}
+
 // Confirm Payment
 async function confirmPayment (userId) {
 	const user = await getUser(userId);
@@ -189,6 +204,7 @@ module.exports = {
 	validateUserLogin,
 	getUser,
 	getAllUsers,
+	editUserDetails,
 	confirmPayment,
 	updateUserQuizRecord,
 	getQuizzes,
