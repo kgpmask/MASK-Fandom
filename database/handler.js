@@ -44,6 +44,14 @@ function getAllUsers () {
 	return User.find().lean();
 }
 
+// Confirm Payment
+async function confirmPayment (userId) {
+	const user = await getUser(userId);
+	if (!user) throw new Error('Invalid User ID!');
+	user.paymentConfirmed = true;
+	return user.save();
+}
+
 // Add new record to database
 async function updateUserQuizRecord (stats) { // {userId, quizId, time, score}
 	// This... should be fine as it is
@@ -181,6 +189,7 @@ module.exports = {
 	validateUserLogin,
 	getUser,
 	getAllUsers,
+	confirmPayment,
 	updateUserQuizRecord,
 	getQuizzes,
 	getUserStats,

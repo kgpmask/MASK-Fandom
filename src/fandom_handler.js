@@ -111,9 +111,9 @@ function handler (app, nunjEnv) {
 		if (!RES.some(Boolean)) return res.notFound();
 		const results = [];
 		RES.forEach(r => {
-			if (!results.find(res => res.uid === r.userID)) {
+			if (!results.find(res => res.uid === r.userId)) {
 				results.push({
-					uid: r.userID,
+					uid: r.userId,
 					points: r.points,
 					time: r.endTime
 				});
@@ -136,9 +136,18 @@ function handler (app, nunjEnv) {
 		if (!req.admin) return res.redirect('/');
 		const records = await dbh.getAllUsers();
 		const images = require('./images');
-		records.forEach(user => user.imageLink = console.log(user.image) ?? images[user.image]?.src);
-		console.log(records);
+		records.forEach(user => user.imageLink = images[user.image.split('-')[0]][user.image.split('-')[1]]);
 		return res.renderFile('/admin/reg_records.njk', { records });
+	});
+	// Confirm payment (will be done by Parmar ig)
+	app.post('/confirm-payment', async (req, res) => {
+		try {
+			if (!req.admin) return res.status(403).send('How are you sending this request??');
+			await dbh.confirmPayment(req.body.userId);
+			return res.send('Confirmation successful');
+		} catch (err) {
+			return res.error(err);
+		}
 	});
 	// Edit a profile in case of inappropriate words
 	app.get('/edit-profile/:id', async (req, res) => {
@@ -148,7 +157,7 @@ function handler (app, nunjEnv) {
 	});
 	// Update profile
 	app.post('/update-profile', async (req, res) => {
-		if (!req.admin) return res.status(403).error('Access Denied. Not an admin');
+		if (!req.admin) return res.status(403).send('Access Denied. Not an admin');
 	});
 	// Quiz Portal
 	app.get('/quiz-portal', async (req, res) => {
@@ -162,7 +171,7 @@ function handler (app, nunjEnv) {
 	});
 	// Re-evaluate a quiz's answers
 	app.post('/re-evaluate/:arg', async (req, res) => {
-		if (!req.admin) return res.status(403).error('Access Denied. Not an admin');
+		if (!req.admin) return res.status(403).send('Access Denied. Not an admin');
 	});
 	// Rebuild
 	app.get('/rebuild', async (req, res) => {
