@@ -69,7 +69,8 @@ function handler (app, nunjEnv) {
 	// Profile
 	app.get('/profile', async (req, res) => {
 		if (!req.loggedIn) return res.redirect('/');
-		req.user.imageLink = require('./images')[req.user.toObject().image]?.src;
+		const [sauce, char] = req.user.image.split('-');
+		req.user.imageLink = require('./images')[sauce][char];
 		return res.renderFile('profile.njk', req.user);
 	});
 
@@ -166,6 +167,10 @@ function handler (app, nunjEnv) {
 	// Rebuild
 	app.get('/rebuild', async (req, res) => {
 		if (!req.admin) return res.redirect('/');
+	});
+	app.use((req, res) => {
+		// Catch-all 404
+		res.notFound();
 	});
 }
 

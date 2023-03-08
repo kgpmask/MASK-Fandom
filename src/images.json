@@ -1,29 +1,30 @@
 {
 	"Naruto": {
-		"Temari": "assets/members/18_apoorva.webp",
-		"Madara": "assets/members/19_ashwin.webp",
-		"Pain": "assets/members/19_manish.webp",
-		"Minato": "assets/members/20_arjit.webp",
-		"Sakura": "assets/members/21_kapil.webp",
-		"Naruto": "assets/members/21_maloth.webp",
-		"Itachi": "assets/members/21_sampreet.webp",
-		"Kakashi": "assets/members/21_venkatsai.webp"
-	},
-	"OPM": {
-		"Reiner": "assets/members/19_saad.webp",
-		"Eren": "assets/members/20_aditya.webp",
-		"Mikasa": "assets/members/20_anmol.webp",
-		"Levi": "assets/members/21_rishabh_prasad.webp",
-		"Hange": "assets/members/22_rashmi.webp"
+		"Naruto": "/assets/fandom/profile-pics/naruto.webp",
+		"Sasuke": "/assets/fandom/profile-pics/sasuke.webp",
+		"Itachi": "/assets/fandom/profile-pics/itachi.webp",
+		"Kakashi": "/assets/fandom/profile-pics/kakashi.webp",
+		"Madara": "/assets/fandom/profile-pics/madara.webp"
 	},
 	"AOT": {
-		"Saitama": "assets/members/20_anshul.webp",
-		"Genos": "assets/members/20_hrishabh.webp",
-		"Tatsumaki": "assets/members/20_kartik.webp"
+		"Eren": "/assets/fandom/profile-pics/erentitan.webp",
+		"Mikasa": "/assets/fandom/profile-pics/mikasa.webp",
+		"Levi": "/assets/fandom/profile-pics/levi.webp",
+		"Zeke": "/assets/fandom/profile-pics/zeketitan.webp",
+		"Erwin": "/assets/fandom/profile-pics/erwin.webp"
 	},
-
+	"OPM": {
+		"Saitama": "/assets/fandom/profile-pics/saitama.webp",
+		"Genos": "/assets/fandom/profile-pics/genos.webp",
+		"Bang": "/assets/fandom/profile-pics/bang.webp",
+		"Tatsumaki": "/assets/fandom/profile-pics/tatsumaki.webp",
+		"MumenRider": "/assets/fandom/profile-pics/mumenrider.webp"
+	},
 	"MHA": {
-		"Hawks": "assets/members/21_manish.webp",
-		"Deku": "assets/members/21_pranay.webp"
+		"Deku": "/assets/fandom/profile-pics/deku.webp",
+		"AllMight": "/assets/fandom/profile-pics/allmight.webp",
+		"Bakugo": "/assets/fandom/profile-pics/bakugo.webp",
+		"Shigaraki": "/assets/fandom/profile-pics/shigaraki.webp",
+		"Todoroki": "/assets/fandom/profile-pics/todoroki.webp"
 	}
 }

@@ -9,10 +9,10 @@
 			{{ error if error else 'Invalid username/password' }}
 		</div>
 	{% endif %}
-
+	<h1>Login!</h1>
+	<p>Click here to <a href="/signup" class="cool-class-name">register</a> if you don't have an account</p>
 	<div class="form-container">
 		<form>
-			<h3>Login!</h3>
 			<input type="text" placeholder="Username" name="username" id="username">
 			<input type="password" placeholder="Password" name="password" id="password">
 			<button type="button" id="login-button">Login</button>
@@ -23,17 +23,26 @@
 
 {% block customcss %}
 	<style media="screen">
+		h1 {
+			font-size: 32px;
+			font-weight: 500;
+			line-height: 42px;
+			text-align: center;
+		}
+		.cool-class-name{
+			color: var(--error-red);
+		}
 		.form-container {
-			margin-top : 31rem;
+			margin-top : 2rem;
+			margin-bottom: 63rem;
+			display: flex;
+			justify-content: center;
 		}
 		form {
 			min-height: auto;
 			min-width: 28%;
 			background-color: rgba(255, 255, 255, 0.13);
 			position: absolute;
-			transform: translate(-50%, -50%);
-			top: 50%;
-			left: 50%;
 			border-radius: 10px;
 			backdrop-filter: blur(5px);
 			border: 2px solid rgba(255, 255, 255, 0.1);
@@ -47,14 +56,6 @@
 			outline: none;
 			border: none;
 		}
-		form h3 {
-			font-size: 32px;
-			font-weight: 500;
-			line-height: 42px;
-			text-align: center;
-			margin-bottom:35px;
-		}
-
 		input {
 			display: block;
 			height: 50px;
@@ -93,7 +94,10 @@
 		const password = document.getElementById('password').value;
 		axios.post('/login', { username, password })
 			.then(() => window.location.href = '/')
-			.catch(err => console.log(err));
+			.catch(err => {
+				console.log(err);
+				return alert(err.response.data);
+			});
 	}
 
 	window.onload = () => document.getElementById('login-button').onclick = login;
