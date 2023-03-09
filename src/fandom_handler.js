@@ -189,7 +189,6 @@ function handler (app, nunjEnv) {
 		const quiz = (await dbh.getQuizzes()).find(e => e._id === req.params.arg);
 		const quizQuestions = [];
 		quiz.questions.forEach((question, i) => quizQuestions.push({ number: i + 1, ...question }));
-		// console.log(quizQuestions[0].options.value[(quizQuestions[0].solution)-1][0].value)
 		return res.renderFile('admin/quiz_solutions.njk', { quizQuestions });
 	});
 	// Re-evaluate a quiz's answers

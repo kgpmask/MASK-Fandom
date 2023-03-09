@@ -4,27 +4,28 @@
 {% set pagetitle = 'quiz solutions' %}
 
 
-
-{% block pagecontent %}
-    <div class = "header"></div>
-	{% for question in quizQuestions %}
-        <div class = "solution_container">
-            <div class = "question-number">
-                <h3>{{ question.number }}</h3>
-            </div>
-            <div class = "solution">
-                {% if question.options.type == 'mcq' %} 
-                    <p class = "solution">: {{ question.options.value[(question.solution)-1][0].value }}</p>
-                {% else %}
-                    <p class = "solution">: {{ question.solution }}</p> 
-                {% endif %}
-                </div>
-        </div>
-    {% endfor %}
-{% endblock %}
-
 {% block customjs %}
     <script>
+		const qs = quizQuestions;
+		function generateHTML(components) {
+			return components
+				.map(component => {
+					switch (component.type) {
+						case 'image':
+							return `<img src="${component.val}" class="option-image" style="${component.style || ''}"/>`;
+						case 'mp3':
+							return `<audio src="${component.val}" type="audio/mpeg"> </audio>`;
+						case 'title':
+							return `<h3>${component.val}</h3>`;
+						default:
+							return component.val;
+					}
+				})
+				.join('<br/>');
+		}
+		function dispayOption(question) {
+			document.getElementById(`option-${question.number-1})`).innerHTML = generateHTML(question.options[question.solution - 1]);		
+		}
     </script>
 {% endblock %}
 
@@ -39,6 +40,24 @@
                 flex-direction: row;
                 margin-left: 10px;
                 margin-bottom: 4px;
-            }
+                }
         </style>
+{% endblock %}
+
+{% block pagecontent %}
+    <div class = "header"></div>
+	{% for question in quizQuestions %}
+        <div class = "solution_container">
+            <div class = "question-{{ question.number }}">
+                <h3>{{ question.number }}</h3>
+            </div>
+            <div class = "solution">
+                {% if question.options.type == 'mcq' %} 
+                    <p class = "solution" id = "option-{{ question.number }}" onload = "">: {{ question.options.value[(question.solution)-1][0].value }}</p>
+                {% else %}
+                    <p class = "solution" >: {{ question.solution }}</p> 
+                {% endif %}
+            </div>
+        </div>
+    {% endfor %}
 {% endblock %}
