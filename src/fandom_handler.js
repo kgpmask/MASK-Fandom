@@ -152,10 +152,13 @@ function handler (app, nunjEnv) {
 	// Records of registered people
 	app.get('/registered', async (req, res) => {
 		if (!req.admin) return res.redirect('/');
-		const records = await dbh.getAllUsers();
+		const records = (await dbh.getAllUsers()).filter(record => !record.permissions?.find(perm => perm === 'Admin'));
+		const count = { Naruto: 0, AOT: 0, OPM: 0, MHA: 0 };
+		records.forEach(record => Object.keys(count).forEach(sauce => count[sauce] += record.signedUpFor[sauce]));
+		const countRecord = Object.keys(count).map(sauce => `<b>${sauce}:</b> ${count[sauce]}`).join(', ');
 		const images = require('./images');
 		records.forEach(user => user.imageLink = images[user.image.split('-')[0]][user.image.split('-')[1]]);
-		return res.renderFile('/admin/reg_records.njk', { records });
+		return res.renderFile('/admin/reg_records.njk', { records, countRecord });
 	});
 	// Confirm payment (will be done by Parmar ig)
 	app.post('/confirm-payment', async (req, res) => {

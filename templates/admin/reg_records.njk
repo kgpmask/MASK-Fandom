@@ -77,7 +77,6 @@
 			margin: 10px 5px;
 			padding: 0px;
 			border-radius: 2px;
-			background: white;
 			opacity: 0.2;
 		}
 
@@ -113,11 +112,30 @@
 			background-color: var(--tinted-gray);
 			color: var(--light-gray);
 		}
+
+		.Naruto-icon {
+			background-color: orange !important;
+		}
+
+		.AOT-icon {
+			background-color: red !important;
+		}
+
+		.MHA-icon {
+			background-color: green !important;
+		}
+
+		.OPM-icon {
+			background-color: yellow !important;
+		}
 	</style>
 {% endblock %}
 
 {% block pagecontent %}
 	<h1>Records of Registered Users</h1>
+	<br>
+	<div>{{ countRecord | safe }}</div>
+	<br>
 	<div class="user-list">
 		{% for record in records %}
 		<div class="user-container">
