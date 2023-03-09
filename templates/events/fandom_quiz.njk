@@ -38,6 +38,7 @@
 			<div id="count"></div>
 			<br/>
 			<button onclick="endQuiz()" style="display:none" class="rel submit" id='submit-button'>Submit</button>
+			<p id='waiting' style='display: hidden;'><i>Fetching next question</i></p>
 			<form id="quiz" class="quizzes" method="POST" action='/misc'>
 				{% for q in range(currentQ + 1, qAmt + currentQ + 1) %}
 					<div id="qbox-{{ q }}" style="display:none">
@@ -179,6 +180,8 @@
 			if (submit) {
 				const answer = document.querySelector(`input[name="answer-${currentQ}"]${qs[currentQ - startQ - 1].options.type === "mcq" ? ":checked" : ""}`)?.value;
 				if (qs[currentQ - startQ - 1].options.type === "number" && !~~answer) return alert('Answering non-numeric value in number field');
+				document.getElementById('quiz').style.display = 'none';
+				document.getElementById('waiting').style.display = 'block';
 				await axios.post('/update-status/{{ id }}', { answer });
 			}
 			for (button of document.getElementsByClassName('nextQ')) button.disabled = false;
@@ -190,6 +193,8 @@
 			} else document.getElementById(`qbox-${c + 1}`).style.display = 'block';
 			if (c) document.getElementById(`qbox-${c}`)?.parentElement?.removeChild(document.getElementById(`qbox-${c}`));
 			currentQ++;
+			document.getElementById('waiting').style.display = 'none';
+			document.getElementById('quiz').style.display = 'block';
 			// if (submit) await axios.post('/update-record', );
 		}
 		
@@ -204,6 +209,9 @@
 {% block customcss %}
 	<link rel="stylesheet" type="text/css" href="/assets/styles/icons.css"/>
 	<style>
+		.waiting-for-q{
+			display:none;
+		}
 		.quiz-container {
 			width: 80%;
 			margin: auto;
