@@ -36,13 +36,44 @@ function getUserByUsername (username) {
 async function validateUserLogin (creds) {
 	const { username, password } = creds;
 	const user = await getUserByUsername(username);
-	if (!user) return false;
+	if (!user) throw new Error('User does not exist');
 	return user.hash === await bcrypt.hash(password, user.salt) ? user._id : false;
 }
 
-// Wondering why this one exists TBH...
-function getAllUsers (id) {
+// Purpose served in admin pages
+function getAllUsers () {
 	return User.find().lean();
+}
+
+// Edit user details
+async function editUserDetails (details) {
+	// details = { _id, name, username, password };
+	const user = await getUser(details._id);
+	if (!user) throw new Error('Invalid User ID');
+	if (user.username !== details.username && details.username) {
+		const userByUsername = await getUserByUsername(details.username);
+		if (userByUsername) throw new Error('Username already exists.');
+	}
+	user.username = details.username || user.username;
+	user.name = details.name ?? user.name;
+	if (details.password) user.hash = bcrypt.hash(details.password, user.salt);
+	return user.save();
+}
+
+// Confirm Payment
+async function confirmPayment (userId) {
+	const user = await getUser(userId);
+	if (!user) throw new Error('Invalid User ID!');
+	user.paymentConfirmed = true;
+	return user.save();
+}
+
+// Mark as present
+async function markUserAsPresent (userId) {
+	const user = await getUser(userId);
+	if (!user) throw new Error('Invalid User ID!');
+	user.qrScanned = true;
+	return user.save();
 }
 
 // Add new record to database
@@ -172,11 +203,19 @@ async function getMembersbyYear (year) {
 	return yearData;
 }
 
+// Get Fandom results (using the quiz id)
+async function getFandomResult (quizId) {
+	return await Quiz.UserInfo.find({ quizId });
+}
+
 module.exports = {
 	createNewUser,
 	validateUserLogin,
 	getUser,
 	getAllUsers,
+	editUserDetails,
+	confirmPayment,
+	markUserAsPresent,
 	updateUserQuizRecord,
 	getQuizzes,
 	getUserStats,
@@ -189,5 +228,6 @@ module.exports = {
 	generateSessionRecord,
 	returnUserFromSession,
 	removeSession,
-	getMembersbyYear
+	getMembersbyYear,
+	getFandomResult
 };

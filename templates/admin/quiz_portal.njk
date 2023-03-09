@@ -1,0 +1,163 @@
+{% extends '_base.njk' %}
+
+{% set pagetitle = 'Quiz Portal' %}
+{% set thispage = 'quiz-portal' %}
+
+{% block pagecontent %}
+	<h1>Admin Quiz Portal</h1>
+	{% for quiz in quizzes %}
+		<div class="quiz-list">
+			<div class="quiz-container">
+				<div class = 'quizId' style = "font-weight: bold; font-size:24px;">{{quiz._id}}</div>
+				<div class="details-container">
+					{% if quiz.status == "Running" %}
+						<div class = 'status' id = 'status' style = "color : #ff5959;">{{quiz.status}}</div>
+					{% else %} {% if quiz.status == "To be started" %}
+						<div class = 'status' id = 'status' style = "color: #999999;">{{quiz.status}}</div>
+					{% else %}
+						<div class = 'status' id = 'status' style = "color: #ff8585;">{{quiz.status}}</div>
+					{% endif %} {% endif %}
+					<div class="button-container">
+						<button type = "button" class = "stop-quiz {{ 'disabled' if quiz.status != 'Running' }}" onclick="stop({{ quiz.id }})">Stop Quiz</button>
+						<button type = "button" class="re-evaluate  {{ 'disabled' if quiz.status != 'Ended' }}" onclick="re_eval({{ quiz.id }})">Re-Evaluate</button>
+					</div>
+					<div class="button-container">
+						<button type = "button" class="answers" onclick="show_answers('{{ quiz._id }}')">Show Answers</button>
+						<button type = "button" class="results {{ 'disabled' if quiz.status == 'To be started' }}" onclick="(() => window.location.href = '/results/{{ quiz.id }}')()">Show Results</button>
+					</div>
+				</div>
+			</div>
+		</div>
+	{% endfor %}
+	<div id="answer-container" style="display: none;">
+	</div>
+{% endblock %}
+
+{% block customjs %}
+<script>
+	function stop (quizID) {
+		axios.post(`/stop-quiz/${quizID}`)
+			.then(res => console.log(res.data))
+			.catch(err => alert(err));
+	}
+
+	function re_eval (quizID) {
+		axios.post(`/sre-evaluate/${quizID}`)
+			.then(res => console.log(res.data))
+			.catch(err => alert(err));
+	}
+
+	async function show_answers (quizID) {
+		const question = (await axios.post('/quiz/'+quizID)).data.questions;
+		let ele = document.getElementById('answer-container');
+		if( ele.style.display === 'none' ) ele.style.display = 'flex';
+		else {
+			[...ele.children].forEach(e => {
+    			ele.removeChild(e);
+			});
+		}
+		const div = document.createElement('div');
+		div.style = 'display: flex; flex-direction: column;'
+		div.id = 'answers';
+		const code = [`
+			<h2>Answers for ${quizID}</h2>
+			<table>
+				<tr>
+					<th>Answers</th>
+				</tr>
+		`];
+		question.forEach(elem => {
+			code.push(`
+				<tr>
+					<td>${elem.options.type === 'mcq' ? elem.options.value[elem.solution - 1][0].value : Array.isArray(elem.solution) ? elem.solution.join(", ") : elem.solution}</td>
+				</tr>
+			`)
+		});
+		code.push(`</table>`);
+		div.innerHTML = code.join('');
+		ele.appendChild(div);
+	}
+
+</script>
+{% endblock %}
+
+{% block customcss %}
+	<style>
+		.quiz-list {
+			display: inline-flex;
+		}
+
+		/* {# Note: When mediaport becomes smaller than a set value, make it render in column instead of row #} */
+		.quiz-container {
+			display: inline;
+			flex-direction: row;
+			border: 1px solid var(--off-white);
+			border-radius: 10px;
+			padding: 20px;
+			width: 150px;
+			text-align: center;
+			margin: 20px;
+		}
+
+		.details-container {
+			margin: auto;
+		}
+
+		.details-container>div {
+			margin: 10px -18px;
+		}
+
+		.user-name {
+			font-size: 0.8em;
+			color: var(--ghost-gray);
+		}
+
+		.button-container {
+			display: flex;
+			flex-direction: row;
+			flex-wrap: wrap;
+			justify-content: space-around;
+			height: 33px;
+			width: 187px;
+		}
+
+		#answer-container{
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			border: 1px solid var(--off-white);
+			border-radius: 10px;
+			padding: 20px;
+			text-align: center;
+			margin: 20px;
+		}
+
+		#answers{
+			margin: 25px;
+		}
+		#answers>table{
+			margin-top: 45px;
+		}
+		table, td, th {
+			border: 1px solid var(--off-white);
+			border-collapse: collapse;
+			padding: 5px;
+		}
+
+		.button-container>button {
+			margin: 5% 3px;
+			width: 40%;
+			background: var(--tinted-gray);
+			border: 1px solid var(--off-white);
+			border-radius: 5px;
+			color: var(--white);
+			padding: 2px 10px;
+		}
+
+		.disabled {
+			color: var(--light-gray) !important;
+		}
+	</style>
+{% endblock %}
+
+{% set scripts = ['https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js'] %}

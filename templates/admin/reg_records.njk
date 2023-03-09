@@ -1,0 +1,162 @@
+{% extends '../_base.njk' %}
+
+{% set thispage = 'registered' %}
+{% set pagetitle = 'Records of Registered' %}
+
+{% set scripts = ['https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js'] %}
+
+{% block customjs %}
+<script>
+	async function confirmPayment (userId, username) {
+		if (!confirm(`Do you want to confirm the payment for '${username}'?`)) return;
+		const response = await axios.post('/confirm-payment', { userId });
+		if (response.data === 'Confirmation successful') {
+			const button = document.getElementById(`payment-${userId}`);
+			button.classList.replace('payment-pending', 'payment-done');
+			button.innerHTML = 'Paid';
+			return alert('Payment has been confirmed!');
+		}
+	}
+</script>
+{% endblock %}
+
+{% block customcss %}
+	<style>
+		.user-list {
+			display: flex;
+			flex-direction: row;
+			justify-content: flex-start;
+			flex-wrap: wrap;
+		}
+
+		.user-container {
+			display: inline;
+			flex-direction: row;
+			border: 1px solid var(--off-white);
+			border-radius: 10px;
+			padding: 20px;
+			width: 180px;
+			text-align: center;
+			margin: 20px;
+			font-size: 120%;
+		}
+
+		.user-image {
+			display: inline-block;
+			margin: auto;
+			height: 96px;
+			width: auto;
+			border: 2px solid var(--off-white);
+			border-radius: 7px;
+		}
+
+		.details-container {
+			margin: auto;
+		}
+
+		.details-container>div {
+			margin: 5px auto;
+		}
+
+		.user-name {
+			font-size: 0.8em;
+			color: var(--ghost-gray);
+		}
+
+		.user-signed-up-for {
+			display: flex;
+			flex-direction: row;
+			justify-content: space-around;
+		}
+
+		.user-signed-up-for>span {
+			height: 25px;
+			width: 25px;
+			min-height: 25px;
+			min-width: 25px;
+			margin: 10px 5px;
+			padding: 0px;
+			border-radius: 2px;
+			opacity: 0.2;
+		}
+
+		.user-signed-up-for>span.signed-up {
+			opacity: 1;
+		}
+
+		.button-container {
+			display: flex;
+			flex-direction: row;
+			justify-content: space-around;
+		}
+
+		.button-container > button {
+			background-color: var(--tinted-gray);
+			border: 1px solid var(--off-white);
+			border-radius: 5px;
+			color: var(--off-white);
+			padding: 5px 10px;
+			transition: color 0.3s, background-color 0.3s;
+		}
+
+		.button-container > button:hover {
+			background-color: var(--medium-gray);
+			color: var(--red);
+		}
+
+		.button-container > .payment-done {
+			color: var(--light-gray);
+		}
+
+		.button-container > .payment-done:hover {
+			background-color: var(--tinted-gray);
+			color: var(--light-gray);
+		}
+
+		.Naruto-icon {
+			background-color: orange !important;
+		}
+
+		.AOT-icon {
+			background-color: red !important;
+		}
+
+		.MHA-icon {
+			background-color: green !important;
+		}
+
+		.OPM-icon {
+			background-color: yellow !important;
+		}
+	</style>
+{% endblock %}
+
+{% block pagecontent %}
+	<h1>Records of Registered Users</h1>
+	<br>
+	<div>{{ countRecord | safe }}</div>
+	<br>
+	<div class="user-list">
+		{% for record in records %}
+		<div class="user-container">
+			<img class="user-image" src="{{ record.imageLink }}" alt="{{ record.image }}">
+			<br/><br/>
+			<div class="details-container" id={{ record._id }}>
+				<div class="user-username">{{ record.username }}</div>
+				<div class="user-name">{{ record.name }}</div>
+				<div class="user-signed-up-for">
+					{% for sauce, signedUp in record.signedUpFor %}
+						<span class="{{ sauce }}-icon{{ ' signed-up' if signedUp }}"></span>
+					{% endfor %}
+				</div>
+				<br/>
+				<div class="button-container">
+					<button type='button' class="edit-record" onclick="(() => window.location.href='/edit-profile/{{ record._id }}')()"> Edit </button>
+					<button type='button' class="{{ 'payment-done' if record.paymentConfirmed else 'payment-pending' }}" id='payment-{{ record._id }}'
+						{% if not record.paymentConfirmed %}onclick="confirmPayment('{{ record._id}}', '{{ record.username }}')"{% endif %}>{{ 'Paid' if record.paymentConfirmed else 'Confirm' }}</button>
+				</div>
+			</div>
+		</div>
+		{% endfor %}
+	</div>
+{% endblock %}

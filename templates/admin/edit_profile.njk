@@ -1,0 +1,204 @@
+{% extends "_base.njk" %}
+
+{% set thispage = 'edit_profile' %}
+{% set pagetitle = 'Edit Profile' %}
+{% set animes = ['Naruto', 'OPM', 'MHA', 'AOT'] %}
+{% set scripts = ['https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js'] %}
+
+
+{% block pagecontent %}
+
+	<div class = "form">
+		<form action = '/' method = 'post'>
+			<h3>Edit Profile</h3>
+			<div>
+				<label for = "id">ID</label>
+				<input type="text" placeholder='{{_id}}' id="id" readonly>
+			</div>
+			<div>
+				<label for = "email">Email</label>
+				<input type="text" placeholder='{{email}}' id="email" readonly>
+			</div>
+			
+			<div>
+				<label for = "name">Name</label>
+				<input type="text" value = '{{name}}' placeholder='{{name}}' id="name">
+			</div>
+			<div>
+				<label for = "username">Username</label>	
+				<input type="text" value = '{{username}}' placeholder='{{username}}' id="username">
+			</div>
+			<div>
+				<label for = "password">Password</label>	
+				<input type="password" placeholder='unchanged' id="password">
+			</div>
+			<div>
+				<label for = "transaction-id">Transaction ID</label>
+				<input type="text" placeholder='{{ transactionID }}' id="transaction-id" readonly>
+			</div>
+			<div class='checkbox-holder'>
+				{% for sauce, signedUp in signedUpFor %}	
+					{% if sauce in animes %}
+					<div>
+						<label for="{{ sauce }}">{{ sauce }}</label>
+						<input type="checkbox" class="quiz" id="{{ sauce }}" {{ 'checked' if signedUp }}>
+					</div>
+					{% endif %}
+				{% endfor %}
+			</div>
+			<div class='button-container'>
+				<button type = "button" onclick = "confirmPayment()" style='margin: 5px;' {{'disabled' if paymentConfirmed}} id='payment'>{{'Payment Confirmed' if paymentConfirmed else 'Confirm Payment' }}</button>
+				<button type = "button" onclick = "markPresence()" style='margin: 5px;' {{'disabled' if qrScanned}} id='present'>{{ 'Marked Present' if qrScanned else 'Mark Present' }}</button>
+				<button type = "button" onclick = "updateProfile()" style='margin: 5px;'>Confirm Changes</button>
+			</div>
+		</form>
+	</div>
+
+{% endblock %}
+
+{% block customcss %}
+	<style media="screen">
+		label{
+			padding : 0px,0px;
+		}
+		.form{
+			margin: 7vh auto;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+		}
+		form{
+			height: auto;
+			width: 400px;
+			background-color: rgba(255,255,255,0.13);
+			border-radius: 10px;
+			backdrop-filter: blur(5px);
+			border: 2px solid rgba(255,255,255,0.1);
+			box-shadow: 0 0 40px rgba(8,7,16,0.6);
+			padding: 23px 25px;
+		}
+		form *{
+			font-family: 'Poppins',sans-serif;
+			color: #ffffff;
+			letter-spacing: 0.5px;
+			outline: none;
+			border: none;
+		}
+		form h3{
+			font-size: 32px;
+			font-weight: 500;
+			line-height: 42px;
+			text-align: center;
+			margin-bottom:35px;
+		}
+
+		input{
+			display: block;
+			height: 45px;
+			width: 90%;
+			background-color: rgba(255,255,255,0.07);
+			border-radius: 12px;
+			padding: 4px 20px 4px 14px;
+			margin-top: 12px;
+			margin-bottom : 12px;
+			font-size: 17px;
+			font-weight: 300;
+		}
+
+		#id::placeholder,#email::placeholder, #transaction-id::placeholder, #password::placeholder{
+			color : grey;
+		}
+		::placeholder{
+			color: #e5e5e5;
+			font-family:Ubuntu,Roboto,Arial,Open Sans,sans-serif;
+			font-size:20px;
+		}
+		button{
+			margin-top: 19px;
+			width: 75%;
+			background-color: var(--red);
+			color: white;
+			padding: 15px 0;
+			font-size: 18px;
+			font-weight: 600;
+			border-radius: 12px;
+			cursor: pointer;
+		}
+		.checkbox-holder {
+			display: flex;
+			flex-direction: row;
+			flex-wrap: wrap;
+			justify-content: space-between;
+			align-items: center;
+		}
+		.checkbox-holder input {
+			width: 45px;
+		}
+		.button-container {
+			display: flex;
+			flex-direction: row;
+			align-items: center;
+			justify-content: center;
+			flex-wrap: wrap;
+		}
+		.button-container button {
+			width: 47%;
+
+		}
+	</style>
+{% endblock %}
+
+{% block customjs %}
+	<script>
+		async function updateProfile () {
+			const _id = document.getElementById('id').placeholder.trim();
+			const name = document.getElementById('name').value.trim() || document.getElementById('name').placeholder.trim();
+			const username = document.getElementById('username').value.trim() || document.getElementById('username').placeholder.trim();
+			const password = document.getElementById('password').value.trim();
+			try {
+				const response = await axios.post('/update-profile', { _id, name, username, password });
+				if (response.data === 'Updated successfully') {
+					alert('Data has been updated successfully.');
+					window.location.href = '/registered';
+				} else return alert(response.data);
+			} catch (err) {
+				// console.log(err);
+				return alert(err.response.data);
+			}
+		}
+
+		async function confirmPayment () {
+			const username = document.getElementById('username').placeholder.trim();
+			const userId = document.getElementById('id').placeholder.trim();
+			if (!confirm(`Do you want to confirm the payment for '${username}'?`)) return;
+			try {
+				const response = await axios.post('/confirm-payment', { userId });
+				if (response.data === 'Confirmation successful') {
+					const button = document.getElementById(`payment`);
+					button.disabled = true;
+					button.innerHTML = 'Payment Confirmed';
+					return alert('Payment has been confirmed!');
+				}
+			} catch (err) {
+				return alert(err.response.data);
+			}
+		}
+
+		async function markPresence () {
+			const id = document.getElementById('id').placeholder.trim();
+			const username = document.getElementById('username').placeholder.trim();
+			if (!confirm(`Do you want to mark ${username} as present?`)) return;
+			try {
+				const response = await axios.post('/mark-present', { id });
+				if (response.data === 'Marked as present') {
+					const button = document.getElementById(`present`);
+					button.disabled = true;
+					button.innerHTML = 'Marked Present';
+					return alert(`Marked as present. ${username} can now attempt the quizzes.`);
+				} else return alert(response.data);
+			} catch (err) {
+				return alert(err.response.data);
+			}
+		}
+	</script>
+{% endblock %}
