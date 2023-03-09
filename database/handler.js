@@ -10,7 +10,7 @@ const Session = require('./schemas/Session');
 
 // Handle newly registered user or normal login
 async function createNewUser (profile) {
-	// profile = { name, username, password, email, images, signedUpFor, transactionID }
+	// profile = { name, username, password, email, rollno, image, signedUpFor, transactionID }
 	let user = await getUserByUsername(profile.username);
 	if (user) throw new Error('User with username already exists :(');
 	user = new User({ _id: [...Array(21)].map(() => Math.floor(10 * Math.random() + '')).join('') });
@@ -18,6 +18,7 @@ async function createNewUser (profile) {
 	// Generate a salt and hash. Then save them both.
 	user.salt = await bcrypt.genSalt(7);
 	user.hash = await bcrypt.hash(profile.password, user.salt);
+	user.rollno = user.rollno?.toUpperCase();
 	return user.save();
 }
 

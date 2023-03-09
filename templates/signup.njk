@@ -16,8 +16,9 @@
 	<div class="form-container">
 		<form action='/' method='post' id="signup">
 			<div id="page1" style="display:block;">
-				<input type= "text" placeholder="Display name" id="display-name">
-				<input type="email" placeholder="Email address" id="email">
+				<input type= "text" placeholder="Display Name" id="display-name">
+				<input type="email" placeholder="Email Address" id="email">
+				<input type="text" placeholder="Roll Number" id="rollno">
 				<hr style="width: 80%; border: solid 1px var(--off-white); margin: 15px 10% 5px;">
 				<p style="padding-top: 9px;font-size: 130%;">Select your profile picture</p>
 				<div id="images">
@@ -44,7 +45,7 @@
 					</div>
 					{% endfor %}
 				</div>
-				<button type="button" class="nextpage" onclick="shownextpg()">Next</button>
+				<button type="button" class="nextpage" onclick="if (validatePageOne()) shownextpg()">Next</button>
 			</div>
 			<div id="page2" style="display:none;">
 				<p style="padding-top: 9px;font-size: 150%;">Authentication</p>
@@ -52,7 +53,7 @@
 				<input type="password" placeholder="Set Password" id="password">
 				<input type="password" placeholder="Confirm Password" id="confirm-password">
 				<button type="button" class="prev" onclick="showprevpg()">Previous</button>
-				<button type="button" class="nextpage" onclick="shownextpg()">Next</button>
+				<button type="button" class="nextpage" onclick="if (validatePageTwo()) shownextpg()">Next</button>
 			</div>
 			<div id="page3" style="display:none;">
 				<p style="padding-top: 9px;font-size: 150%;">Payment</p>
@@ -75,7 +76,7 @@
 			<div class="modal-container">
 				<div id="modal">
 					<span onclick="closemodal()" class="closespn">×</span><br>
-					<img class="modalImage" id="modalimg" style="scale:0.67; translate: 0% -20%;" />
+					<img class="modalImage" id="modalimg" style="scale:0.67; translate: 0% -20%;"/>
 				</div>
 			</div>
 
@@ -111,44 +112,74 @@
 			// console.log('close');
 			document.getElementById('modal').style.display = 'none';
 		}
-		
-		function signUp () {
-			// Page one
-			const name = document.getElementById('display-name').value;
-			if (!name.trim()) return alert('Empty Name');
-			if (!name.match(/^(?!.*\.{2})[a-zA-Z0-9. ]*$/)) return alert('Name doesn\'t meet requirements');
-			const email = document.getElementById('email').value;
-			if (!email.trim()) return alert('Empty Email Address');
-			if (!email.match(/^((?!.*\.{2})[a-zA-Z0-9\.\-\_]*)@((?!.*\.{2})[a-zA-Z\.\-\_]*).[a-zA-z]{2,3}$/)) return alert('Invalid e-mail address');
+
+		function validatePageOne () {
+			const name = document.getElementById('display-name').value.trim();
+			if (!name) return alert('Empty Name');
+			if (!name.match(/^[a-zA-Z0-9. ]*$/)) return alert('Name doesn\'t meet requirements');
+			const email = document.getElementById('email').value.trim();
+			if (!email) return alert('Empty email address');
+			if (!email.match(/^[a-zA-Z0-9\.\-\_]*@[a-zA-Z\.\-\_]*.[a-zA-z]{2,4}$/)) return alert('Invalid email address');
+			const rollno = document.getElementById('rollno').value.trim();
+			if (!rollno) return alert('Roll number not found');
+			if (!rollno.match(/^[12][89012][A-Z]{2}[0-9][A-Z0-9]{2}\d\d$/i)) return alert('Roll number is invalid');
 			const image = selectedImage;
-			if (!image) return alert('Images not selected.');
+			if (!image) return alert('Profile picture not selected.');
 			const signedUpFor = {};
 			{% for sauce in sauces %}
-				signedUpFor.{{ sauce.name if sauce.name == 'Naruto' else sauce.id }} = document.getElementById('{{ sauce.id }}').checked;
+				signedUpFor.{{ sauce.id }} = document.getElementById('{{ sauce.id }}').checked;
 			{% endfor %}
 			if (!Object.values(signedUpFor).some(Boolean)) return alert('Sign up for at least one quiz.');
-			// console.log({ name, email, selectedImage, signedUpFor })
-			// Page two
+			return true;
+		}
+
+		function validatePageTwo () {
 			const username = document.getElementById('username').value;
 			if (!username) return alert('No username given.');
-			if (!username.match(/^(?!.*[\._]{2,})[\w\.]*$/)) return alert('Username doesn\'t meet requirements');
+			// if (!username.match(/^(?!.*[\._]{2,})[\w\.]*$/)) return alert('Username doesn\'t meet requirements');
+			// Removing the arbitrary requirements
+			// ...actually let's remove HTML-breaking stuff
+			if (username.match(/[<>]/)) return alert(`The characters < and > are not permitted in usernames.`);
 			const password = document.getElementById('password').value;
 			if (!password) return alert('No password provided.');
-			if (!password.match(/^(?=.*[!-~]).{6,20}$/)) {
-				return alert('Password doesn\'t meet the requirements');
+			if (!password.match(/^.{6,24}$/)) {
+				return alert('Password must be between 6 and 24 characters long');
 			}
 			if (password !== document.getElementById('confirm-password').value) return alert('Passwords do not match!');
-			// Page three
+			return true;
+		}
+
+		function validatePageThree () {
 			const transactionID = document.getElementById('transaction-ID').value;
 			if (!~~transactionID) return alert('Transaction ID not provided. Signup requires transaction ID');
 			if (!transactionID.match(/^\d{12}$/)) return alert('Transaction ID provided is invalid!');
-			// console.log('Sending POST request');
+			return true;
+		}
+
+		function signUp () {
+			if (!validatePageOne()) return;
+			if (!validatePageTwo()) return;
+			if (!validatePageThree()) return;
+
+			const name = document.getElementById('display-name').value.trim();
+			const email = document.getElementById('email').value.trim();
+			const rollno = document.getElementById('rollno').value.trim();
+			const image = selectedImage;
+			const signedUpFor = {};
+			{% for sauce in sauces %}
+				signedUpFor.{{ sauce.id }} = document.getElementById('{{ sauce.id }}').checked;
+			{% endfor %}
+			const username = document.getElementById('username').value;
+			const password = document.getElementById('password').value;
+			const transactionID = document.getElementById('transaction-ID').value;
+
 			axios.post('/signup', {
 				name,
 				username,
 				password,
 				email,
-				selectedImages,
+				rollno,
+				image,
 				signedUpFor,
 				transactionID
 			}).then(() => window.location.href = '/')
@@ -166,9 +197,9 @@
 						sauce = ele.getAttribute('value');
 						try {
 							document.getElementById(`img-${selectedImage}`).classList.remove('selected-image');
-						}
-						catch (e) { console.log('Throwing error');}
-						finally {
+						} catch (e) {
+							console.log('Throwing error');
+						} finally {
 							selectedSauce = sauce;
 							selectedImage = event.srcElement.id.slice(4, );
 							event.srcElement.classList.add('selected-image');
@@ -181,8 +212,7 @@
 					[...document.getElementsByClassName('image-array')].forEach(el => {
 						if (el.getAttribute('value') === ele.getAttribute('value')) {
 							el.classList.remove('collasp');
-						}
-						else if (!el.classList.contains('collasp')) {
+						} else if (!el.classList.contains('collasp')) {
 							el.classList.add('collasp');
 						}
 					});
@@ -200,17 +230,17 @@
 			line-height: 42px;
 			text-align: center;
 		}
-		.cool-class-name{
+		.cool-class-name {
 			color: var(--error-red);
 		}
-		.form-container{
+		.form-container {
 			margin-top : 2rem;
 			margin-bottom: 63rem;
 			display: flex;
 			justify-content: center;
 		}
 		
-		form{
+		form {
 			display: flex;
 			width: 75%;
 			max-width: 540px;
@@ -223,14 +253,14 @@
 			padding: 12px 25px;
 			row-gap: 10px;
 		}
-		form *{
+		form * {
 			font-family:Ubuntu,Roboto,Arial,Open Sans,sans-serif;
 			color: #ffffff;
 			letter-spacing: 0.5px;
 			outline: none;
 			border: none;
 		}
-		form h3{
+		form h3 {
 			font-size: 32px;
 			font-weight: 500;
 			line-height: 42px;
@@ -238,7 +268,7 @@
 			margin-bottom:35px;
 		}
 
-		input{
+		input {
 			height: 50px;
 			width: -moz-available;
 			width: -webkit-fill-available;
@@ -264,16 +294,16 @@
 			width: 30%;
 		}
 
-		.checkboxes{
+		.checkboxes {
 			display : inline;
 			height: 10px;
 		}
-		::placeholder{
+		::placeholder {
 			color: #e5e5e5;
 			font-family:Ubuntu,Roboto,Arial,Open Sans,sans-serif;
 			font-size:20px;
 		}
-		button{
+		button {
 			margin-top: 19px;
 			width: 44%;
 			background-color: var(--red);
@@ -288,27 +318,27 @@
 			margin-right : 9px;
 			margin-left : 9px;
 		}
-		.collasp{
+		.collasp {
 			display: none;
 		}
-		.image-array>img{
+		.image-array>img {
 			margin: 10px;
 			width: 50px;
 			height: 50px;
 		}
-		.image-array-heading{
+		.image-array-heading {
 			background-color: rgba(255,255,255,0.07);
 			margin-top: 5px;
 			width: 80%;
 			padding: 10px 0px 10px 0px;
 			border-radius: 12px
 		}
-		.profile_picture{
+		.profile_picture {
 			height : 82px;
 			border-radius : 14px;
 		}
 
-		.profile_picture:hover{
+		.profile_picture:hover {
 			transform : scale(1.1);
 		}
 
@@ -326,26 +356,26 @@
 		background-color: rgba(0, 0, 0, 0.9);
 		}
 		
-		.closespn{
+		.closespn {
 			position: absolute;
 			translate: 2200% -128%;
 			transform: scale(3);
 			font-weight: bold;
 		}
 
-		.upi_icons{
+		.upi_icons {
 			padding-top:15px;
 		}
-		.icons{
+		.icons {
 			padding:0px 5px;
 			border-radius :20px;
 		}
 		
-		h4{
+		h4 {
 			padding-top:12px;
 		}
 
-		.modalImage{
+		.modalImage {
 			border-radius:15px;
 		}
 
