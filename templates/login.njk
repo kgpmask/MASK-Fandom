@@ -96,7 +96,15 @@
 			.catch(err => console.log(err));
 	}
 
-	window.onload = () => document.getElementById('login-button').onclick = login;
+	window.onload = () => {
+		document.getElementById('login-button').onclick = login;
+		document.getElementsByClassName('form-container')[0].addEventListener('keyup', event => {
+			if (event.key === 'Enter') {
+				document.getElementById('login-button').click();
+			}
+		});
+		document.getElementById('username').focus();
+	}
 </script>
 {% endblock %}
 
