@@ -31,8 +31,8 @@ function handler (app, nunjEnv) {
 			if (!id) throw new Error('Credentials don\'t match.');
 			res.cookie('sessionId', await dbh.generateSessionRecord(id));
 			return res.send('Login Successful');
-		} catch (e) {
-			return res.error(e);
+		} catch (err) {
+			return res.error(err);
 		}
 	});
 	// Signup GET
@@ -65,7 +65,7 @@ function handler (app, nunjEnv) {
 
 			req.user = await dbh.createNewUser(req.body);
 			// Generate a session for login middleware to recognize
-			res.cookie('sessionId', await dbh.generateSessionRecord(req.user.id));
+			res.cookie('sessionId', await dbh.generateSessionRecord(req.user._id));
 			// Send a message to indicate successful login
 			return res.send('Successfully logged in');
 		} catch (err) {
@@ -112,6 +112,10 @@ function handler (app, nunjEnv) {
 		// eslint-disable-next-line no-unreachable
 		return res.renderFile('events/fandom_quiz.njk');
 	});
+	app.post('/quiz/:arg', async (req, res) => {
+		const quiz = (await dbh.getQuizzes()).find(e => e._id === req.params.arg);
+		return res.send(quiz);
+	});
 	// Update Participant Quiz Status
 	app.post('/update-status/:arg', async (req, res) => {
 		// Will be used when the person starts the quiz or moves to another question
@@ -121,31 +125,97 @@ function handler (app, nunjEnv) {
 
 	// Results page
 	app.get('/results/:arg', async (req, res) => {
-		return res.redirect('/');
+		const RES = await dbh.getFandomResult(req.params.arg);
+		if (!RES.some(Boolean)) return res.notFound();
+		const results = [];
+		RES.forEach(r => {
+			if (!results.find(res => res.uid === r.userId)) {
+				results.push({
+					uid: r.userId,
+					points: r.points,
+					time: r.endTime
+				});
+			}
+		});
+		results.sort((a, b) => {
+			if (a.points === b.points) return a.endTime > b.endTime;
+			return -(a.points > b.points);
+		});
+		results.map((ele, index) => {
+			ele.rank = index + 1;
+			delete ele.time;
+		});
+		return res.renderFile('events/results.njk', { results: results });
 	});
 
 	// Admin-related only
 	// Records of registered people
 	app.get('/registered', async (req, res) => {
 		if (!req.admin) return res.redirect('/');
-		// left blank for goose
+		const records = (await dbh.getAllUsers()).filter(record => !record.permissions?.find(perm => perm === 'Admin'));
+		const count = { Naruto: 0, AOT: 0, OPM: 0, MHA: 0 };
+		records.forEach(record => Object.keys(count).forEach(sauce => count[sauce] += record.signedUpFor[sauce]));
+		const countRecord = Object.keys(count).map(sauce => `<b>${sauce}:</b> ${count[sauce]}`).join(', ');
+		const images = require('./images');
+		records.forEach(user => user.imageLink = images[user.image.split('-')[0]][user.image.split('-')[1]]);
+		return res.renderFile('/admin/reg_records.njk', { records, countRecord });
+	});
+	// Confirm payment (will be done by Parmar ig)
+	app.post('/confirm-payment', async (req, res) => {
+		try {
+			if (!req.admin) return res.status(403).send('How are you sending this request??');
+			await dbh.confirmPayment(req.body.userId);
+			return res.send('Confirmation successful');
+		} catch (err) {
+			return res.error(err);
+		}
 	});
 	// Edit a profile in case of inappropriate words
-	app.get('/edit-profile/:arg', async (req, res) => {
+	app.get('/edit-profile/:id', async (req, res) => {
 		if (!req.admin) return res.redirect('/');
-		// left blank for goose
+		const user = await dbh.getUser(req.params.id);
+		return res.renderFile('admin/edit_profile.njk', user);
 	});
 	// Update profile
 	app.post('/update-profile', async (req, res) => {
-		if (!req.admin) return res.status(403).error('Access Denied. Not an admin');
+		try {
+			if (!req.admin) return res.status(403).send('Access Denied. Not an admin');
+			await dbh.editUserDetails(req.body);
+			return res.send('Updated successfully');
+		} catch (err) {
+			return res.error(err);
+		}
+	});
+	// Mark as present (can't attempt quiz without being marked present)
+	app.post('/mark-present', async (req, res) => {
+		try {
+			if (!req.admin) return res.status(403).send('Access Denied. Not an admin!');
+			await dbh.markUserAsPresent(req.body.id);
+			return res.send('Marked as present');
+		} catch (err) {
+			return res.error(err);
+		}
 	});
 	// Quiz Portal
 	app.get('/quiz-portal', async (req, res) => {
-		if (!req.admin) return res.redirect('/');
+		// if (!req.admin) return res.redirect('/');
+		const quizzes = await dbh.getQuizzes();
+		quizzes.forEach(quiz => {
+			quiz.status = new Date().getTime() < new Date(quiz.startTime).getTime() ? 'To be started' :
+				new Date().getTime() < new Date(quiz.endTime).getTime() ? 'Running' : 'Ended';
+		});
+		return res.renderFile('admin/quiz_portal.njk', { quizzes });
+	});
+	// Show answers to quizzes
+	app.get('/show-answers/:arg', async (req, res) => {
+		const quiz = (await dbh.getQuizzes()).find(e => e._id === req.params.arg);
+		const quizQuestions = [];
+		quiz.questions.forEach((question, i) => quizQuestions.push({ number: i + 1, ...question, _id: req.params.arg }));
+		return res.renderFile('admin/quiz_solutions.njk', { quizQuestions, questions: JSON.stringify(quizQuestions) });
 	});
 	// Re-evaluate a quiz's answers
 	app.post('/re-evaluate/:arg', async (req, res) => {
-		if (!req.admin) return res.status(403).error('Access Denied. Not an admin');
+		if (!req.admin) return res.status(403).send('Access Denied. Not an admin');
 	});
 	// Rebuild
 	app.get('/rebuild', async (req, res) => {

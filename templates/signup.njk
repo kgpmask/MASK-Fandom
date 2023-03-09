@@ -134,7 +134,7 @@
 		}
 
 		function validatePageTwo () {
-			const username = document.getElementById('username').value;
+			const username = document.getElementById('username').value.trim();
 			if (!username) return alert('No username given.');
 			// if (!username.match(/^(?!.*[\._]{2,})[\w\.]*$/)) return alert('Username doesn\'t meet requirements');
 			// Removing the arbitrary requirements
@@ -150,7 +150,7 @@
 		}
 
 		function validatePageThree () {
-			const transactionID = document.getElementById('transaction-ID').value;
+			const transactionID = document.getElementById('transaction-ID').value.trim();
 			if (!~~transactionID) return alert('Transaction ID not provided. Signup requires transaction ID');
 			if (!transactionID.match(/^\d{12}$/)) return alert('Transaction ID provided is invalid!');
 			return true;
