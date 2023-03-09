@@ -32,7 +32,7 @@ function handler (app, nunjEnv) {
 			res.cookie('sessionId', await dbh.generateSessionRecord(id));
 			return res.send('Login Successful');
 		} catch (err) {
-			return res.error(rrr);
+			return res.error(err);
 		}
 	});
 	// Signup GET
