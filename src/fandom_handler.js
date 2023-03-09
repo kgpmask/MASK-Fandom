@@ -185,10 +185,11 @@ function handler (app, nunjEnv) {
 		});
 		return res.renderFile('admin/quiz_portal.njk', { quizzes });
 	});
+	// Show answers to quizzes 
 	app.get('/show-answers/:arg', async (req, res) => {
 		const quiz = (await dbh.getQuizzes()).find(e => e._id === req.params.arg);
 		const quizQuestions = [];
-		quiz.questions.forEach((question, i) => quizQuestions.push({ number: i + 1, ...question }));
+		quiz.questions.forEach((question, i) => quizQuestions.push({ number: i + 1, ...question, _id : req.params.arg }));
 		return res.renderFile('admin/quiz_solutions.njk', { quizQuestions });
 	});
 	// Re-evaluate a quiz's answers

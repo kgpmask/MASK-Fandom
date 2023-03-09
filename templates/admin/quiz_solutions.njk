@@ -45,7 +45,7 @@
 {% endblock %}
 
 {% block pagecontent %}
-    <div class = "header"></div>
+    <div class = "header"><h3>Answers to the {{ quizQuestions[0]._id }} Quiz</h3><br></div>
 	{% for question in quizQuestions %}
         <div class = "solution_container">
             <div class = "question-{{ question.number }}">
