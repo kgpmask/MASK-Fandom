@@ -1,20 +1,30 @@
 {
-	"Temari": {"src" : "assets/members/18_apoorva.webp"},
-	"Madara": {"src" : "assets/members/19_ashwin.webp"},
-	"Pain": {"src" : "assets/members/19_manish.webp"},
-	"Minato": {"src" : "assets/members/20_arjit.webp"},
-	"Sakura ": {"src" : "assets/members/21_kapil.webp"},
-	"Naruto": {"src" : "assets/members/21_maloth.webp"},
-	"Itachi": {"src" : "assets/members/21_sampreet.webp"},
-	"Kakashi": {"src" : "assets/members/21_venkatsai.webp"},
-	"Reiner": {"src" : "assets/members/19_saad.webp"},
-	"Eren": {"src" : "assets/members/20_aditya.webp"},
-	"Mikasa": {"src" : "assets/members/20_anmol.webp"},
-	"Levi": {"src" : "assets/members/21_rishabh_prasad.webp"},
-	"Hange": {"src" : "assets/members/22_rashmi.webp"},
-	"Saitama": {"src" : "assets/members/20_anshul.webp"},
-	"Genos": {"src" : "assets/members/20_hrishabh.webp"},
-	"Tatsumaki": {"src" : "assets/members/20_kartik.webp"},
-	"Keigo": {"src" : "assets/members/21_manish.webp"},
-	"Deku": {"src" : "assets/members/21_pranay.webp"}
+	"Naruto": {
+		"Naruto": "/assets/fandom/profile-pics/naruto.webp",
+		"Sasuke": "/assets/fandom/profile-pics/sasuke.webp",
+		"Itachi": "/assets/fandom/profile-pics/itachi.webp",
+		"Kakashi": "/assets/fandom/profile-pics/kakashi.webp",
+		"Madara": "/assets/fandom/profile-pics/madara.webp"
+	},
+	"AOT": {
+		"Eren": "/assets/fandom/profile-pics/erentitan.webp",
+		"Mikasa": "/assets/fandom/profile-pics/mikasa.webp",
+		"Levi": "/assets/fandom/profile-pics/levi.webp",
+		"Zeke": "/assets/fandom/profile-pics/zeketitan.webp",
+		"Erwin": "/assets/fandom/profile-pics/erwin.webp"
+	},
+	"OPM": {
+		"Saitama": "/assets/fandom/profile-pics/saitama.webp",
+		"Genos": "/assets/fandom/profile-pics/genos.webp",
+		"Bang": "/assets/fandom/profile-pics/bang.webp",
+		"Tatsumaki": "/assets/fandom/profile-pics/tatsumaki.webp",
+		"MumenRider": "/assets/fandom/profile-pics/mumenrider.webp"
+	},
+	"MHA": {
+		"Deku": "/assets/fandom/profile-pics/deku.webp",
+		"AllMight": "/assets/fandom/profile-pics/allmight.webp",
+		"Bakugo": "/assets/fandom/profile-pics/bakugo.webp",
+		"Shigaraki": "/assets/fandom/profile-pics/shigaraki.webp",
+		"Todoroki": "/assets/fandom/profile-pics/todoroki.webp"
+	}
 }
