@@ -98,8 +98,11 @@ async function getUserStats (userId, quizId) {
 async function updateUserStats (userId, quizId, answer) {
 	const user = await getUserStats(userId, quizId);
 	if (user.status === 'Submitted') throw new Error('Updating a submitted record!!');
-	if (answer === 1.063) user.status = 'Submitted';
-	else user.records.push(answer);
+	if (typeof answer === 'object') {
+		user.status = 'Submitted';
+		user.endTime = answer.endTime;
+		user.points = answer.points;
+	} else user.records.push(answer);
 	return user.save();
 }
 

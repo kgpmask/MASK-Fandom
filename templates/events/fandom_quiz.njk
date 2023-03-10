@@ -177,10 +177,14 @@
 			document.getElementsByClassName('instructions')[0].style.display = 'none';
 			document.getElementsByClassName('quiz-container')[0].style.display = 'block';
 			for (let button of document.getElementsByClassName('nextQ')) button.style.display = 'inline';
-			const timerLength = (await axios.post(`/time-left/${ id }`)).data;
-			await nextQ(false);
-			timer(timerLength);
-			return false;
+			try {
+				const response = await axios.post(`/time-left/${ id }`);
+				await nextQ(false);
+				timer(response.data);
+				return false;
+			} catch (err) {
+				if (err.response.status === 403) endQuiz();
+			}
 			// Here, we have started a global timer with value = timerLength
 		}
 		async function nextQ (submit = true) {
@@ -351,7 +355,7 @@
 			display: flex; 
 			flex-direction: column;
 			align-items: center;
-			justinfy-content: center;
+			justify-content: center;
 		}
 
 		div[id^='question-'] i {
@@ -361,6 +365,11 @@
 
 		#waiting {
 			margin: 0px 3px 15px;
+		}
+
+		div[id^='question-'] img, div[id^='option-'] img{
+			max-width: 200px;
+			max-height: 300px;
 		}
 	</style>
 {% endblock %}

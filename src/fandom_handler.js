@@ -117,10 +117,13 @@ function handler (app, nunjEnv) {
 			if (!(PARAMS.dev && req.params.arg === 'SQ1')) return res.redirect('/events');
 		}
 		const quiz = (await dbh.getQuizzes()).find(e => e._id === req.params.arg);
+		if (new Date().getTime() > quiz.endTime.getTime()) return res.redirect('/events');
 		const questions = [];
 		const types = [];
 		const userStat = await dbh.getUserStats(req.user._id, req.params.arg);
-		if (userStat.status === 'Submitted') return res.redirect('/submitted');
+		// Redirect to /events if timeout, redirect to /submitted if submitted
+		if (userStat.endTime.getTime() < new Date().getTime()) return res.redirect('/events');
+		else if (userStat.status === 'Submitted') return res.redirect('/submitted');
 		currentQ = userStat.records.length;
 		quiz.questions.forEach((question, i) => i >= currentQ ? types.push(question.options.type) && questions.push({
 			number: i + 1,
@@ -143,8 +146,12 @@ function handler (app, nunjEnv) {
 			if (!(PARAMS.dev && req.params.id === 'SQ1')) return res.error('Not registered');
 		}
 		const quiz = (await dbh.getQuizzes()).find(quiz => quiz._id === req.params.id);
+		const userData = await dbh.getUserStats(req.user._id, req.params.id);
 		if (!quiz) throw new Error('Unable to find the quiz!');
-		return res.send(Math.min(20 * 60, (new Date(quiz.endTime).getTime() - new Date().getTime()) / 1000).toString());
+		const timeLeft = Math.floor((Math.min(userData.endTime.getTime(), quiz.endTime.getTime()) - new Date().getTime()) / 1000);
+		console.log(timeLeft);
+		if (timeLeft <= 0) return res.status(403).send('Time limit crossed already');
+		return res.send(timeLeft.toString());
 	});
 	app.post('/quiz/:arg', async (req, res) => {
 		const quiz = (await dbh.getQuizzes()).find(e => e._id === req.params.arg);
@@ -168,9 +175,15 @@ function handler (app, nunjEnv) {
 			if (!(PARAMS.dev && req.params.id === 'SQ1')) return res.error('Not registered');
 		}
 		try {
-			await dbh.updateUserStats(req.user._id, req.params.id, 1.063);
+			const answer = { endTime: new Date(), points: 0 };
+			const quiz = (await dbh.getQuizzes()).find(quiz => quiz._id === req.params.id);
+			const userStat = await dbh.getUserStats(req.user._id, req.params.id);
+			for (let i = 0; i < userStat.records.length; i++) answer.points += quiz.questions[i].points *
+				await checker.checkFandomQuiz(userStat.records[i], quiz.questions[i].solution, quiz.questions[i].options.type);
+			await dbh.updateUserStats(req.user._id, req.params.id, answer);
 			return res.redirect('/submitted');
 		} catch (err) {
+			console.log(err);
 			return res.error(err);
 		}
 	});
