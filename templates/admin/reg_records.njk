@@ -143,8 +143,8 @@
 			<img class="user-image" src="{{ record.imageLink }}" alt="{{ record.image }}">
 			<br/><br/>
 			<div class="details-container" id={{ record._id }}>
-				<div class="user-username">{{ record.username }}</div>
-				<div class="user-name">{{ record.name }}</div>
+				<div class="user-username">{{ record.name }}</div>
+				<div class="user-name">{{ record.username }}</div>
 				<div class="user-signed-up-for">
 					{% for sauce, signedUp in record.signedUpFor %}
 						<span class="{{ sauce }}-icon{{ ' signed-up' if signedUp }}"></span>
