@@ -4,6 +4,8 @@
 {% set thispage = 'events' %}
 {% set pagetitle = 'Events' %}
 
+{% set typesMap = { mcq: 'MCQ', text: 'Text', number: 'Number' } %}
+
 {% block pagecontent %}
 	<div class = "instructions" style = "display:block">
 		<h1 class = "title">Manga and Anime Society Kharagpur</h1>
@@ -43,9 +45,9 @@
 				{% for q in range(currentQ + 1, qAmt + currentQ + 1) %}
 					<div id="qbox-{{ q }}" style="display:none">
 						<fieldset>
-							<legend>Question [{{ q }}]</legend><br/>
+							<legend>&nbspQuestion [{{ q }}]&nbsp</legend>
+							<div id="type-{{ q }}"> <b>Type:</b> {{ typesMap[types[q - currentQ - 1]] }} </div>
 							<div id="question-{{ q }}"></div>
-							<div id="type-{{ q }}"> Type: {{ types[q - currentQ - 1] }} </div>
 							<br/>
 							<div id="options-{{ q }}" class="options">
 								{% if types[q - currentQ - 1] == 'mcq' %}
@@ -96,9 +98,15 @@
 						return `<audio src="${component.value}" type="audio/mpeg"> </audio>`;
 					case 'title':
 						return `<h3>${component.value}</h3>`;
-					case 'gallery':
+					case 'gallery': {
 						const images = components.value.map(img => `<img src="${img.src}" class="gallery-image">`).join('');
-						return `<div style="display: flex; flex-direction: row; flex-wrap: wrap;"> ${images} </div>`
+						return `<div style="display: flex; flex-direction: row; flex-wrap: wrap;"> ${images} </div>`;
+					}
+					case 'paragraph': 
+						return `<i>${component.value}</i>`;
+					case 'table':
+						// needs to be fixed
+						return component.value;
 					default:
 						return component.value;
 				}
@@ -177,12 +185,19 @@
 		}
 		async function nextQ (submit = true) {
 			// if (currentTimer) currentTimer();
+			[...document.getElementsByClassName('nextQ')].forEach(button => button.disabled = true);
 			if (submit) {
-				const answer = document.querySelector(`input[name="answer-${currentQ}"]${qs[currentQ - startQ - 1].options.type === "mcq" ? ":checked" : ""}`)?.value;
-				if (qs[currentQ - startQ - 1].options.type === "number" && !~~answer) return alert('Answering non-numeric value in number field');
-				document.getElementById('quiz').style.display = 'none';
-				document.getElementById('waiting').style.display = 'block';
-				await axios.post('/update-status/{{ id }}', { answer });
+				try {
+					const answer = document.querySelector(`input[name="answer-${currentQ}"]${qs[currentQ - startQ - 1].options.type === "mcq" ? ":checked" : ""}`)?.value.trim();
+					if (qs[currentQ - startQ - 1].options.type === "number" && !~~answer) throw new Error('Answering non-numeric value in number field');
+					else if (!answer) throw new Error('No answer provided...');
+					// document.getElementById('quiz').style.display = 'none';
+					document.getElementById('waiting').style.display = 'block';
+					await axios.post('/update-status/{{ id }}', { answer });
+				} catch (err) {
+					[...document.getElementsByClassName('nextQ')].forEach(button => button.disabled = false);
+					return alert(err.response ? err.response.data : err);
+				}
 			}
 			for (button of document.getElementsByClassName('nextQ')) button.disabled = false;
 			const c = currentQ;
@@ -190,12 +205,14 @@
 				for (button of document.getElementsByClassName('submit')) button.style.display = 'inline';
 				document.getElementById(`qbox-${c}`) ? document.getElementById(`qbox-${c}`).style.display = 'none' : '';
 				for (button of document.getElementsByClassName('nextQ')) button.disabled = true;
-			} else document.getElementById(`qbox-${c + 1}`).style.display = 'block';
+			} else {
+				[...document.getElementsByClassName('nextQ')].forEach(button => button.disabled = false);
+				document.getElementById(`qbox-${c + 1}`).style.display = 'block';
+			}
 			if (c) document.getElementById(`qbox-${c}`)?.parentElement?.removeChild(document.getElementById(`qbox-${c}`));
 			currentQ++;
 			document.getElementById('waiting').style.display = 'none';
 			document.getElementById('quiz').style.display = 'block';
-			// if (submit) await axios.post('/update-record', );
 		}
 		
 		async function endQuiz () {
@@ -324,6 +341,26 @@
 			padding: 30px 60px;
 			border-radius: 20px;
 			margin: 20px 10%;
+		}
+
+		div[id^='type-'] {
+			margin: 6px;
+		}
+
+		div[id^='question-'] {
+			display: flex; 
+			flex-direction: column;
+			align-items: center;
+			justinfy-content: center;
+		}
+
+		div[id^='question-'] i {
+			max-width: 85%;
+			margin: 5px 3px 3px;
+		}
+
+		#waiting {
+			margin: 0px 3px 15px;
 		}
 	</style>
 {% endblock %}
