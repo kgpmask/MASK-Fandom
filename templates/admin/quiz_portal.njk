@@ -18,12 +18,12 @@
 						<div class = 'status' id = 'status' style = "color: #ff8585;">{{quiz.status}}</div>
 					{% endif %} {% endif %}
 					<div class="button-container">
-						<button type = "button" class = "stop-quiz {{ 'disabled' if quiz.status != 'Running' }}" onclick="stop({{ quiz.id }})">Stop Quiz</button>
-						<button type = "button" class="re-evaluate  {{ 'disabled' if quiz.status != 'Ended' }}" onclick="re_eval({{ quiz.id }})">Re-Evaluate</button>
+						<button type = "button" class = "stop-quiz {{ 'disabled' if quiz.status != 'Running' }}" {{ 'disabled' if quiz.status != 'Running' }} onclick="stop('{{ quiz._id }}')">Stop Quiz</button>
+						<button type = "button" class="re-evaluate  {{ 'disabled' if quiz.status != 'Ended' }}" {{ 'disabled' if quiz.status != 'Ended' }} onclick="re_eval'({{ quiz._id }}')">Re-Evaluate</button>
 					</div>
 					<div class="button-container">
-						<button type = "button" class="answers" onclick="show_answers('{{ quiz._id }}')">Show Answers</button>
-						<button type = "button" class="results {{ 'disabled' if quiz.status == 'To be started' }}" onclick="(() => window.location.href = '/results/{{ quiz.id }}')()">Show Results</button>
+						<button type = "button" class="answers {{ 'disabled' if quiz.status != 'Ended' }}" {{ 'disabled' if quiz.status != 'Ended' }} onclick="window.location.href ='/show-answers/{{ quiz._id }}'">Show Answers</button>
+						<button type = "button" class="results {{ 'disabled' if quiz.status != 'Ended' }}" {{ 'disabled' if quiz.status != 'Ended' }} onclick="(() => window.location.href = '/results/{{ quiz._id }}')()">Show Results</button>
 					</div>
 				</div>
 			</div>
@@ -36,46 +36,15 @@
 {% block customjs %}
 <script>
 	function stop (quizID) {
-		axios.post(`/stop-quiz/${quizID}`)
+		return axios.post(`/stop-quiz/${quizID}`)
 			.then(res => console.log(res.data))
 			.catch(err => alert(err));
 	}
 
 	function re_eval (quizID) {
-		axios.post(`/sre-evaluate/${quizID}`)
+		return axios.post(`/re-evaluate/${quizID}`)
 			.then(res => console.log(res.data))
 			.catch(err => alert(err));
-	}
-
-	async function show_answers (quizID) {
-		const question = (await axios.post('/quiz/'+quizID)).data.questions;
-		let ele = document.getElementById('answer-container');
-		if( ele.style.display === 'none' ) ele.style.display = 'flex';
-		else {
-			[...ele.children].forEach(e => {
-    			ele.removeChild(e);
-			});
-		}
-		const div = document.createElement('div');
-		div.style = 'display: flex; flex-direction: column;'
-		div.id = 'answers';
-		const code = [`
-			<h2>Answers for ${quizID}</h2>
-			<table>
-				<tr>
-					<th>Answers</th>
-				</tr>
-		`];
-		question.forEach(elem => {
-			code.push(`
-				<tr>
-					<td>${elem.options.type === 'mcq' ? elem.options.value[elem.solution - 1][0].value : Array.isArray(elem.solution) ? elem.solution.join(", ") : elem.solution}</td>
-				</tr>
-			`)
-		});
-		code.push(`</table>`);
-		div.innerHTML = code.join('');
-		ele.appendChild(div);
 	}
 
 </script>

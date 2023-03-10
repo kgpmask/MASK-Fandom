@@ -76,7 +76,7 @@ exports.checkFandomQuiz = function (answer, solution, questionType) {
 		switch (questionType) {
 			case 'number':
 			case 'mcq': {
-				if (!~~answer) return reject('Invalid Answer');
+				if (~~answer) return reject('Invalid Answer');
 				flag = ~~answer === solution;
 				break;
 			}

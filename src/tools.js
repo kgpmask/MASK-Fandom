@@ -66,7 +66,7 @@ exports.fakeRandom = function fakeRandom (seed) {
 
 exports.levenshtein = function levenshtein (str1, str2) {
 	// needs some maintenance
-	if (!str1.length) return t.length;
+	if (!str1.length) return str2.length;
 	if (!str2.length) return str1.length;
 	const arr = [];
 	for (let i = 0; i <= str2.length; i++) {

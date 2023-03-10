@@ -95,9 +95,13 @@ async function getUserStats (userId, quizId) {
 	else return generateUserQuizRecord({ userId, quizId });
 }
 
+function getStatsOfQuiz (quizId) {
+	return Quiz.UserInfo.find({ quizId }).lean();
+}
+
 async function updateUserStats (userId, quizId, answer) {
 	const user = await getUserStats(userId, quizId);
-	if (user.status === 'Submitted') throw new Error('Updating a submitted record!!');
+	if (user.status === 'Submitted' && !answer.reEvaluation) throw new Error('Updating a submitted record!!');
 	if (typeof answer === 'object') {
 		user.status = 'Submitted';
 		user.endTime = answer.endTime;
@@ -108,6 +112,10 @@ async function updateUserStats (userId, quizId, answer) {
 
 function getQuizzes () {
 	return Quiz.Questions.find().lean();
+}
+
+function getQuiz (quizId) {
+	return Quiz.Questions.findById(quizId).lean();
 }
 
 async function getLiveQuiz (query) {
@@ -218,7 +226,9 @@ module.exports = {
 	confirmPayment,
 	markUserAsPresent,
 	getQuizzes,
+	getQuiz,
 	getUserStats,
+	getStatsOfQuiz,
 	updateUserStats,
 	getLiveQuiz,
 	getLiveResult,

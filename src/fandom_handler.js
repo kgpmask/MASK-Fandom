@@ -116,7 +116,7 @@ function handler (app, nunjEnv) {
 			// made it compatible for testing... may remove later
 			if (!(PARAMS.dev && req.params.arg === 'SQ1')) return res.redirect('/events');
 		}
-		const quiz = (await dbh.getQuizzes()).find(e => e._id === req.params.arg);
+		const quiz = await dbh.getQuiz(req.params.arg);
 		if (new Date().getTime() > quiz.endTime.getTime()) return res.redirect('/events');
 		const questions = [];
 		const types = [];
@@ -145,7 +145,7 @@ function handler (app, nunjEnv) {
 			// made it compatible for testing... may remove later
 			if (!(PARAMS.dev && req.params.id === 'SQ1')) return res.error('Not registered');
 		}
-		const quiz = (await dbh.getQuizzes()).find(quiz => quiz._id === req.params.id);
+		const quiz = await dbh.getQuiz(req.params.id);
 		const userData = await dbh.getUserStats(req.user._id, req.params.id);
 		if (!quiz) throw new Error('Unable to find the quiz!');
 		const timeLeft = Math.floor((Math.min(userData.endTime.getTime(), quiz.endTime.getTime()) - new Date().getTime()) / 1000);
@@ -154,7 +154,7 @@ function handler (app, nunjEnv) {
 		return res.send(timeLeft.toString());
 	});
 	app.post('/quiz/:arg', async (req, res) => {
-		const quiz = (await dbh.getQuizzes()).find(e => e._id === req.params.arg);
+		const quiz = await dbh.getQuiz(req.params.arg);
 		return res.send(quiz);
 	});
 	// Update Participant Quiz Status
@@ -176,7 +176,7 @@ function handler (app, nunjEnv) {
 		}
 		try {
 			const answer = { endTime: new Date(), points: 0 };
-			const quiz = (await dbh.getQuizzes()).find(quiz => quiz._id === req.params.id);
+			const quiz = await dbh.getQuiz(req.params.id);
 			const userStat = await dbh.getUserStats(req.user._id, req.params.id);
 			for (let i = 0; i < userStat.records.length; i++) answer.points += quiz.questions[i].points *
 				await checker.checkFandomQuiz(userStat.records[i], quiz.questions[i].solution, quiz.questions[i].options.type);
@@ -194,13 +194,17 @@ function handler (app, nunjEnv) {
 
 	// Results page
 	app.get('/results/:arg', async (req, res) => {
+		if (!req.admin) return res.redirect('/');
 		const RES = await dbh.getFandomResult(req.params.arg);
 		if (!RES.some(Boolean)) return res.notFound();
 		const results = [];
+		const users = await dbh.getAllUsers();
 		RES.forEach(r => {
 			if (!results.find(res => res.uid === r.userId)) {
+				const user = users.find(user => user._id === r.userId);
 				results.push({
-					uid: r.userId,
+					name: user.name,
+					username: user.username,
 					points: r.points,
 					time: r.endTime
 				});
@@ -277,14 +281,23 @@ function handler (app, nunjEnv) {
 	});
 	// Show answers to quizzes
 	app.get('/show-answers/:arg', async (req, res) => {
-		const quiz = (await dbh.getQuizzes()).find(e => e._id === req.params.arg);
+		const quiz = await dbh.getQuiz(req.params.arg);
 		const quizQuestions = [];
 		quiz.questions.forEach((question, i) => quizQuestions.push({ number: i + 1, ...question, _id: req.params.arg }));
 		return res.renderFile('admin/quiz_solutions.njk', { quizQuestions, questions: JSON.stringify(quizQuestions) });
 	});
 	// Re-evaluate a quiz's answers
-	app.post('/re-evaluate/:arg', async (req, res) => {
+	app.post('/re-evaluate/:id', async (req, res) => {
 		if (!req.admin) return res.status(403).send('Access Denied. Not an admin');
+		const stats = await dbh.getStatsOfQuiz(req.params.id);
+		const quiz = await dbh.getQuiz(req.params.id);
+		for (let i = 0; i < stats.length; i++) {
+			const record = stats[i];
+			const answer = { endTime: record.endTime, points: 0, reEvaluation: true };
+			for (let i = 0; i < record.records.length; i++) answer.points += quiz.questions[i].points *
+				await checker.checkFandomQuiz(record.records[i], quiz.questions[i].solution, quiz.questions[i].options.type);
+			await dbh.updateUserStats(record.userId, record.quizId, answer);
+		}
 	});
 	// Rebuild
 	app.get('/rebuild', async (req, res) => {
