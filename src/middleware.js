@@ -50,7 +50,7 @@ module.exports = function setMiddleware (app) {
 			});
 		};
 
-		console.log(req.url, req.body);
+		// console.log(req.url, req.body);
 
 		next();
 	});
