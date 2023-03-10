@@ -157,6 +157,7 @@
 		}
 
 		function signUp () {
+			document.getElementById('submit').disabled = true;
 			if (!validatePageOne()) return;
 			if (!validatePageTwo()) return;
 			if (!validatePageThree()) return;
@@ -185,6 +186,7 @@
 			}).then(() => window.location.href = '/')
 			.catch(e => {
 				console.log(e);
+				document.getElementById('submit').disabled = true;
 				return alert(e.response.data);
 			});
 		}
