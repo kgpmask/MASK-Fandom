@@ -103,8 +103,8 @@ function handler (app, nunjEnv) {
 			return {
 				id: quiz._id,
 				name: quiz._id === 'NRT' ? 'Naruto' : quiz._id,
-				active: (new Date).getTime() >= quiz.startTime.getTime() && (new Date).getTime() < quiz.endTime.getTime()
-				&& (quiz._id === 'SQ1' || req.user.signedUpFor[quiz._id])
+				active: new Date().getTime() >= quiz.startTime.getTime() && new Date().getTime() < quiz.endTime.getTime()
+				&& (quiz._id === 'SQ1' || req.user.signedUpFor[quiz._id === 'NRT' ? 'Naruto' : quiz._id])
 			};
 		});
 		return res.renderFile('events.njk', { quizzes });
@@ -114,16 +114,24 @@ function handler (app, nunjEnv) {
 		if (!req.loggedIn) return res.redirect('/login');
 		if (!req.user.signedUpFor[req.params.arg]) {
 			// made it compatible for testing... may remove later
-			if (!(PARAMS.dev && req.params.arg === 'SQ1')) return res.redirect('/events');
+			if (!(PARAMS.dev && req.params.arg === 'SQ1')) return res.renderFile('events/quizzes_404.njk', {
+				message: 'Invalid Quiz URL'
+			});
 		}
 		const quiz = await dbh.getQuiz(req.params.arg);
-		if (new Date().getTime() > quiz.endTime.getTime()) return res.redirect('/events');
+		if (new Date().getTime() > quiz.endTime.getTime()) return res.renderFile('events/quizzes_404.njk', {
+			message: 'The quiz timings have ended.'
+		});
 		const questions = [];
 		const types = [];
 		const userStat = await dbh.getUserStats(req.user._id, req.params.arg);
 		// Redirect to /events if timeout, redirect to /submitted if submitted
-		if (userStat.endTime.getTime() < new Date().getTime()) return res.redirect('/events');
-		else if (userStat.status === 'Submitted') return res.redirect('/submitted');
+		if (userStat.endTime.getTime() < new Date().getTime()) return res.renderFile('events/quizzes_404.njk', {
+			message: 'Quiz time has ended for this account.'
+		});
+		else if (userStat.status === 'Submitted') return res.renderFile('events/quizzes_404.njk', {
+			message: 'You have already submitted this quiz.'
+		});
 		currentQ = userStat.records.length;
 		quiz.questions.forEach((question, i) => i >= currentQ ? types.push(question.options.type) && questions.push({
 			number: i + 1,
@@ -189,9 +197,8 @@ function handler (app, nunjEnv) {
 	});
 
 	app.get('/submitted', (req, res) => {
-		return res.send("Submitted...");
+		return res.renderFile('events/quiz_success.njk');
 	});
-
 	// Results page
 	app.get('/results/:arg', async (req, res) => {
 		if (!req.admin) return res.redirect('/');
