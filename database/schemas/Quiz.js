@@ -18,7 +18,7 @@ const questionsSchema = new mongoose.Schema({
 			points: { type: Number, required: true },
 			q: [
 				{
-					type: { type: String, required: true, enum: ['text', 'image', 'audio', 'video', 'table', 'gallery'] },
+					type: { type: String, required: true },
 					value: { type: [String, [String]], required: true }
 				}
 			],
