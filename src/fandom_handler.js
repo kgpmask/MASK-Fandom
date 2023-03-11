@@ -14,7 +14,8 @@ function handler (app, nunjEnv) {
 	// Home page
 	app.get(['/', '/home'], async (req, res) => {
 		const notif = PARAMS.dev ? 'Operating in dev' : 'Registrations open!!!';
-		return res.renderFile('fandom_home.njk', { notif });
+		const timeLeft = Math.floor((new Date('2023-03-12T06:30:00.000Z') - Date.now()) / 1000);
+		return res.renderFile('fandom_home.njk', { notif, timevalue: timeLeft });
 	});
 	// Quiz Details Page
 	app.get('/info', (req, res) => res.renderFile('events/fandom_info.njk'));
@@ -55,6 +56,8 @@ function handler (app, nunjEnv) {
 	// Signup GET
 	app.get('/signup', (req, res) => {
 		if (req.loggedIn) return res.redirect('/');
+		const timeLeft = Math.floor((new Date('2023-03-12T06:30:00.000Z') - Date.now()) / 1000);
+		if (timeLeft < 0) return res.redirect('/');
 		res.renderFile('signup.njk', { images: fandomImages });
 	});
 	// Signup POST
@@ -130,6 +133,7 @@ function handler (app, nunjEnv) {
 	// Actual quiz
 	app.get('/quiz/:arg', async (req, res) => {
 		if (!req.loggedIn) return res.redirect('/login');
+		const user = await dbh.getUser(req.user);
 		const quizzes = (await dbh.getQuizzes()).map(quiz => {
 			return {
 				id: quiz._id,
@@ -138,6 +142,14 @@ function handler (app, nunjEnv) {
 				&& new Date().getTime() < (PARAMS.dev ? quiz.endTime.getTime() : quiz.startTime.getTime() + 23 * 60 * 1000)
 				&& (quiz._id === 'SQ1' || req.user.signedUpFor[quiz._id === 'NRT' ? 'Naruto' : quiz._id])
 			};
+		});
+		if (!user.qrScanned) return res.renderFile('events/quizzes_404.njk', {
+			message: 'Please scan the qr to be marked as present',
+			quizzes: quizzes
+		});
+		if (!user.paymentConfirmed) return res.renderFile('events/quizzes_404.njk', {
+			message: 'Your payment is not confirmed yet, please contact the administrators',
+			quizzes: quizzes
 		});
 		if (!req.user.signedUpFor[req.params.arg]) {
 			// made it compatible for testing... may remove later
