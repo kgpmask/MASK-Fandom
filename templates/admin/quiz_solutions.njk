@@ -1,7 +1,7 @@
 {% extends '../_base.njk' %}
 
 {% set thispage = 'show-answers' %}
-{% set pagetitle = 'quiz solutions' %}
+{% set pagetitle = 'Quiz Solutions' %}
 
 
 {% block customjs %}
@@ -16,9 +16,15 @@
 						return `<audio src="${component.value}" type="audio/mpeg"> </audio>`;
 					case 'title':
 						return `<h3>${component.value}</h3>`;
-					case 'gallery':
+					case 'gallery': {
 						const images = components.value.map(img => `<img src="${img.src}" class="gallery-image">`).join('');
-						return `<div style="display: flex; flex-direction: row; flex-wrap: wrap;"> ${images} </div>`
+						return `<div style="display: flex; flex-direction: row; flex-wrap: wrap;"> ${images} </div>`;
+					}
+					case 'paragraph': 
+						return `<i>${component.value}</i>`;
+					case 'table':
+						// needs to be fixed
+						return component.value;
 					default:
 						return component.value;
 				}
