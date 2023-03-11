@@ -126,12 +126,13 @@ function handler (app, nunjEnv) {
 		const types = [];
 		const userStat = await dbh.getUserStats(req.user._id, req.params.arg);
 		// Redirect to /events if timeout, redirect to /submitted if submitted
-		if (userStat.endTime.getTime() < new Date().getTime()) return res.renderFile('events/quizzes_404.njk', {
-			message: 'Quiz time has ended for this account.'
-		});
-		else if (userStat.status === 'Submitted') return res.renderFile('events/quizzes_404.njk', {
+		if (userStat.status === 'Submitted') return res.renderFile('events/quizzes_404.njk', {
 			message: 'You have already submitted this quiz.'
 		});
+		else if (userStat.endTime.getTime() < new Date().getTime()) return res.renderFile('events/quizzes_404.njk', {
+			message: 'Quiz time has ended for this account.'
+		});
+
 		currentQ = userStat.records.length;
 		quiz.questions.forEach((question, i) => i >= currentQ ? types.push(question.options.type) && questions.push({
 			number: i + 1,
@@ -158,7 +159,7 @@ function handler (app, nunjEnv) {
 		if (!quiz) throw new Error('Unable to find the quiz!');
 		// Resetting endTime for the first time, to avoid time loss due to loading...
 		if (!userData.timeStampSet) {
-			userData.endTime = new Date(new Date().getTime() + 20 * 60 * 1000);
+			userData.endTime = new Date(new Date().getTime() + (20 * 60 + 3) * 1000);
 			userData.timeStampSet = true;
 			await userData.save();
 		}

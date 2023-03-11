@@ -1,5 +1,5 @@
 
-{% extends "_base.njk" %}
+{% extends "../_base.njk" %}
 
 {% set thispage = 'events' %}
 {% set pagetitle = 'Events' %}
@@ -10,18 +10,7 @@
 	<div class = "instructions" style = "display:block">
 		<h1 class = "title">Manga and Anime Society Kharagpur</h1>
 		<h2 class = "title">Quad Anime Trivia Quiz</h2><br>
-		<div class = "text" style = "text-align:left">
-			<h3>Instructions:</h3>
-			<ol>
-				{# Iesvs Christ get a better description here :sob: #}
-				<li><p>There are 20 questions in total.</p></li><br>
-				<li><p>There are three types of questions:<br>&emsp;&emsp;- Integer type: the answer is allowed only in integer format. For example, if 106 wa seikai, ‘one hundred six’ de wa arimasen(is incorrect).<br>&emsp;&emsp;- Text type: text input is expected. (minor spelling errors are allowed)<br>&emsp;&emsp;- Multiple Choice Type: One of the given options is correct. Selection can be done manually or by selecting 1,2,3,4 on the keyboard.</p></li>
-				<li><p>The total time limit is 15 minutes. There is no time limit for individual questions.</p></li>
-				<li><p>Is back navigation allowed? Mochiron de go jaru (Yes, of course).</p></li>
-				<li><p>The questions are asked in random order, i.e., minna no (everyones) order differs.</p></li>
-				<li><p>Saigo made (finally); points are awarded for correctly answering the questions; the time taken is also included in the evaluation.</p></li>
-			</ol>
-		</div>
+		{% include './instructions.njk' %}
 		<br>
 		<button id="startQuiz" class="rel" type="button">Start</button>
 		<script>
