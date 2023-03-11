@@ -50,13 +50,12 @@
 				border: solid white 3px;
 				border-radius: 5px;
 				height: auto;
-				width: 88%;
-				margin-left: 5%;
-				margin-bottom: 4px;
+				width: 80%;
+				margin: 8px auto;
 				display: flex;
 				flex-direction: column;
 				align-items: baseline;
-				padding: 10px 1%;
+				padding: 10px 5%;
 			}
 
 			.question-container{
@@ -73,6 +72,44 @@
 				align-items: baseline;
 				row-gap: 2px;
 			}
+
+			div[id^='question-'] {
+				width: 90%;
+				margin: 10px auto;
+			}
+
+			div[id^='question-'] i {
+				display: block;
+				width: 80%;
+				margin: 10px auto;
+			}
+
+			.question-container{
+				width: 90%;
+				margin: 0 auto;
+			}
+
+			.solution {
+				text-align: left;
+				margin: 5px auto;
+				width: 90%;
+				padding: 0; 
+			}
+			
+			table img {
+				min-width: 5vw;
+				max-width: 25vw;
+				min-height: 5vh;
+				max-height: 15vh;
+			}
+
+			table td {
+				padding: 5px 30px;
+			}
+			
+			table {
+				margin: 10px auto;
+			}
 		</style>
 {% endblock %}
 
@@ -86,9 +123,9 @@
 			</div>
 			<div class = "solution">
 				{% if question.options.type == 'mcq' %} 
-					<p class = "solution" id = "option-{{ question.number }}" onload = ""><b>Answer(s):</b> {{ question.solution }}: </p>
+					<p id = "option-{{ question.number }}" onload = ""><b>Answer(s):</b> {{ question.solution }}: </p>
 				{% else %}
-					<p class = "solution" ><b>Answer(s):</b> {{ question.solution }}</p> 
+					<p><b>Answer(s):</b> {{ question.solution }}</p> 
 				{% endif %}
 			</div>
 		</div>
