@@ -96,11 +96,22 @@
 				padding: 0; 
 			}
 			
-			table img {
-				min-width: 10vw;
+			div[id^='question'] img {
 				min-height: 10vh;
-				max-width: 25vw;
-				max-height: 25vh;
+				min-width: 10vw;
+				max-height: 50vh;
+				max-width: 50vw;
+			}
+
+			.option img, .solution img {
+				max-height: 16vh;
+			}
+
+			table img {
+				min-width: 10vw !important;
+				min-height: 10vh !important;
+				max-width: 25vw !important;
+				max-height: 25vh !important;
 			}
 
 			table td {
