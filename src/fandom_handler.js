@@ -121,7 +121,7 @@ function handler (app, nunjEnv) {
 				id: quiz._id,
 				name: quiz._id === 'NRT' ? 'Naruto' : quiz._id,
 				active: new Date().getTime() >= quiz.startTime.getTime()
-				&& new Date().getTime() < quiz.startTime.getTime() + 23 * 60 * 1000
+				&& new Date().getTime() < (PARAMS.dev ? quiz.endTime.getTime() : quiz.startTime.getTime() + 23 * 60 * 1000)
 				&& (quiz._id === 'SQ1' || req.user.signedUpFor[quiz._id === 'NRT' ? 'Naruto' : quiz._id])
 			};
 		});
@@ -135,7 +135,7 @@ function handler (app, nunjEnv) {
 				id: quiz._id,
 				name: quiz._id === 'NRT' ? 'Naruto' : quiz._id,
 				active: new Date().getTime() >= quiz.startTime.getTime()
-				&& new Date().getTime() < quiz.startTime.getTime() + 23 * 60 * 1000
+				&& new Date().getTime() < (PARAMS.dev ? quiz.endTime.getTime() : quiz.startTime.getTime() + 23 * 60 * 1000)
 				&& (quiz._id === 'SQ1' || req.user.signedUpFor[quiz._id === 'NRT' ? 'Naruto' : quiz._id])
 			};
 		});
@@ -147,7 +147,8 @@ function handler (app, nunjEnv) {
 			});
 		}
 		const quiz = await dbh.getQuiz(req.params.arg);
-		if (new Date().getTime() > quiz.startTime.getTime() + 23 * 60 * 1000) return res.renderFile('events/quizzes_404.njk', {
+		if (new Date().getTime() > (PARAMS.dev ? quiz.endTime.getTime()
+			: quiz.startTime.getTime() + 23 * 60 * 1000)) return res.renderFile('events/quizzes_404.njk', {
 			message: 'The quiz timings have ended.',
 			quizzes: quizzes
 		});
