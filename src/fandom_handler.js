@@ -192,6 +192,7 @@ function handler (app, nunjEnv) {
 		try {
 			const answer = { endTime: new Date(), points: 0 };
 			const quiz = await dbh.getQuiz(req.params.id);
+			if (answer.endTime.getTime() > quiz.endTime.getTime()) throw new Error('Submitting after end of quiz');
 			const userStat = await dbh.getUserStats(req.user._id, req.params.id);
 			for (let i = 0; i < userStat.records.length; i++) answer.points += quiz.questions[i].points *
 				await checker.checkFandomQuiz(userStat.records[i], quiz.questions[i].solution, quiz.questions[i].options.type);
@@ -312,6 +313,7 @@ function handler (app, nunjEnv) {
 				await checker.checkFandomQuiz(record.records[i], quiz.questions[i].solution, quiz.questions[i].options.type);
 			await dbh.updateUserStats(record.userId, record.quizId, answer);
 		}
+		return res.send('Evaluation successful.');
 	});
 	// Rebuild
 	app.get('/rebuild', async (req, res) => {

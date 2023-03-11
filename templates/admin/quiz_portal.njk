@@ -38,13 +38,13 @@
 	function stop (quizID) {
 		return axios.post(`/stop-quiz/${quizID}`)
 			.then(res => console.log(res.data))
-			.catch(err => alert(err));
+			.catch(err => alert(err.response.data));
 	}
 
 	function re_eval (quizID) {
 		return axios.post(`/re-evaluate/${quizID}`)
-			.then(res => console.log(res.data))
-			.catch(err => alert(err));
+			.then(res => console.log(res.data) && alert(res.data))
+			.catch(err => alert(err.response.data));
 	}
 
 </script>
