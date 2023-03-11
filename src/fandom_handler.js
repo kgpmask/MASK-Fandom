@@ -29,8 +29,7 @@ function handler (app, nunjEnv) {
 	app.post('/login', [
 		body('username')
 			.notEmpty().withMessage('Please provide a username.')
-			.trim()
-			.customSanitizer(value => value.toLowerCase()),
+			.trim(),
 
 		body('password')
 			.notEmpty().withMessage('Please provide a password.')
@@ -131,26 +130,39 @@ function handler (app, nunjEnv) {
 	// Actual quiz
 	app.get('/quiz/:arg', async (req, res) => {
 		if (!req.loggedIn) return res.redirect('/login');
+		const quizzes = (await dbh.getQuizzes()).map(quiz => {
+			return {
+				id: quiz._id,
+				name: quiz._id === 'NRT' ? 'Naruto' : quiz._id,
+				active: new Date().getTime() >= quiz.startTime.getTime()
+				&& new Date().getTime() < quiz.startTime.getTime() + 23 * 60 * 1000
+				&& (quiz._id === 'SQ1' || req.user.signedUpFor[quiz._id === 'NRT' ? 'Naruto' : quiz._id])
+			};
+		});
 		if (!req.user.signedUpFor[req.params.arg]) {
 			// made it compatible for testing... may remove later
 			if (!(PARAMS.dev && req.params.arg === 'SQ1')) return res.renderFile('events/quizzes_404.njk', {
-				message: 'Invalid Quiz URL'
+				message: 'Invalid Quiz URL',
+				quizzes: quizzes
 			});
 		}
 		const quiz = await dbh.getQuiz(req.params.arg);
 		if (new Date().getTime() > quiz.startTime.getTime() + 23 * 60 * 1000) return res.renderFile('events/quizzes_404.njk', {
-			message: 'The quiz timings have ended.'
+			message: 'The quiz timings have ended.',
+			quizzes: quizzes
 		});
 		const questions = [];
 		const types = [];
 		const userStat = await dbh.getUserStats(req.user._id, req.params.arg);
 		// Redirect to /events if timeout, redirect to /submitted if submitted
 		if (userStat.status === 'Submitted') return res.renderFile('events/quizzes_404.njk', {
-			message: 'You have already submitted this quiz.'
+			message: 'You have already submitted this quiz.',
+			quizzes: quizzes
 		});
 		else if (userStat.startTime.getTime() + 23 * 60 * 1000 < new Date().getTime())
 			return res.renderFile('events/quizzes_404.njk', {
-				message: 'Quiz time has ended for this account.'
+				message: 'Quiz time has ended for this account.',
+				quizzes: quizzes
 			});
 
 		currentQ = userStat.records.length;
