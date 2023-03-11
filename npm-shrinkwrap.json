@@ -16,6 +16,7 @@
 				"csurf": "^1.11.0",
 				"express": "^4.18.2",
 				"express-session": "^1.17.2",
+				"express-validator": "^6.15.0",
 				"mongodb": "^4.8.0",
 				"mongoose": "^6.2.4",
 				"nunjucks": "^3.2.3",
@@ -2172,6 +2173,18 @@
 			"resolved": "https://registry.npmjs.org/ms/-/ms-2.0.0.tgz",
 			"integrity": "sha1-VgiurfwAvmwpAd9fmGF4jeDVl8g="
 		},
+		"node_modules/express-validator": {
+			"version": "6.15.0",
+			"resolved": "https://registry.npmjs.org/express-validator/-/express-validator-6.15.0.tgz",
+			"integrity": "sha512-r05VYoBL3i2pswuehoFSy+uM8NBuVaY7avp5qrYjQBDzagx2Z5A77FZqPT8/gNLF3HopWkIzaTFaC4JysWXLqg==",
+			"dependencies": {
+				"lodash": "^4.17.21",
+				"validator": "^13.9.0"
+			},
+			"engines": {
+				"node": ">= 8.0.0"
+			}
+		},
 		"node_modules/express/node_modules/cookie": {
 			"version": "0.5.0",
 			"resolved": "https://registry.npmjs.org/cookie/-/cookie-0.5.0.tgz",
@@ -2848,6 +2861,11 @@
 			"funding": {
 				"url": "https://github.com/sponsors/sindresorhus"
 			}
+		},
+		"node_modules/lodash": {
+			"version": "4.17.21",
+			"resolved": "https://registry.npmjs.org/lodash/-/lodash-4.17.21.tgz",
+			"integrity": "sha512-v2kDEe57lecTulaDIuNTPy3Ry4gLGJ6Z1O3vE1krgXZNrsQ+LFTGHVxVjcXPs17LhbZVGedAJv8XZ1tvj5FvSg=="
 		},
 		"node_modules/lodash.merge": {
 			"version": "4.6.2",
@@ -4171,6 +4189,14 @@
 			"optional": true,
 			"bin": {
 				"uuid": "dist/bin/uuid"
+			}
+		},
+		"node_modules/validator": {
+			"version": "13.9.0",
+			"resolved": "https://registry.npmjs.org/validator/-/validator-13.9.0.tgz",
+			"integrity": "sha512-B+dGG8U3fdtM0/aNK4/X8CXq/EcxU2WPrPEkJGslb47qyHsxmbggTWK0yEA4qnYVNF+nxNlN88o14hIcPmSIEA==",
+			"engines": {
+				"node": ">= 0.10"
 			}
 		},
 		"node_modules/vary": {

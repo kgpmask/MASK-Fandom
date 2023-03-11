@@ -1,6 +1,7 @@
 const axios = require('axios');
 const fs = require('fs').promises;
 const path = require('path');
+const { body, validationResult } = require('express-validator');
 
 const checker = require('./checker.js');
 const dbh = PARAMS.mongoless ? {} : require('../database/handler');
@@ -25,14 +26,31 @@ function handler (app, nunjEnv) {
 		res.renderFile('login.njk');
 	});
 	// Login POST
-	app.post('/login', async (req, res) => {
+	app.post('/login', [
+		body('username')
+			.notEmpty().withMessage('Please provide a username.')
+			.trim()
+			.customSanitizer(value => value.toLowerCase()),
+
+		body('password')
+			.notEmpty().withMessage('Please provide a password.')
+			.isLength({ min: 6, max: 24 }).withMessage('Password must be between 6 and 24 characters long.')
+			.trim()
+	], async (req, res) => {
 		try {
+			const errors = validationResult(req);
+			if (!errors.isEmpty()) {
+				const errorMessages = errors.array().map(error => error.msg);
+				return res.status(400).json({ errors: errorMessages });
+			}
+
 			const id = await dbh.validateUserLogin(req.body);
 			if (!id) throw new Error('Credentials don\'t match.');
+
 			res.cookie('sessionId', await dbh.generateSessionRecord(id));
 			return res.send('Login Successful');
 		} catch (err) {
-			return res.error(err);
+			return res.status(400).json({ errors: [err.message] });
 		}
 	});
 	// Signup GET
@@ -86,7 +104,7 @@ function handler (app, nunjEnv) {
 	});
 	// Profile
 	app.get('/profile', async (req, res) => {
-		if (!req.loggedIn) return res.redirect('/');
+		if (!req.loggedIn) return res.redirect('/login');
 		const [sauce, char] = req.user.image.split('-');
 		req.user.imageLink = fandomImages[sauce][char];
 		return res.renderFile('profile.njk', req.user);
