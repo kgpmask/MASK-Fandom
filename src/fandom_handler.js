@@ -103,7 +103,8 @@ function handler (app, nunjEnv) {
 			return {
 				id: quiz._id,
 				name: quiz._id === 'NRT' ? 'Naruto' : quiz._id,
-				active: new Date().getTime() >= quiz.startTime.getTime() && new Date().getTime() < quiz.endTime.getTime()
+				active: new Date().getTime() >= quiz.startTime.getTime()
+				&& new Date().getTime() < quiz.startTime.getTime() + 23 * 60 * 1000
 				&& (quiz._id === 'SQ1' || req.user.signedUpFor[quiz._id === 'NRT' ? 'Naruto' : quiz._id])
 			};
 		});
@@ -119,7 +120,7 @@ function handler (app, nunjEnv) {
 			});
 		}
 		const quiz = await dbh.getQuiz(req.params.arg);
-		if (new Date().getTime() > quiz.endTime.getTime()) return res.renderFile('events/quizzes_404.njk', {
+		if (new Date().getTime() > quiz.startTime.getTime() + 23 * 60 * 1000) return res.renderFile('events/quizzes_404.njk', {
 			message: 'The quiz timings have ended.'
 		});
 		const questions = [];
@@ -129,9 +130,10 @@ function handler (app, nunjEnv) {
 		if (userStat.status === 'Submitted') return res.renderFile('events/quizzes_404.njk', {
 			message: 'You have already submitted this quiz.'
 		});
-		else if (userStat.endTime.getTime() < new Date().getTime()) return res.renderFile('events/quizzes_404.njk', {
-			message: 'Quiz time has ended for this account.'
-		});
+		else if (userStat.startTime.getTime() + 23 * 60 * 1000 < new Date().getTime())
+			return res.renderFile('events/quizzes_404.njk', {
+				message: 'Quiz time has ended for this account.'
+			});
 
 		currentQ = userStat.records.length;
 		quiz.questions.forEach((question, i) => i >= currentQ ? types.push(question.options.type) && questions.push({
@@ -163,7 +165,8 @@ function handler (app, nunjEnv) {
 			userData.timeStampSet = true;
 			await userData.save();
 		}
-		const timeLeft = Math.floor((Math.min(userData.endTime.getTime(), quiz.endTime.getTime()) - new Date().getTime()) / 1000);
+		const timeLeft = Math.floor((Math.min(userData.endTime.getTime(), quiz.startTime.getTime() * 23 * 60 * 1000)
+			- new Date().getTime()) / 1000);
 		console.log(timeLeft);
 		if (timeLeft <= 0) return res.status(403).send('Time limit crossed already');
 		return res.send(timeLeft.toString());

@@ -51,7 +51,7 @@
 									{% endfor %}
 								{% else %}
 									<div class="option">
-										<input type="text" id="answer-{{ q }}" name="answer-{{ q }}"/>
+										<input type="{{ types[q - currentQ - 1 ] }}" id="answer-{{ q }}" name="answer-{{ q }}" placeholder="Answer"/>
 									</div>
 								{% endif %}
 							</div>
@@ -154,7 +154,7 @@
 			}
 			function decrement () {
 				if (cancel) return;
-				document.getElementById('count').innerHTML = timeVal;
+				document.getElementById('count').innerHTML = `${Math.floor(timeVal/60)}:${Math.floor((timeVal%60)/10)}${(timeVal%60)%10}`;
 				timeVal--;
 				if (timeVal >= 0) setTimeout(decrement, 1000);
 				else endQuiz();
@@ -169,7 +169,7 @@
 			try {
 				const response = await axios.post(`/time-left/${ id }`);
 				await nextQ(false);
-				timer(response.data);
+				timer(Math.min(~~response.data, 1200));
 				return false;
 			} catch (err) {
 				if (err.response.status === 403) endQuiz();
@@ -374,6 +374,19 @@
 		
 		table {
 			margin: 10px auto;
+		}
+
+		input[type='number'], input[type='text']{
+			display: block;
+			height: 45px;
+			width: 90%;
+			background-color: #77777744;
+			border-radius: 12px;
+			padding: 4px 20px 4px 14px;
+			margin: 12px auto;
+			font-size: 15px;
+			font-weight: 300;
+			color: var(--white);
 		}
 	</style>
 {% endblock %}

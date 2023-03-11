@@ -170,9 +170,9 @@
 			{% for sauce in sauces %}
 				signedUpFor.{{ sauce.id }} = document.getElementById('{{ sauce.id }}').checked;
 			{% endfor %}
-			const username = document.getElementById('username').value;
-			const password = document.getElementById('password').value;
-			const transactionID = document.getElementById('transaction-ID').value;
+			const username = document.getElementById('username').value.trim();
+			const password = document.getElementById('password').value.trim();
+			const transactionID = document.getElementById('transaction-ID').value.trim();
 
 			axios.post('/signup', {
 				name,
