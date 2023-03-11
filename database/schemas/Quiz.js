@@ -6,7 +6,8 @@ const userQuizDataSchema = new mongoose.Schema({
 	points: { type: Number, required: true, default: 0 },
 	status: { type: String, required: true, enum: ['Attempting', 'Submitted'], default: 'Attempting' },
 	endTime: { type: Date, required: true },
-	records: { type: [String], required: true }
+	records: { type: [String], required: true },
+	timeStampSet: Boolean
 });
 
 const questionsSchema = new mongoose.Schema({

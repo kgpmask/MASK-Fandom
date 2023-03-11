@@ -82,6 +82,7 @@ async function generateUserQuizRecord (creds) {
 	if (await Quiz.UserInfo.findOne(creds)) throw new Error('Record already exists.');
 	const userStat = new Quiz.UserInfo(creds);
 	userStat.endTime = new Date(new Date().getTime() + 20 * 60 * 1000);
+	userStat.timeStampSet = false;
 	userStat.points = 0;
 	userStat.records = [];
 	return userStat.save();

@@ -156,6 +156,12 @@ function handler (app, nunjEnv) {
 		const quiz = await dbh.getQuiz(req.params.id);
 		const userData = await dbh.getUserStats(req.user._id, req.params.id);
 		if (!quiz) throw new Error('Unable to find the quiz!');
+		// Resetting endTime for the first time, to avoid time loss due to loading...
+		if (!userData.timeStampSet) {
+			userData.endTime = new Date(new Date().getTime() + 20 * 60 * 1000);
+			userData.timeStampSet = true;
+			await userData.save();
+		}
 		const timeLeft = Math.floor((Math.min(userData.endTime.getTime(), quiz.endTime.getTime()) - new Date().getTime()) / 1000);
 		console.log(timeLeft);
 		if (timeLeft <= 0) return res.status(403).send('Time limit crossed already');
