@@ -133,7 +133,6 @@ function handler (app, nunjEnv) {
 	// Actual quiz
 	app.get('/quiz/:arg', async (req, res) => {
 		if (!req.loggedIn) return res.redirect('/login');
-		const user = await dbh.getUser(req.user);
 		const quizzes = (await dbh.getQuizzes()).map(quiz => {
 			return {
 				id: quiz._id,
@@ -143,12 +142,12 @@ function handler (app, nunjEnv) {
 				&& (quiz._id === 'SQ1' || req.user.signedUpFor[quiz._id === 'NRT' ? 'Naruto' : quiz._id])
 			};
 		});
-		if (!user.qrScanned) return res.renderFile('events/quizzes_404.njk', {
-			message: 'Please scan the qr to be marked as present',
+		if (!req.user.paymentConfirmed) return res.renderFile('events/quizzes_404.njk', {
+			message: 'Your payment is not confirmed yet, please contact the administrators',
 			quizzes: quizzes
 		});
-		if (!user.paymentConfirmed) return res.renderFile('events/quizzes_404.njk', {
-			message: 'Your payment is not confirmed yet, please contact the administrators',
+		if (!req.user.qrScanned) return res.renderFile('events/quizzes_404.njk', {
+			message: 'Your attendance has not been marked. Contact the administrators.',
 			quizzes: quizzes
 		});
 		if (!req.user.signedUpFor[req.params.arg]) {
