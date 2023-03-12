@@ -60,6 +60,10 @@ function handler (app, nunjEnv) {
 		if (timeLeft < 0) return res.redirect('/');
 		res.renderFile('signup.njk', { images: fandomImages });
 	});
+	app.get('/onsite-signup', (req, res) => {
+		if (req.loggedIn) return res.redirect('/');
+		res.renderFile('signup.njk', { images: fandomImages });
+	});
 	// Signup POST
 	app.post('/signup', async (req, res) => {
 		// req.body = { name, username, rollno, password, email, image, signedUpFor, transactionID }
