@@ -60,10 +60,6 @@ function handler (app, nunjEnv) {
 		if (timeLeft < 0) return res.redirect('/');
 		res.renderFile('signup.njk', { images: fandomImages });
 	});
-	app.get('/onsite-signup', (req, res) => {
-		if (req.loggedIn) return res.redirect('/');
-		res.renderFile('signup.njk', { images: fandomImages });
-	});
 	// Signup POST
 	app.post('/signup', async (req, res) => {
 		// req.body = { name, username, rollno, password, email, image, signedUpFor, transactionID }
@@ -156,13 +152,13 @@ function handler (app, nunjEnv) {
 			message: 'Your attendance has not been marked. Contact the administrators.',
 			quizzes: quizzes
 		});
-		if (!req.user.signedUpFor[req.params.arg]) {
-			// made it compatible for testing... may remove later
-			if (!(PARAMS.dev && req.params.arg === 'SQ1')) return res.renderFile('events/quizzes_404.njk', {
-				message: 'Invalid Quiz URL',
-				quizzes: quizzes
-			});
-		}
+		// if (!req.user.signedUpFor[req.params.arg]) {
+		// 	// made it compatible for testing... may remove later
+		// 	if (!(PARAMS.dev && req.params.arg === 'SQ1')) return res.renderFile('events/quizzes_404.njk', {
+		// 		message: 'Invalid Quiz URL',
+		// 		quizzes: quizzes
+		// 	});
+		// }
 		const quiz = await dbh.getQuiz(req.params.arg);
 		if (new Date().getTime() < quiz.startTime.getTime()) return res.renderFile('events/quizzes_404.njk', {
 			message: 'Quiz not started yet',
