@@ -208,7 +208,7 @@ function handler (app, nunjEnv) {
 	});
 	// Time left fetcher
 	app.post('/time-left/:id', async (req, res) => {
-		if (!req.user.signedUpFor[req.params.id]) {
+		if (!req.user.signedUpFor[req.params.id === 'NRT' ? 'Naruto' : 'NRT']) {
 			// made it compatible for testing... may remove later
 			if (!(PARAMS.dev && req.params.id === 'SQ1')) return res.error('Not registered');
 		}
@@ -232,7 +232,7 @@ function handler (app, nunjEnv) {
 	});
 	// Update Participant Quiz Status
 	app.post('/update-status/:id', async (req, res) => {
-		if (!req.user.signedUpFor[req.params.id]) {
+		if (!req.user.signedUpFor[req.params.id === 'NRT' ? 'Naruto' : 'NRT']) {
 			// made it compatible for testing... may remove later
 			if (!(PARAMS.dev && req.params.id === 'SQ1')) return res.error('Not registered');
 		}
@@ -243,7 +243,7 @@ function handler (app, nunjEnv) {
 	});
 	// Quiz submit POST function
 	app.post('/submit/:id', async (req, res) => {
-		if (!req.user.signedUpFor[req.params.id]) {
+		if (!req.user.signedUpFor[req.params.id === 'NRT' ? 'Naruto' : 'NRT']) {
 			// made it compatible for testing... may remove later
 			if (!(PARAMS.dev && req.params.id === 'SQ1')) return res.error('Not registered');
 		}
