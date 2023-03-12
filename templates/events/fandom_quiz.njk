@@ -104,6 +104,7 @@
 		window.onload = () => {
 			[...document.getElementsByTagName('button')].forEach(button => button.addEventListener('click', (event) => event.preventDefault()))
 			qs.forEach((question, q) => {
+				document.getElementById(`type-${q + currentQ + 1}`).insertAdjacentHTML('beforeend',` | <b>Points: </b>${question.points}`)	;
 				document.getElementById(`question-${q + currentQ + 1}`).innerHTML = generateHTML(question.question);
 				if (question.options.type !== 'mcq') return;
 				for (let i = 1; i <= 4; i++) 

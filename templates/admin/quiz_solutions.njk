@@ -39,7 +39,9 @@
 						qs[i].options.value.map((e, i) => `<div class="option">${i + 1}: ${generateHTML(e)}</div>`).join('') + '</div';
 					document.getElementById(`option-${i + 1}`).innerHTML += ' ' + generateHTML(console.log() ?? qs[i].options.value[qs[i].solution - 1]);
 				}
+				document.getElementById(`points-${i + 1}`).innerHTML = `<b>Points: </b>${qs[i].points}`;
 			})
+			document.getElementById(`total-points`).innerHTML = `Total Points: ${qs.map(question => question.points).reduce((a, b) => a + b, 0)}`;
 		}
 	</script>
 {% endblock %}
@@ -126,11 +128,13 @@
 
 {% block pagecontent %}
 	<div class = "header"><h3>Answers to the {{ quizQuestions[0]._id }} Quiz</h3><br></div>
+	<div id="total-points"></div>
 	{% for question in quizQuestions %}
 		<div class = "solution_container">
 			<div class = "question-container">
 				<h3>{{ question.number }}</h3>
 				<div id="question-{{ question.number }}"></div>
+				<div id="points-{{ question.number }}"></div>
 			</div>
 			<div class = "solution">
 				{% if question.options.type == 'mcq' %} 

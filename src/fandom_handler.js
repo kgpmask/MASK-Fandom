@@ -160,6 +160,10 @@ function handler (app, nunjEnv) {
 			});
 		}
 		const quiz = await dbh.getQuiz(req.params.arg);
+		if (new Date.getTime() < quiz.startTime.getTime()) return res.renderFile('events/quizzes_404.njk', {
+			message: 'Quiz not started yet',
+			quizzes: quizzes
+		});
 		if (new Date().getTime() > (PARAMS.dev ? quiz.endTime.getTime()
 			: quiz.startTime.getTime() + 23 * 60 * 1000)) return res.renderFile('events/quizzes_404.njk', {
 			message: 'The quiz timings have ended.',
@@ -188,7 +192,8 @@ function handler (app, nunjEnv) {
 				questions.push({
 					number: i + 1,
 					question: question.q,
-					options: question.options
+					options: question.options,
+					points: question.points
 				});
 			}
 		});
