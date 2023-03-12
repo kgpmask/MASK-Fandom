@@ -195,7 +195,6 @@
 			[...document.getElementsByClassName('image-array')].forEach(ele => {
 				[...ele.children].forEach(child => {
 					child.addEventListener('click', (event) => {
-						console.log(event)
 						sauce = ele.getAttribute('value');
 						try {
 							document.getElementById(`img-${selectedImage}`).classList.remove('selected-image');

@@ -167,22 +167,29 @@ function handler (app, nunjEnv) {
 		const types = [];
 		const userStat = await dbh.getUserStats(req.user._id, req.params.arg);
 		// Redirect to /events if timeout, redirect to /submitted if submitted
-		if (userStat.status === 'Submitted') return res.renderFile('events/quizzes_404.njk', {
-			message: 'You have already submitted this quiz.',
-			quizzes: quizzes
-		});
-		else if (userStat.startTime.getTime() + 23 * 60 * 1000 < new Date().getTime())
+		if (userStat.status === 'Submitted') {
+			return res.renderFile('events/quizzes_404.njk', {
+				message: 'You have already submitted this quiz.',
+				quizzes: quizzes
+			});
+		} else if (quiz.startTime.getTime() + 23 * 60 * 1000 < new Date().getTime()) {
 			return res.renderFile('events/quizzes_404.njk', {
 				message: 'Quiz time has ended for this account.',
 				quizzes: quizzes
 			});
+		}
 
 		currentQ = userStat.records.length;
-		quiz.questions.forEach((question, i) => i >= currentQ ? types.push(question.options.type) && questions.push({
-			number: i + 1,
-			question: question.q,
-			options: question.options
-		}) : undefined);
+		quiz.questions.forEach((question, i) => {
+			if (i >= currentQ) {
+				types.push(question.options.type);
+				questions.push({
+					number: i + 1,
+					question: question.q,
+					options: question.options
+				});
+			}
+		});
 
 		return res.renderFile('events/fandom_quiz.njk', {
 			id: req.params.arg,
@@ -209,7 +216,6 @@ function handler (app, nunjEnv) {
 		}
 		const timeLeft = Math.floor((Math.min(userData.endTime.getTime(), quiz.startTime.getTime() * 23 * 60 * 1000)
 			- new Date().getTime()) / 1000);
-		console.log(timeLeft);
 		if (timeLeft <= 0) return res.status(403).send('Time limit crossed already');
 		return res.send(timeLeft.toString());
 	});

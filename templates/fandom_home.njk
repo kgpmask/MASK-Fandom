@@ -172,8 +172,8 @@
 				}
 				function decrement () {
 					if (cancel) return;
-					console.log(timeVal);
-					document.getElementById('notif').innerHTML = `「 Registration closes in ${Math.floor(timeVal/3600)%24}:${Math.floor(Math.floor((timeVal/60)%60)/10)}${Math.floor((timeVal/60)%60)%10}:${Math.floor((timeVal%60)/10)}${(timeVal%60)%10}. Register soon!!!」`;
+					const timeStr = `${Math.floor(timeVal / 3600) % 24}:${Math.floor(Math.floor((timeVal / 60) % 60) / 10)}${Math.floor((timeVal / 60) % 60) % 10}:${Math.floor((timeVal % 60) / 10)}${(timeVal % 60) % 10}`;
+					document.getElementById('notif').innerHTML = `「 Registration closes in ${timeStr}. Register soon!!!」`;
 					timeVal--;
 					if (timeVal >= 0) setTimeout(decrement, 1000);
 					else endQuiz();
@@ -181,7 +181,9 @@
 				decrement();
 				return endTimer;
 			}
-			window.onload = () => { timer({{ timevalue }})}
+			window.onload = () => {
+				if (!{{ loggedIn }}) timer({{ timevalue }});
+			};
 		{% endif %}
 	</script>
 {% endblock %}
