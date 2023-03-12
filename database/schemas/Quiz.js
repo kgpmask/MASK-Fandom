@@ -1,11 +1,13 @@
 const mongoose = require('mongoose');
 
 const userQuizDataSchema = new mongoose.Schema({
-	userId: { type: String, required: true, index: true, unique: true },
+	userId: { type: String, required: true },
 	quizId: { type: String, required: true },
 	points: { type: Number, required: true, default: 0 },
+	status: { type: String, required: true, enum: ['Attempting', 'Submitted'], default: 'Attempting' },
 	endTime: { type: Date, required: true },
-	records: { type: [Number, String], required: true }
+	records: { type: [String], required: true },
+	timeStampSet: Boolean
 });
 
 const questionsSchema = new mongoose.Schema({
@@ -17,7 +19,7 @@ const questionsSchema = new mongoose.Schema({
 			points: { type: Number, required: true },
 			q: [
 				{
-					type: { type: String, required: true, enum: ['text', 'image', 'audio', 'video', 'table', 'gallery'] },
+					type: { type: String, required: true },
 					value: { type: [String, [String]], required: true }
 				}
 			],

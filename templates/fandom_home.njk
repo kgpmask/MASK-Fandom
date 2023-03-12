@@ -20,9 +20,10 @@
 {% set shirts = ['naruto', 'aot', 'opm', 'mha'] %}
 
 {% block pagecontent %}
-	<div class="notification-banner">「 {{ 'Limited seats only. Register quickly!' }} 」</div>
-	<hr style="width: 90%; margin-left: 5%;">
-	<div class="text" style='max-width: 70%; text-align: center;'>
+	<div class="notification-banner" id='notif'>「 {{ 'Limited seats only. Register quickly!' if timevalue > 0 else 'Online registration closed. Only on-site registrations available.' }} 」</div>
+	<div id="count" class="notification-banner"></div>
+	<hr style="width: 90%; margin: auto;">
+	<div class="text" style='max-width: 70%; text-align: center; margin: 45px auto 15px;'>
 		<p style="font-size: 1.3em;">Welcome to the <b>Quad Anime Trivia Quiz</b>, hosted by Manga & Anime Society Kharagpur.<br/></p>
 		<br/>
 		<p style="text-align: justify;">We have four quizzes in store for you. The quizzes and their times are given below.</p>
@@ -35,7 +36,7 @@
 		<br/>
 		<h3 style="text-align: justify; margin: 5px;">Quiz Instructions</h3>
 		<ul class="list-of-rules">
-			<li>The registration fee <u><b>for each quiz</b></u> is <b>₹40.</b></li>
+			<li>The registration fee <u><b>for each quiz</b></u> is <b>₹{{ '4' if timevalue > 0 else '5' }}0.</b></li>
 			<li>You are allowed to register for multiple quizzes using the same user account.</li>
 			<li>For further registrations, contact us at the event.</li>
 			<li>Note that the entry fee is <b>non-refundable</b>.</li>
@@ -64,6 +65,8 @@
 				<li><img src="/assets/fandom/prizes/naruto.webp"></li>
 			</ul>
 		</section>
+		<div style="color: var(--error-red); font-size: 110%;">Disclaimer: T-shirt designs are subject to change according to the availability of stock and size.</div>
+		<br/>
 		<br/>
 		<div class="notification-banner">Disclaimer: T-shirt designs are subject to change according to the availability of stock and size.</div>
 		<br/>
@@ -162,5 +165,27 @@
 
 {% block customjs %}
 	<script>
+		{% if timevalue > 0 %}
+			function timer (timerLength) {
+				timeVal = timerLength;
+				let cancel = false;
+				function endTimer () {
+					cancel = true;
+				}
+				function decrement () {
+					if (cancel) return;
+					const timeStr = `${Math.floor(timeVal / 3600) % 24}:${Math.floor(Math.floor((timeVal / 60) % 60) / 10)}${Math.floor((timeVal / 60) % 60) % 10}:${Math.floor((timeVal % 60) / 10)}${(timeVal % 60) % 10}`;
+					document.getElementById('notif').innerHTML = `「 Registration closes in ${timeStr}. Register soon!!!」`;
+					timeVal--;
+					if (timeVal >= 0) setTimeout(decrement, 1000);
+					else endQuiz();
+				}
+				decrement();
+				return endTimer;
+			}
+			window.onload = () => {
+				if (!{{ loggedIn }}) timer({{ timevalue }});
+			};
+		{% endif %}
 	</script>
 {% endblock %}

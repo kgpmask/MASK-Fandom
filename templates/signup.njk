@@ -157,6 +157,7 @@
 		}
 
 		function signUp () {
+			document.getElementById('submit').disabled = true;
 			if (!validatePageOne()) return;
 			if (!validatePageTwo()) return;
 			if (!validatePageThree()) return;
@@ -169,9 +170,9 @@
 			{% for sauce in sauces %}
 				signedUpFor.{{ sauce.id }} = document.getElementById('{{ sauce.id }}').checked;
 			{% endfor %}
-			const username = document.getElementById('username').value;
-			const password = document.getElementById('password').value;
-			const transactionID = document.getElementById('transaction-ID').value;
+			const username = document.getElementById('username').value.trim();
+			const password = document.getElementById('password').value.trim();
+			const transactionID = document.getElementById('transaction-ID').value.trim();
 
 			axios.post('/signup', {
 				name,
@@ -185,6 +186,7 @@
 			}).then(() => window.location.href = '/')
 			.catch(e => {
 				console.log(e);
+				document.getElementById('submit').disabled = true;
 				return alert(e.response.data);
 			});
 		}
@@ -193,7 +195,6 @@
 			[...document.getElementsByClassName('image-array')].forEach(ele => {
 				[...ele.children].forEach(child => {
 					child.addEventListener('click', (event) => {
-						console.log(event)
 						sauce = ele.getAttribute('value');
 						try {
 							document.getElementById(`img-${selectedImage}`).classList.remove('selected-image');

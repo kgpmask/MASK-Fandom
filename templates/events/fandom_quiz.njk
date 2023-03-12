@@ -1,74 +1,227 @@
 
-{% extends "_base.njk" %}
+{% extends "../_base.njk" %}
 
 {% set thispage = 'events' %}
 {% set pagetitle = 'Events' %}
+
+{% set typesMap = { mcq: 'MCQ', text: 'Text', number: 'Number' } %}
 
 {% block pagecontent %}
 	<div class = "instructions" style = "display:block">
 		<h1 class = "title">Manga and Anime Society Kharagpur</h1>
 		<h2 class = "title">Quad Anime Trivia Quiz</h2><br>
-		<div class = "text" style = "text-align:left">
-			<h3>Instructions:</h3>
-			<ol>
-				<li><p>There are 20 questions in total.</p></li><br>
-				<li><p>There are three types of questions:<br>&emsp;&emsp;- Integer type: the answer is allowed only in integer format. For example, if 106 wa seikai, ‘one hundred six’ de wa arimasen(is incorrect).<br>&emsp;&emsp;- Text type: text input is expected. (minor spelling errors are allowed)<br>&emsp;&emsp;- Multiple Choice Type: One of the given options is correct. Selection can be done manually or by selecting 1,2,3,4 on the keyboard.</p></li>
-				<li><p>The total time limit is 15 minutes. There is no time limit for individual questions.</p></li>
-				<li><p>Is back navigation allowed? Mochiron de go jaru (Yes, of course).</p></li>
-				<li><p>The questions are asked in random order, i.e., minna no (everyones) order differs.</p></li>
-				<li><p>Saigo made (finally); points are awarded for correctly answering the questions; the time taken is also included in the evaluation.</p></li>
-			</ol>
-		</div>
+		{% include './instructions.njk' %}
 		<br>
-		<button id="startQuiz" onclick="startQuiz()" class="rel" >Start</button>
+		<button id="startQuiz" class="rel" type="button">Start</button>
+		<script>
+			document.getElementById('startQuiz').addEventListener('click', e => {
+				startQuiz().catch(console.log);
+			});
+		</script>
 	</div>
 	<div class="quiz-container" style = "display:none">
 		<div class="countDown">
-			<button onclick="prevQ()" style="display:none" class="rel prevQ">Previous</button>
-			<button onclick="nextQ()" style="display:none" class="rel nextQ">Next</button>
+			<button onclick="nextQ()" style="display:none" class="rel nextQ" type="button">Next</button>
 			<br/><br/>
 		</div>
 		<br/>
 		<div class="question-zone">
 			<div id="count"></div>
 			<br/>
-			<button onclick="endQuiz()" style="display:none" class="rel submit">Submit</button>
-			<form id="quiz" class="quizzes" method="POST" action="/quizzes">
-				<input type="hidden" name="_csrf" value="{{ csrfToken }}"/>
-				<input type="hidden" name="quizId" value="{{ id }}"/>
-				{% for q in range(1, qAmt + 1) %}
+			<button onclick="endQuiz()" style="display:none" class="rel submit" id='submit-button'>Submit</button>
+			<p id='waiting' style='display: hidden;'><i>Fetching next question</i></p>
+			<form id="quiz" class="quizzes" method="POST" action='/misc'>
+				{% for q in range(currentQ + 1, qAmt + currentQ + 1) %}
 					<div id="qbox-{{ q }}" style="display:none">
 						<fieldset>
-						{# Of all the options we had, why is this called _ques_? #}
-							<legend>Ques [{{ q }}]</legend><br/>
+							<legend>&nbspQuestion [{{ q }}]&nbsp</legend>
+							<div id="type-{{ q }}"> <b>Type:</b> {{ typesMap[types[q - currentQ - 1]] }} </div>
 							<div id="question-{{ q }}"></div>
 							<br/>
 							<div id="options-{{ q }}" class="options">
-								{% for i in range(1, 5) %}
+								{% if types[q - currentQ - 1] == 'mcq' %}
+									{% for i in range(1, 5) %}
+										<div class="option">
+											<label class="rad-label">
+												<input type="radio" id="answer-{{ q }}-{{ i }}" name="answer-{{ q }}" class="rad-input" value="{{ i }}"/>
+												<div class="rad-design"></div>
+												<div class="rad-text" id="option-{{ q }}-{{ i }}" for="answer-{{ q }}-{{ i }}"></div>
+											</label><br/>
+										</div>
+									{% endfor %}
+								{% else %}
 									<div class="option">
-										<label  class="rad-label">
-											<input type="radio" id="answer-{{ q }}-{{ i }}" name="answer-{{ q }}" class="rad-input" value="{{ i }}"/>
-											<div class="rad-design"></div>
-											<div class="rad-text" id="option-{{ q }}-{{ i }}" for="answer-{{ q }}-{{ i }}"></div>
-										</label><br/>
+										<input type="{{ types[q - currentQ - 1 ] }}" id="answer-{{ q }}" name="answer-{{ q }}" placeholder="Answer"/>
 									</div>
-								{% endfor %}
+								{% endif %}
 							</div>
-							<br/></fieldset>
+							<br/>
+						</fieldset>
 					</div>
 				{% endfor %}
 			</form>
 		</div>
 		<br/><br/><br/>
-		<button onclick="prevQ()" style="display:none" class="rel prevQ">Previous</button>
-		<button onclick="nextQ()" style="display:none" class="rel nextQ">Next</button>
+		<button onclick="nextQ()" style="display:none" class="rel nextQ" type="button">Next</button>
 	</div>
 	<br/><br/>
+{% endblock %}
+
+{% block customjs %}
+	<script>
+		const id = '{{ id }}';
+		const startQ = {{ currentQ }};
+		let currentQ = {{ currentQ }};
+		let timeVal = 0;
+		let globalTimer;
+		let next = false;
+		let currentTimer;
+		const qAmt = {{ qAmt }};
+		const qs = {{ questions | safe }};
+		function generateHTML (components) {
+			return components.map(component => {
+				switch (component.type) {
+					case 'image':
+						return `<img src="${component.value}" class="option-image" style="${component.style || ''}"/>`;
+					case 'mp3':
+						return `<audio src="${component.value}" type="audio/mpeg"> </audio>`;
+					case 'title':
+						return `<h3>${component.value}</h3>`;
+					case 'gallery': {
+						const images = components.value.map(img => `<img src="${img.src}" class="gallery-image">`).join('');
+						return `<div style="display: flex; flex-direction: row; flex-wrap: wrap;"> ${images} </div>`;
+					}
+					case 'paragraph': 
+						return `<i>${component.value}</i>`;
+					case 'table':
+						// needs to be fixed
+						return component.value;
+					default:
+						return component.value;
+				}
+			}).join('<br/>');
+		}
+		window.onload = () => {
+			[...document.getElementsByTagName('button')].forEach(button => button.addEventListener('click', (event) => event.preventDefault()))
+			qs.forEach((question, q) => {
+				document.getElementById(`question-${q + currentQ + 1}`).innerHTML = generateHTML(question.question);
+				if (question.options.type !== 'mcq') return;
+				for (let i = 1; i <= 4; i++) 
+					document.getElementById(`option-${q + currentQ + 1}-${i}`).innerHTML = generateHTML(question.options.value[i - 1]);
+				}
+			);
+			// Enabled manual start of quiz
+		}
+		// Support for Keyboard input for MCQ type Quiz Questions
+		// Feature: 1,2,3,4 or a,b,c,d or Num1,Num2,Num3,Num4 to select quiz options
+		function preventDefault (event) {
+			event.stopImmediatePropagation();
+			event.preventDefault();
+			event.stopPropagation();
+		}
+		window.addEventListener('keydown', function (event) {
+			let e = 0;
+			const n = event.keyCode;
+			// Daheck are these variable names
+			keys = [48, 64, 96]; //[[49-52 = 1-4], [65-68 = A-D], [97-100:NUM1-NUM4]]
+			keys.forEach(k => {
+				// Here we check if the input code is in between the range of the keys
+				if (k < n && n < k + 5) return e = n - k;
+			});
+			if (e) {
+				// e = 1 || 2 || 3 || 4
+				// Select the corresponding option
+				op = document.getElementById(`option-${currentQ}-${e}`);
+				op.click();
+				// Was trying a feature to allow focus on a checked element
+				op.scrollIntoView();
+				// op.focus({ focusVisible: true });
+				preventDefault(event);
+			} else if (n === 27) {
+				const chkOpt = document.querySelector(`input[name="answer-${currentQ}"]:checked`);
+				if (chkOpt) chkOpt.checked = false
+			} else if (n === 13 || n === 39) {
+				// TODO: Ignore if no input is selected
+				if (document.querySelector(`input[name="answer-${currentQ}"]:checked`)) nextQ();
+				preventDefault(event);
+			}
+		});
+		function timer (timerLength) {
+			timeVal = timerLength;
+			let cancel = false;
+			function endTimer () {
+				cancel = true;
+			}
+			function decrement () {
+				if (cancel) return;
+				document.getElementById('count').innerHTML = `${Math.floor(timeVal/60)}:${Math.floor((timeVal%60)/10)}${(timeVal%60)%10}`;
+				timeVal--;
+				if (timeVal >= 0) setTimeout(decrement, 1000);
+				else endQuiz();
+			}
+			decrement();
+			return endTimer;
+		}
+		async function startQuiz () {
+			document.getElementsByClassName('instructions')[0].style.display = 'none';
+			document.getElementsByClassName('quiz-container')[0].style.display = 'block';
+			for (let button of document.getElementsByClassName('nextQ')) button.style.display = 'inline';
+			try {
+				const response = await axios.post(`/time-left/${ id }`);
+				await nextQ(false);
+				timer(Math.min(~~response.data, 1200));
+				return false;
+			} catch (err) {
+				if (err.response.status === 403) endQuiz();
+			}
+			// Here, we have started a global timer with value = timerLength
+		}
+		async function nextQ (submit = true) {
+			// if (currentTimer) currentTimer();
+			[...document.getElementsByClassName('nextQ')].forEach(button => button.disabled = true);
+			if (submit) {
+				try {
+					const answer = document.querySelector(`input[name="answer-${currentQ}"]${qs[currentQ - startQ - 1].options.type === "mcq" ? ":checked" : ""}`)?.value.trim();
+					if (qs[currentQ - startQ - 1].options.type === "number" && !~~answer) throw new Error('Answering non-numeric value in number field');
+					else if (!answer) throw new Error('No answer provided...');
+					// document.getElementById('quiz').style.display = 'none';
+					document.getElementById('waiting').style.display = 'block';
+					await axios.post('/update-status/{{ id }}', { answer });
+				} catch (err) {
+					[...document.getElementsByClassName('nextQ')].forEach(button => button.disabled = false);
+					return alert(err.response ? err.response.data : err);
+				}
+			}
+			for (button of document.getElementsByClassName('nextQ')) button.disabled = false;
+			const c = currentQ;
+			if (c >= qAmt + startQ ) {
+				for (button of document.getElementsByClassName('submit')) button.style.display = 'inline';
+				document.getElementById(`qbox-${c}`) ? document.getElementById(`qbox-${c}`).style.display = 'none' : '';
+				for (button of document.getElementsByClassName('nextQ')) button.disabled = true;
+			} else {
+				[...document.getElementsByClassName('nextQ')].forEach(button => button.disabled = false);
+				document.getElementById(`qbox-${c + 1}`).style.display = 'block';
+			}
+			if (c) document.getElementById(`qbox-${c}`)?.parentElement?.removeChild(document.getElementById(`qbox-${c}`));
+			currentQ++;
+			document.getElementById('waiting').style.display = 'none';
+			document.getElementById('quiz').style.display = 'block';
+		}
+		
+		async function endQuiz () {
+			// document.getElementById('quiz').submit();
+			document.getElementById('submit-button').disabled = true;
+ 			window.location.href = (await axios.post('/submit/{{ id }}')).request.responseURL;
+		}
+	</script>
 {% endblock %}
 
 {% block customcss %}
 	<link rel="stylesheet" type="text/css" href="/assets/styles/icons.css"/>
 	<style>
+		.waiting-for-q{
+			display:none;
+		}
 		.quiz-container {
 			width: 80%;
 			margin: auto;
@@ -182,140 +335,60 @@
 			border-radius: 20px;
 			margin: 20px 10%;
 		}
+
+		div[id^='type-'] {
+			margin: 6px;
+		}
+
+		div[id^='question-'] {
+			display: flex; 
+			flex-direction: column;
+			align-items: center;
+			justify-content: center;
+		}
+
+		div[id^='question-'] i {
+			max-width: 85%;
+			margin: 5px 3px 3px;
+		}
+
+		#waiting {
+			margin: 0px 3px 15px;
+		}
+
+		div[id^='question-'] img, div[id^='option-'] img{
+			max-width: 200px;
+			max-height: 300px;
+		}
+
+		table img {
+			min-width: 10vw !important;
+			min-height: 10vh !important;
+			max-width: 25vw !important;
+			max-height: 25vh !important;
+		}
+
+		table td {
+			padding: 5px 30px;
+		}
+		
+		table {
+			margin: 10px auto;
+		}
+
+		input[type='number'], input[type='text']{
+			display: block;
+			height: 45px;
+			width: 90%;
+			background-color: #77777744;
+			border-radius: 12px;
+			padding: 4px 20px 4px 14px;
+			margin: 12px auto;
+			font-size: 15px;
+			font-weight: 300;
+			color: var(--white);
+		}
 	</style>
-{% endblock %}
-
-{% block customjs %}
-	<script>
-		let currentQ = 0;
-		let timeVal = 0;
-		let globalTimer = 1000;
-		let next = false;
-		let currentTimer;
-		const qAmt = {{ qAmt }};
-		const qs = {{ questions | safe }};
-		function generateHTML(components) {
-			return components
-				.map(component => {
-					switch (component.type) {
-						case 'image':
-							return `<img src="${component.val}" class="option-image" style="${component.style || ''}"/>`;
-						case 'mp3':
-							return `<audio src="${component.val}" type="audio/mpeg"> </audio>`;
-						case 'title':
-							return `<h3>${component.val}</h3>`;
-						default:
-							return component.val;
-					}
-				})
-				.join('<br/>');
-		}
-		window.onload = () => {
-			qs.forEach((question, q) => {
-				document.getElementById(`question-${q + 1}`).innerHTML = generateHTML(question.q);
-				for (let i = 1; i <= 4; i++) 
-					document.getElementById(`option-${q + 1}-${i}`).innerHTML = generateHTML(question.options[i - 1]);
-				}
-			);
-			//enabled manual start of quiz
-		}
-		// Support for Keyboard input for MCQ type Quiz Questions
-		// Feature: 1,2,3,4 or a,b,c,d or Num1,Num2,Num3,Num4 to select quiz options
-		function preventDefault(event) {
-			event.stopImmediatePropagation();
-			event.preventDefault();
-			event.stopPropagation();
-		}
-		window.addEventListener('keydown', function (event) {
-			let e = 0;
-			const n = event.keyCode;
-			// Daheck are these variable names
-			keys = [48, 64, 96]; //[48: 1-4, 64 A-D, 96:NUM1-4]
-			keys.forEach(k => {
-				if (k < n && n < k + 5) return e = n - k;
-			});
-			if (e) {
-				// Select the corresponding option
-				op = document.getElementById(`option-${currentQ}-${e}`);
-				op.click();
-				// Was trying a feature to allow focus on a checked element
-				op.scrollIntoView();
-				// op.focus({ focusVisible: true });
-				preventDefault(event);
-			}
-			else if (n === 27) {
-				const chkOpt = document.querySelector(`input[name="answer-${currentQ}"]:checked`);
-				if (chkOpt) chkOpt.checked = false
-			}
-			else if (n === 13 || n === 39) {
-				// TODO: Ignore if no input is selected
-				if (document.querySelector(`input[name="answer-${currentQ}"]:checked`)) nextQ();
-				preventDefault(event);
-			}
-			else if (n === 8 || n === 37) {
-				prevQ();
-				preventDefault(event);
-			}
-
-		});
-		function timer() {
-			timeVal = globalTimer;
-			let cancel = false;
-			function endTimer () {
-				cancel = true;
-			}
-			function decrement () {
-				if (cancel) return;
-				document.getElementById('count').innerHTML = timeVal;
-				timeVal--;
-				if (timeVal >= 0) setTimeout(decrement, 1000);
-				else endQuiz();
-			}
-			decrement();
-			return endTimer;
-		}
-		function startQuiz() {
-			document.getElementsByClassName('instructions')[0].style.display = 'none';
-			document.getElementsByClassName('quiz-container')[0].style.display = 'block';
-			for (button of document.getElementsByClassName('nextQ')) button.style.display = 'inline';
-			for (button of document.getElementsByClassName('prevQ')) button.style.display = 'inline';
-			nextQ();
-			timer();
-			// Here, we have started a global timer with value = globalTimer
-		}
-		function nextQ() {
-			// if (currentTimer) currentTimer();
-			for (button of document.getElementsByClassName('nextQ')) button.disabled = false;
-			for (button of document.getElementsByClassName('prevQ')) button.disabled = false;
-			const c = currentQ;
-			if (c < 1) {
-				for (button of document.getElementsByClassName('prevQ')) button.disabled = true;
-			}
-			if (c >= qAmt){
-				for (button of document.getElementsByClassName('submit')) button.style.display = 'inline';
-				document.getElementById(`qbox-${c}`).style.display = 'none';
-				for (button of document.getElementsByClassName('nextQ')) button.disabled = true;
-			} else document.getElementById(`qbox-${c + 1}`).style.display = 'block';
-			if (c) document.getElementById(`qbox-${c}`).style.display = 'none';
-			currentQ++;
-		}
-		function prevQ() {
-			const d = currentQ;
-			for (button of document.getElementsByClassName('submit')) button.style.display = 'none';
-			for (button of document.getElementsByClassName('nextQ')) button.disabled = false;
-			if (d > 1){
-				document.getElementById(`qbox-${d - 1}`).style.display = 'block';
-				if (d <= qAmt) document.getElementById(`qbox-${d}`).style.display = 'none';
-				currentQ--;
-			}
-			if (d <= 2) {
-				for (button of document.getElementsByClassName('prevQ')) button.disabled = true;
-			}
-		}
-		function endQuiz(){
-			document.getElementById('quiz').submit();
-		}
-	</script>
 {% endblock %}
 
 {% set scripts = ['https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js'] %}

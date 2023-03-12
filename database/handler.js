@@ -77,36 +77,46 @@ async function markUserAsPresent (userId) {
 }
 
 // Add new record to database
-async function updateUserQuizRecord (stats) { // {userId, quizId, time, score}
-	// This... should be fine as it is
-	const user = await Quiz.UserInfo.findOne({ userId: stats.userId });
-	const userName = (await getUser(stats.userId)).name;
-	const record = user || new Quiz.UserInfo({ userId: stats.userId, userName, points: 0, quizData: [] });
-	if (!record.quizData) record.quizData = [];
-	const key = stats.quizId;
-	if (!key) return record.save();
-	if (record.quizData.find(elm => elm.quizId === key)) return record;
-	else {
-		record.quizData.push({
-			quizId: key,
-			points: stats.score,
-			time: stats.time
-		});
-		record.points += stats.score;
-	}
-	return record.save();
+async function generateUserQuizRecord (creds) {
+	// stats = { userId, quizId }
+	if (await Quiz.UserInfo.findOne(creds)) throw new Error('Record already exists.');
+	const userStat = new Quiz.UserInfo(creds);
+	userStat.endTime = new Date(new Date().getTime() + 20 * 60 * 1000);
+	userStat.timeStampSet = false;
+	userStat.points = 0;
+	userStat.records = [];
+	return userStat.save();
 }
 
 // User statistics
-async function getUserStats (userId) {
+async function getUserStats (userId, quizId) {
 	// This should be fine as it is too
-	const user = await Quiz.UserInfo.findOne({ userId });
+	const user = await Quiz.UserInfo.findOne({ userId, quizId });
 	if (user) return user;
-	else return updateUserQuizRecord({ userId });
+	else return generateUserQuizRecord({ userId, quizId });
+}
+
+function getStatsOfQuiz (quizId) {
+	return Quiz.UserInfo.find({ quizId }).lean();
+}
+
+async function updateUserStats (userId, quizId, answer) {
+	const user = await getUserStats(userId, quizId);
+	if (user.status === 'Submitted' && !answer.reEvaluation) throw new Error('Updating a submitted record!!');
+	if (typeof answer === 'object') {
+		user.status = 'Submitted';
+		user.endTime = answer.endTime;
+		user.points = answer.points;
+	} else user.records.push(answer);
+	return user.save();
 }
 
 function getQuizzes () {
 	return Quiz.Questions.find().lean();
+}
+
+function getQuiz (quizId) {
+	return Quiz.Questions.findById(quizId).lean();
 }
 
 async function getLiveQuiz (query) {
@@ -216,9 +226,11 @@ module.exports = {
 	editUserDetails,
 	confirmPayment,
 	markUserAsPresent,
-	updateUserQuizRecord,
 	getQuizzes,
+	getQuiz,
 	getUserStats,
+	getStatsOfQuiz,
+	updateUserStats,
 	getLiveQuiz,
 	getLiveResult,
 	getAllLiveResults,
