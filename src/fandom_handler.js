@@ -339,7 +339,7 @@ function handler (app, nunjEnv) {
 	});
 	// Quiz Portal
 	app.get('/quiz-portal', async (req, res) => {
-		// if (!req.admin) return res.redirect('/');
+		if (!req.admin) return res.redirect('/');
 		const quizzes = await dbh.getQuizzes();
 		quizzes.forEach(quiz => {
 			quiz.status = new Date().getTime() < new Date(quiz.startTime).getTime() ? 'To be started' :
@@ -349,6 +349,7 @@ function handler (app, nunjEnv) {
 	});
 	// Show answers to quizzes
 	app.get('/show-answers/:arg', async (req, res) => {
+		if (!req.admin) return res.redirect('/');
 		const quiz = await dbh.getQuiz(req.params.arg);
 		const quizQuestions = [];
 		quiz.questions.forEach((question, i) => quizQuestions.push({ number: i + 1, ...question, _id: req.params.arg }));

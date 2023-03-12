@@ -157,10 +157,10 @@
 		}
 
 		function signUp () {
-			document.getElementById('submit').disabled = true;
 			if (!validatePageOne()) return;
 			if (!validatePageTwo()) return;
 			if (!validatePageThree()) return;
+			document.getElementById('submit').disabled = true;
 
 			const name = document.getElementById('display-name').value.trim();
 			const email = document.getElementById('email').value.trim();
