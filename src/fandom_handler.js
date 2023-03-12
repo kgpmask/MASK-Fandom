@@ -164,7 +164,7 @@ function handler (app, nunjEnv) {
 			});
 		}
 		const quiz = await dbh.getQuiz(req.params.arg);
-		if (new Date.getTime() < quiz.startTime.getTime()) return res.renderFile('events/quizzes_404.njk', {
+		if (new Date().getTime() < quiz.startTime.getTime()) return res.renderFile('events/quizzes_404.njk', {
 			message: 'Quiz not started yet',
 			quizzes: quizzes
 		});
